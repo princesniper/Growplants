@@ -233,22 +233,47 @@ export function Header() {
               {/* Notifications (authenticated only) */}
               {isAuthenticated && <NotificationBell className="hidden sm:block" />}
 
-              {/* Account */}
+              {/* Account (desktop — hidden on mobile) */}
               {isAuthenticated && user ? (
-                <div ref={accountRef} className="relative">
+                <div ref={accountRef} className="relative hidden lg:block">
                   <button
                     onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-                    className="size-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold hover:opacity-90 transition-opacity"
+                    className="size-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold hover:opacity-90 transition-opacity overflow-hidden border-2 border-white shadow-sm"
                     aria-label={`Account — ${user.fullName}`}
                     aria-expanded={accountMenuOpen}
                   >
-                    {user.fullName.charAt(0).toUpperCase()}
+                    {user.profileImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.profileImageUrl}
+                        alt={user.fullName}
+                        className="size-full object-cover rounded-full"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      user.fullName.charAt(0).toUpperCase()
+                    )}
                   </button>
                   {accountMenuOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl rounded-md overflow-hidden z-50">
-                      <div className="p-3 border-b border-slate-100 bg-slate-50">
-                        <p className="text-sm font-semibold text-slate-800 truncate">{user.fullName}</p>
-                        <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      <div className="p-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2.5">
+                        <div className="size-9 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold overflow-hidden shrink-0">
+                          {user.profileImageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={user.profileImageUrl}
+                              alt={user.fullName}
+                              className="size-full object-cover rounded-full"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            user.fullName.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-800 truncate">{user.fullName}</p>
+                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                        </div>
                       </div>
                       <div className="p-1.5">
                         <Link href="/account" onClick={() => setAccountMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-50 text-sm text-slate-700">
@@ -273,11 +298,21 @@ export function Header() {
                 </Link>
               )}
 
-              {/* Mobile account icon */}
+              {/* Mobile account icon (hidden on desktop — uses MobileBottomNav instead) */}
               {isAuthenticated && user ? (
                 <Link href="/account" className="lg:hidden">
-                  <div className="w-7 h-7 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold">
-                    {user.fullName.charAt(0).toUpperCase()}
+                  <div className="w-7 h-7 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold overflow-hidden">
+                    {user.profileImageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.profileImageUrl}
+                        alt={user.fullName}
+                        className="size-full object-cover rounded-full"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      user.fullName.charAt(0).toUpperCase()
+                    )}
                   </div>
                 </Link>
               ) : (

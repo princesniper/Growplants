@@ -1,0 +1,601 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect, useRef } from 'react';
+     4→import Link from 'next/link';
+     5→import {
+     6→  ShoppingCart,
+     7→  Heart,
+     8→  Search,
+     9→  Menu,
+    10→  X,
+    11→  Globe,
+    12→  ChevronDown,
+    13→  User
+    14→} from 'lucide-react';
+    15→import { useAuth } from '../../contexts/AuthContext';
+    16→import { useUser } from '../../contexts/UserContext';
+    17→import { useCart } from '../../contexts/CartContext';
+    18→import { useWishlist } from '../../contexts/WishlistContext';
+    19→import { MegaMenu } from './MegaMenu';
+    20→import { MiniCartPreview } from './MiniCartPreview';
+    21→import { MiniWishlistPreview } from './MiniWishlistPreview';
+    22→import { SearchSuggestionsOverlay } from './SearchSuggestionsOverlay';
+    23→
+    24→const SEARCH_CATEGORIES = [
+    25→  'All Categories',
+    26→  'Indoor Plants',
+    27→  'Outdoor Plants',
+    28→  'Planters',
+    29→  'Services'
+    30→];
+    31→
+    32→export const Header: React.FC = () => {
+    33→  const { firebaseUser } = useAuth();
+    34→  const { userData } = useUser();
+    35→  const { items, openCart } = useCart();
+    36→  const { items: wishlistItems } = useWishlist();
+    37→
+    38→  // Dialog & Dropdown States
+    39→  const [cartHovered, setCartHovered] = useState(false);
+    40→  const [wishlistHovered, setWishlistHovered] = useState(false);
+    41→  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+    42→
+    43→  // Mobile search state
+    44→  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    45→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    46→
+    47→  // Search logic states
+    48→  const [searchQuery, setSearchQuery] = useState('');
+    49→  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+    50→  const [showSearchCategoryDropdown, setShowSearchCategoryDropdown] = useState(false);
+    51→  const [searchFocused, setSearchFocused] = useState(false);
+    52→
+    53→  // Suggestions states
+    54→  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+    55→  const [suggestionsCount, setSuggestionsCount] = useState(0);
+    56→
+    57→  // Sticky header scrolled state
+    58→  const [scrolled, setScrolled] = useState(false);
+    59→
+    60→  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+    61→
+    62→  // References for clicking outside
+    63→  const categorySelectRef = useRef<HTMLDivElement>(null);
+    64→  const searchContainerRef = useRef<HTMLFormElement>(null);
+    65→
+    66→  useEffect(() => {
+    67→    // Scroll detection
+    68→    const handleScroll = () => setScrolled(window.scrollY > 0);
+    69→    window.addEventListener('scroll', handleScroll, { passive: true });
+    70→
+    71→    // Click outside listener
+    72→    const handleClickOutside = (event: MouseEvent) => {
+    73→      if (categorySelectRef.current && !categorySelectRef.current.contains(event.target as Node)) {
+    74→        setShowSearchCategoryDropdown(false);
+    75→      }
+    76→      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+    77→        setSearchFocused(false);
+    78→      }
+    79→    };
+    80→
+    81→    document.addEventListener('mousedown', handleClickOutside);
+    82→
+    83→    return () => {
+    84→      window.removeEventListener('scroll', handleScroll);
+    85→      document.removeEventListener('mousedown', handleClickOutside);
+    86→    };
+    87→  }, []);
+    88→
+    89→  const executeSearch = (queryStr: string = searchQuery) => {
+    90→    const term = queryStr.trim();
+    91→    if (term) {
+    92→      // Add to recent searches
+    93→      if (typeof window !== 'undefined') {
+    94→        const saved = localStorage.getItem('growplants_recent_searches');
+    95→        let searches: string[] = saved ? JSON.parse(saved) : [];
+    96→        searches = [term, ...searches.filter(s => s !== term)].slice(0, 5);
+    97→        localStorage.setItem('growplants_recent_searches', JSON.stringify(searches));
+    98→      }
+    99→
+   100→      const catParam = selectedCategory !== 'All Categories' ? `&category=${encodeURIComponent(selectedCategory)}` : '';
+   101→      window.location.href = `/shop?q=${encodeURIComponent(term)}${catParam}`;
+   102→    }
+   103→  };
+   104→
+   105→  const handleSearchSubmit = (e: React.FormEvent) => {
+   106→    e.preventDefault();
+   107→    executeSearch();
+   108→  };
+   109→
+   110→  // Keyboard navigation inside search suggestions dropdown
+   111→  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+   112→    if (!searchFocused || suggestionsCount === 0) return;
+   113→
+   114→    if (e.key === 'ArrowDown') {
+   115→      e.preventDefault();
+   116→      setActiveSuggestionIndex((prev) => (prev + 1) % suggestionsCount);
+   117→    } else if (e.key === 'ArrowUp') {
+   118→      e.preventDefault();
+   119→      setActiveSuggestionIndex((prev) => (prev - 1 + suggestionsCount) % suggestionsCount);
+   120→    } else if (e.key === 'Enter') {
+   121→      if (activeSuggestionIndex >= 0) {
+   122→        e.preventDefault();
+   123→        // Trigger action based on focused item in suggestions overlay
+   124→        // overlay component click handler handles search execution, so we trigger selection
+   125→        const suggestionsBox = document.querySelectorAll('[onMouseDown]');
+   126→        if (suggestionsBox.length > 0) {
+   127→          const activeEl = suggestionsBox[activeSuggestionIndex] as HTMLElement;
+   128→          if (activeEl) {
+   129→            activeEl.click();
+   130→          }
+   131→        }
+   132→      }
+   133→    } else if (e.key === 'Escape') {
+   134→      setSearchFocused(false);
+   135→    }
+   136→  };
+   137→
+   138→  return (
+   139→    <>
+   140→
+   141→      {/* Sticky Container for Tier 2 and Tier 3 */}
+   142→      <div className={`sticky top-0 z-40 w-full bg-white transition-all duration-300 ${scrolled ? 'shadow-md border-b border-slate-100' : 'border-b border-slate-200'
+   143→        }`}>
+   144→
+   145→        {/* ==================== TIER 2: MAIN MARKETPLACE HEADER ==================== */}
+   146→        <div className="h-[52px] lg:h-[56px] flex items-center px-4 md:px-6">
+   147→          <div className="max-w-[1400px] mx-auto w-full flex items-center gap-4 lg:gap-6">
+   148→
+   149→            {/* Hamburger (Mobile) */}
+   150→            <button
+   151→              onClick={() => setMobileMenuOpen(true)}
+   152→              className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]"
+   153→            >
+   154→              <Menu className="h-6 w-6" />
+   155→            </button>
+   156→
+   157→            {/* Logo */}
+   158→            <Link href="/" className="flex items-center gap-2 shrink-0">
+   159→              <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+   160→                <img
+   161→                  src="https://res.cloudinary.com/dszy67wp5/image/upload/v1753527438/ChatGPT_Image_Jul_26_2025_04_13_53_PM_rwtuqx.png"
+   162→                  alt="GrowPlants Logo"
+   163→                  className="object-cover w-full h-full"
+   164→                />
+   165→              </div>
+   166→              <div className="flex flex-col">
+   167→                <span className="font-display font-extrabold text-base lg:text-lg text-[#1A6B3C] tracking-tight leading-none">
+   168→                  GROWPLANTS
+   169→                </span>
+   170→                <span className="text-[9px] text-slate-400 font-semibold tracking-wide mt-0 uppercase hidden sm:inline-block">
+   171→                  Plants & Services
+   172→                </span>
+   173→              </div>
+   174→            </Link>
+   175→
+   176→            {/* Center Search Bar Container */}
+   177→            <div className="hidden lg:flex flex-1 justify-center px-2">
+   178→              {/* Search-First Dominant Marketplace Search */}
+   179→              <form
+   180→                onSubmit={handleSearchSubmit}
+   181→                ref={searchContainerRef}
+   182→                className="flex max-w-2xl items-center relative w-full"
+   183→              >
+   184→                <div className="w-full flex h-[36px] border border-slate-300 rounded-md overflow-hidden bg-slate-50 focus-within:ring-2 focus-within:ring-[#1A6B3C]/10 focus-within:border-[#1A6B3C] transition-all">
+   185→                  {/* Category Dropdown Selector */}
+   186→                  <div className="relative border-r border-slate-200 flex items-center" ref={categorySelectRef}>
+   187→                    <button
+   188→                      type="button"
+   189→                      onClick={() => setShowSearchCategoryDropdown(!showSearchCategoryDropdown)}
+   190→                      className="h-full px-3 text-xs font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-1 transition-colors cursor-pointer"
+   191→                    >
+   192→                      <span className="hidden sm:inline">{selectedCategory}</span>
+   193→                      <ChevronDown className="h-3 w-3 text-slate-400" />
+   194→                    </button>
+   195→                    {showSearchCategoryDropdown && (
+   196→                      <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 shadow-xl rounded-md py-1.5 min-w-[160px] z-50">
+   197→                        {SEARCH_CATEGORIES.map((cat, idx) => (
+   198→                          <button
+   199→                            key={idx}
+   200→                            type="button"
+   201→                            onClick={() => { setSelectedCategory(cat); setShowSearchCategoryDropdown(false); }}
+   202→                            className="w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] transition-colors"
+   203→                          >
+   204→                            {cat}
+   205→                          </button>
+   206→                        ))}
+   207→                      </div>
+   208→                    )}
+   209→                  </div>
+   210→
+   211→                  {/* Input Text Box */}
+   212→                  <div className="flex-1 relative flex items-center">
+   213→                    <input
+   214→                      type="text"
+   215→                      value={searchQuery}
+   216→                      onChange={(e) => { setSearchQuery(e.target.value); setActiveSuggestionIndex(-1); }}
+   217→                      onFocus={() => setSearchFocused(true)}
+   218→                      onKeyDown={handleSearchKeyDown}
+   219→                      placeholder='Search plants, planters, fertilizers, services...'
+   220→                      className="w-full h-full bg-transparent px-3 text-xs font-semibold text-slate-800 outline-hidden"
+   221→                    />
+   222→                    {searchQuery && (
+   223→                      <button
+   224→                        type="button"
+   225→                        onClick={() => setSearchQuery('')}
+   226→                        className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600"
+   227→                      >
+   228→                        <X className="h-3.5 w-3.5" />
+   229→                      </button>
+   230→                    )}
+   231→                  </div>
+   232→
+   233→                  {/* Submit Search Button */}
+   234→                  <button
+   235→                    type="submit"
+   236→                    className="bg-[#1A6B3C] hover:bg-[#16A34A] text-white px-4 transition-colors flex items-center justify-center cursor-pointer"
+   237→                  >
+   238→                    <Search className="h-3.5 w-3.5" />
+   239→                  </button>
+   240→                </div>
+   241→
+   242→                {/* Real-time search suggestions overlay */}
+   243→                <SearchSuggestionsOverlay
+   244→                  isOpen={searchFocused}
+   245→                  query={searchQuery}
+   246→                  onClose={() => setSearchFocused(false)}
+   247→                  onSelectSuggestion={(val) => { setSearchQuery(val); executeSearch(val); }}
+   248→                  activeItemIndex={activeSuggestionIndex}
+   249→                  setActiveItemIndex={setActiveSuggestionIndex}
+   250→                  setSuggestionsCount={setSuggestionsCount}
+   251→                />
+   252→              </form>
+   253→            </div>
+   254→
+   255→            {/* Right Icons: Wishlist, Cart, Sign In */}
+   256→            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 shrink-0">
+   257→
+   258→              {/* Mobile Search Toggle */}
+   259→              <button
+   260→                onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+   261→                className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]"
+   262→              >
+   263→                <Search className="h-5.5 w-5.5" />
+   264→              </button>
+   265→
+   266→              {/* Wishlist Module with Mini Wishlist Preview */}
+   267→              <div
+   268→                className="relative"
+   269→                onMouseEnter={() => setWishlistHovered(true)}
+   270→                onMouseLeave={() => setWishlistHovered(false)}
+   271→              >
+   272→                <Link
+   273→                  href="/account/wishlist"
+   274→                  className="relative flex flex-col items-center justify-center p-1.5 rounded-lg text-slate-600 hover:text-[#1A6B3C] hover:bg-slate-50 transition-colors"
+   275→                >
+   276→                  <Heart className="h-4.5 w-4.5 md:h-5 md:w-5" />
+   277→                  <span className="text-[9px] font-bold mt-0 hidden md:inline-block">
+   278→                    Wishlist
+   279→                  </span>
+   280→                  {wishlistItems.length > 0 && (
+   281→                    <span className="absolute top-0 right-0 bg-red-500 text-white text-[7px] font-extrabold h-3 w-3 flex items-center justify-center rounded-full">
+   282→                      {wishlistItems.length}
+   283→                    </span>
+   284→                  )}
+   285→                </Link>
+   286→
+   287→                {/* Mini Wishlist Hover Dropdown (only on Desktop hover) */}
+   288→                <div className="hidden lg:block">
+   289→                  <MiniWishlistPreview
+   290→                    isOpen={wishlistHovered}
+   291→                    onClose={() => setWishlistHovered(false)}
+   292→                  />
+   293→                </div>
+   294→              </div>
+   295→
+   296→              {/* Cart Module with Mini-Cart Preview */}
+   297→              <div
+   298→                className="relative"
+   299→                onMouseEnter={() => setCartHovered(true)}
+   300→                onMouseLeave={() => setCartHovered(false)}
+   301→              >
+   302→                <button
+   303→                  onClick={openCart}
+   304→                  className="relative flex flex-col items-center justify-center p-1.5 rounded-lg text-slate-600 hover:text-[#1A6B3C] hover:bg-slate-50 transition-colors cursor-pointer"
+   305→                >
+   306→                  <ShoppingCart className="h-4.5 w-4.5 md:h-5 md:w-5" />
+   307→                  <span className="text-[9px] font-bold mt-0 hidden md:inline-block">
+   308→                    Cart
+   309→                  </span>
+   310→                  {cartCount > 0 && (
+   311→                    <span className="absolute top-0 right-0 bg-amber-500 text-white text-[7px] font-extrabold h-3 w-3 flex items-center justify-center rounded-full">
+   312→                      {cartCount}
+   313→                    </span>
+   314→                  )}
+   315→                </button>
+   316→
+   317→                {/* Mini Cart Hover Dropdown (only on Desktop hover) */}
+   318→                <div className="hidden lg:block">
+   319→                  <MiniCartPreview
+   320→                    isOpen={cartHovered}
+   321→                    onClose={() => setCartHovered(false)}
+   322→                    onOpenDrawer={() => { openCart(); setCartHovered(false); }}
+   323→                  />
+   324→                </div>
+   325→              </div>
+   326→
+   327→              {/* Mobile Profile Icon */}
+   328→              {firebaseUser ? (
+   329→                <Link
+   330→                  href="/account/dashboard"
+   331→                  className="lg:hidden"
+   332→                >
+   333→                  {userData?.profileImage || firebaseUser.photoURL ? (
+   334→                    <img
+   335→                      src={userData?.profileImage || firebaseUser.photoURL!}
+   336→                      alt="Profile"
+   337→                      className="w-7 h-7 rounded-full object-cover border-2 border-[#1A6B3C]"
+   338→                    />
+   339→                  ) : (
+   340→                    <div className="w-7 h-7 rounded-full bg-[#1A6B3C]/10 text-[#1A6B3C] flex items-center justify-center text-xs font-bold">
+   341→                      {userData?.firstName?.[0]?.toUpperCase() || firebaseUser.email?.[0]?.toUpperCase() || '?'}
+   342→                    </div>
+   343→                  )}
+   344→                </Link>
+   345→              ) : (
+   346→                <Link
+   347→                  href="/login"
+   348→                  className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]"
+   349→                >
+   350→                  <User className="h-5.5 w-5.5" />
+   351→                </Link>
+   352→              )}
+   353→
+   354→              {/* Profile / Sign In - Desktop Only */}
+   355→              {firebaseUser ? (
+   356→                <Link
+   357→                  href="/account/dashboard"
+   358→                  className="hidden lg:flex items-center gap-2 ml-1"
+   359→                >
+   360→                  {userData?.profileImage || firebaseUser.photoURL ? (
+   361→                    <img
+   362→                      src={userData?.profileImage || firebaseUser.photoURL!}
+   363→                      alt="Profile"
+   364→                      className="w-10 h-10 rounded-full object-cover border-2 border-[#1A6B3C]"
+   365→                    />
+   366→                  ) : (
+   367→                    <div className="w-8 h-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold">
+   368→                      {userData?.firstName?.[0]?.toUpperCase() || firebaseUser.email?.[0]?.toUpperCase() || '?'}
+   369→                    </div>
+   370→                  )}
+   371→                </Link>
+   372→              ) : (
+   373→                <Link
+   374→                  href="/login"
+   375→                  className="hidden lg:flex items-center px-4 py-1.5 bg-[#1A6B3C] hover:bg-[#16A34A] text-white font-semibold text-xs rounded-md shadow-sm hover:shadow-md transition-all active:scale-95 ml-1"
+   376→                >
+   377→                  <span>Sign In</span>
+   378→                </Link>
+   379→              )}
+   380→            </div>
+   381→          </div>
+   382→        </div>
+   383→
+   384→        {/* Mobile Expanded Search Bar (toggled by search icon on mobile) */}
+   385→        {mobileSearchOpen && (
+   386→          <div className="lg:hidden px-4 pb-3 border-b border-slate-100 bg-white">
+   387→            <form onSubmit={handleSearchSubmit} className="flex gap-2">
+   388→              <div className="flex-1 flex items-center border border-slate-300 rounded-md bg-slate-50 px-2.5 py-1.5">
+   389→                <Search className="h-4 w-4 text-slate-400 mr-2" />
+   390→                <input
+   391→                  type="text"
+   392→                  placeholder='Search plants, services...'
+   393→                  value={searchQuery}
+   394→                  onChange={(e) => setSearchQuery(e.target.value)}
+   395→                  className="w-full text-xs font-semibold text-slate-700 bg-transparent outline-hidden"
+   396→                />
+   397→                {searchQuery && (
+   398→                  <button type="button" onClick={() => setSearchQuery('')} className="text-slate-400">
+   399→                    <X className="h-3.5 w-3.5" />
+   400→                  </button>
+   401→                )}
+   402→              </div>
+   403→              <button
+   404→                type="submit"
+   405→                className="px-4 bg-[#1A6B3C] hover:bg-[#16A34A] text-white text-xs font-bold rounded-md"
+   406→              >
+   407→                Go
+   408→              </button>
+   409→            </form>
+   410→          </div>
+   411→        )}
+   412→
+   413→        {/* ==================== TIER 3: CATEGORY NAVIGATION ==================== */}
+   414→        <div className="hidden lg:block h-11 border-t border-slate-100">
+   415→          <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex justify-between items-center gap-4">
+   416→
+   417→            {/* Mega Menu Toggle */}
+   418→            <div className="relative h-full flex items-center">
+   419→              <button
+   420→                onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+   421→                className="h-full flex items-center gap-1.5 font-bold text-xs text-slate-800 hover:text-[#1A6B3C] transition-colors cursor-pointer whitespace-nowrap"
+   422→              >
+   423→                <Menu className="h-4 w-4" />
+   424→                <span className="hidden sm:inline">Categories</span>
+   425→                <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${megaMenuOpen ? 'rotate-180' : ''}`} />
+   426→              </button>
+   427→
+   428→              <MegaMenu isOpen={megaMenuOpen} onClose={() => setMegaMenuOpen(false)} />
+   429→            </div>
+   430→
+   431→            {/* Center Navigation Links */}
+   432→            <nav className="flex items-center gap-5 lg:gap-6 h-full">
+   433→              <Link href="/shop" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap">
+   434→                Shop
+   435→              </Link>
+   436→              <Link href="/services" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap">
+   437→                Services
+   438→              </Link>
+   439→              <Link href="/shop?filter=new" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap hidden lg:block">
+   440→                New
+   441→              </Link>
+   442→              <Link href="/shop?filter=bestseller" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap hidden xl:block">
+   443→                Best Sellers
+   444→              </Link>
+   445→              <Link href="/shop?filter=trending" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap hidden xl:block">
+   446→                Trending
+   447→              </Link>
+   448→              <Link href="/offers" className="text-[11px] font-bold uppercase tracking-wide text-[#1A6B3C] hover:text-[#16A34A] transition-colors py-3 whitespace-nowrap">
+   449→                Offers
+   450→              </Link>
+   451→              <Link href="/blog" className="text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:text-[#1A6B3C] transition-colors py-3 whitespace-nowrap">
+   452→                Blog
+   453→              </Link>
+   454→            </nav>
+   455→
+   456→            {/* Right Side highlighted CTAs */}
+   457→            <div className="flex items-center gap-3 ml-auto">
+   458→              <Link
+   459→                href="/shop?filter=deals"
+   460→                className="text-[11px] font-bold text-red-600 hover:text-red-700 uppercase tracking-wide flex items-center gap-0.5 whitespace-nowrap"
+   461→              >
+   462→                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+   463→                <span className="hidden lg:inline">Deals</span>
+   464→              </Link>
+   465→              <div className="h-3 w-px bg-slate-300" />
+   466→              <Link
+   467→                href="/shop?filter=seasonal"
+   468→                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 uppercase tracking-wide whitespace-nowrap"
+   469→              >
+   470→                Seasonal
+   471→              </Link>
+   472→            </div>
+   473→
+   474→          </div>
+   475→        </div>
+   476→
+   477→      </div>
+   478→
+   479→      {/* MOBILE DRAWER MENU OVERLAY */}
+   480→      {mobileMenuOpen && (
+   481→        <>
+   482→          <div
+   483→            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
+   484→            onClick={() => setMobileMenuOpen(false)}
+   485→          />
+   486→          <div className="fixed top-0 left-0 h-full w-full max-w-xs z-50 bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out">
+   487→            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+   488→              <span className="font-display font-extrabold text-sm text-[#1A6B3C]">GROWPLANTS Menu</span>
+   489→              <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-md">
+   490→                <X className="h-5 w-5 text-slate-500" />
+   491→              </button>
+   492→            </div>
+   493→
+   494→            <div className="flex-1 min-w-0 overflow-y-auto p-4 flex flex-col gap-1">
+   495→              <Link
+   496→                href="/shop"
+   497→                onClick={() => setMobileMenuOpen(false)}
+   498→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   499→              >
+   500→                Shop All Plants
+   501→              </Link>
+   502→              <Link
+   503→                href="/services"
+   504→                onClick={() => setMobileMenuOpen(false)}
+   505→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   506→              >
+   507→                Gardening Services
+   508→              </Link>
+   509→              <Link
+   510→                href="/shop?filter=new"
+   511→                onClick={() => setMobileMenuOpen(false)}
+   512→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   513→              >
+   514→                New Arrivals
+   515→              </Link>
+   516→              <Link
+   517→                href="/shop?filter=bestseller"
+   518→                onClick={() => setMobileMenuOpen(false)}
+   519→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   520→              >
+   521→                Best Sellers
+   522→              </Link>
+   523→              <Link
+   524→                href="/offers"
+   525→                onClick={() => setMobileMenuOpen(false)}
+   526→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   527→              >
+   528→                Special Offers
+   529→              </Link>
+   530→              <Link
+   531→                href="/blog"
+   532→                onClick={() => setMobileMenuOpen(false)}
+   533→                className="py-3 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   534→              >
+   535→                Read Blog
+   536→              </Link>
+   537→
+   538→              <div className="h-px bg-slate-100 my-4" />
+   539→
+   540→              {/* Mobile login / account */}
+   541→              {firebaseUser ? (
+   542→                <>
+   543→                  <Link
+   544→                    href="/account/dashboard"
+   545→                    onClick={() => setMobileMenuOpen(false)}
+   546→                    className="flex items-center gap-3 py-3 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] rounded-md"
+   547→                  >
+   548→                    {userData?.profileImage || firebaseUser.photoURL ? (
+   549→                      <img
+   550→                        src={userData?.profileImage || firebaseUser.photoURL!}
+   551→                        alt="Profile"
+   552→                        className="w-8 h-8 rounded-full object-cover"
+   553→                      />
+   554→                    ) : (
+   555→                      <div className="w-8 h-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold">
+   556→                        {userData?.firstName?.[0]?.toUpperCase() || firebaseUser.email?.[0]?.toUpperCase() || '?'}
+   557→                      </div>
+   558→                    )}
+   559→                    <span>My Account</span>
+   560→                  </Link>
+   561→                  <button
+   562→                    onClick={async () => {
+   563→                      setMobileMenuOpen(false);
+   564→                      const { firebaseSignOut } = await import('@/lib/firebase/auth');
+   565→                      await firebaseSignOut();
+   566→                    }}
+   567→                    className="w-full py-3 px-4 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-md text-left"
+   568→                  >
+   569→                    Sign Out
+   570→                  </button>
+   571→                </>
+   572→              ) : (
+   573→                <Link
+   574→                  href="/login"
+   575→                  onClick={() => setMobileMenuOpen(false)}
+   576→                  className="py-3 px-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 rounded-md"
+   577→                >
+   578→                  Sign In / Account
+   579→                </Link>
+   580→              )}
+   581→            </div>
+   582→
+   583→            {!firebaseUser && (
+   584→              <div className="p-4 bg-slate-50 border-t border-slate-100 text-center">
+   585→                <Link
+   586→                  href="/login"
+   587→                  onClick={() => setMobileMenuOpen(false)}
+   588→                  className="w-full block py-2.5 bg-[#1A6B3C] hover:bg-[#16A34A] text-white text-xs font-bold rounded-lg shadow-sm"
+   589→                >
+   590→                  Sign In
+   591→                </Link>
+   592→              </div>
+   593→            )}
+   594→          </div>
+   595→        </>
+   596→      )}
+   597→
+   598→    </>
+   599→  );
+   600→};
+   601→

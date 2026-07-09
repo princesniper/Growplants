@@ -45,8 +45,18 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
       {/* User card */}
       <div className="p-3 mb-3 rounded-lg bg-[#F3F8F1]">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold shrink-0">
-            {user?.fullName?.charAt(0).toUpperCase() ?? "U"}
+          <div className="size-10 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden border-2 border-white shadow-sm">
+            {user?.profileImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.profileImageUrl}
+                alt={user.fullName}
+                className="size-full object-cover rounded-full"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              user?.fullName?.charAt(0).toUpperCase() ?? "U"
+            )}
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-slate-800 truncate">{user?.fullName ?? "Guest"}</p>

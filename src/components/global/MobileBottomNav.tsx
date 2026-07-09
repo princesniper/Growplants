@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Home, ShoppingBag, BellRing, ShoppingCart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useBilingual } from "@/store/useBilingual";
 
 /**
@@ -12,6 +13,7 @@ import { useBilingual } from "@/store/useBilingual";
  * Source: PRD §8.3 (Mobile Bottom Tab: Home | Shop | Services | Cart | Profile)
  *
  * 5 tabs with active state highlighting + cart badge count.
+ * Account tab shows real avatar image if available, otherwise User icon.
  * Fixed to bottom of viewport with safe-area inset support.
  */
 interface NavItem {
@@ -33,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { itemCount, openDrawer } = useCart();
+  const { user, isAuthenticated } = useAuth();
   const { language } = useBilingual();
   const isHi = language === "hi";
 
@@ -42,7 +45,7 @@ export function MobileBottomNav() {
         "md:hidden fixed bottom-0 left-0 right-0 z-40",
         "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80",
         "border-t border-border",
-        "pb-[env(safe-area-inset-bottom)]" // iOS safe area
+        "pb-[env(safe-area-inset-bottom)]"
       )}
       aria-label="Mobile navigation"
     >
@@ -86,6 +89,51 @@ export function MobileBottomNav() {
                     {isHi ? item.labelHi : item.label}
                   </span>
                 </button>
+              </li>
+            );
+          }
+
+          // Account tab — show real avatar if logged in, else User icon
+          if (item.href === "/account" && isAuthenticated && user) {
+            return (
+              <li key={item.href} className="flex-1">
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "w-full h-full flex flex-col items-center justify-center gap-0.5",
+                    "text-body-sm transition-colors",
+                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={isHi ? item.labelHi : item.label}
+                >
+                  {user.profileImageUrl ? (
+                    <div className={cn(
+                      "size-6 rounded-full overflow-hidden border-2 transition-all",
+                      isActive ? "border-primary ring-2 ring-primary/20" : "border-transparent"
+                    )}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={user.profileImageUrl}
+                        alt={user.fullName}
+                        className="size-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  ) : (
+                    <div className={cn(
+                      "size-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all",
+                      isActive
+                        ? "bg-primary text-primary-foreground ring-2 ring-primary/20"
+                        : "bg-primary/10 text-primary"
+                    )}>
+                      {user.fullName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-caption font-medium">
+                    {isHi ? item.labelHi : item.label}
+                  </span>
+                </Link>
               </li>
             );
           }

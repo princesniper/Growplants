@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart } from "lucide-react";
+import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useOrders, type OrderAddress, type PaymentMethod } from "@/contexts/OrdersContext";
+import { useAddresses } from "@/contexts/AddressContext";
 import { formatINR, isValidPincode } from "@/lib/utils";
 import { appToast } from "@/lib/toast";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
@@ -24,9 +25,12 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, itemCount, clearCart } = useCart();
   const { createOrder } = useOrders();
+  const { addresses, isLoading: addressesLoading } = useAddresses();
 
   const [step, setStep] = useState(0);
   const [isPlacing, setIsPlacing] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
 
   // Address form
   const [address, setAddress] = useState<OrderAddress>({
@@ -43,6 +47,55 @@ export default function CheckoutPage() {
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal - couponDiscount + shipping;
+
+  // Auto-select default address on mount
+  useEffect(() => {
+    if (addresses.length > 0 && !selectedAddressId) {
+      const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
+      setSelectedAddressId(defaultAddr.id);
+      // Populate the address form with the default address
+      setAddress({
+        fullName: defaultAddr.fullName,
+        phone: defaultAddr.phone,
+        addressLine1: defaultAddr.houseNo,
+        addressLine2: defaultAddr.locality,
+        landmark: "",
+        city: defaultAddr.city,
+        state: defaultAddr.state,
+        pincode: defaultAddr.pincode,
+      });
+    }
+  }, [addresses, selectedAddressId]);
+
+  // Handle selecting a saved address
+  const handleSelectAddress = (addrId: string) => {
+    const addr = addresses.find((a) => a.id === addrId);
+    if (!addr) return;
+    setSelectedAddressId(addrId);
+    setShowNewAddressForm(false);
+    setAddress({
+      fullName: addr.fullName,
+      phone: addr.phone,
+      addressLine1: addr.houseNo,
+      addressLine2: addr.locality,
+      landmark: "",
+      city: addr.city,
+      state: addr.state,
+      pincode: addr.pincode,
+    });
+    setAddressErrors({});
+  };
+
+  // Handle "Add new address" click
+  const handleAddNewAddress = () => {
+    setSelectedAddressId(null);
+    setShowNewAddressForm(true);
+    setAddress({
+      fullName: "", phone: "", addressLine1: "", addressLine2: "", landmark: "",
+      city: "Sonipat", state: "Haryana", pincode: "",
+    });
+    setAddressErrors({});
+  };
 
   // Empty cart guard
   if (itemCount === 0 && !isPlacing) {
@@ -119,20 +172,113 @@ export default function CheckoutPage() {
             <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
               <h2 className="text-base font-bold text-[#1A6B3C] flex items-center gap-2"><MapPin className="size-5" />Delivery Address</h2>
               <Separator />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5"><Label htmlFor="fullName" className="text-sm">Full Name *</Label><Input id="fullName" value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })} className="h-11" />{addressErrors.fullName && <p className="text-xs text-red-500">{addressErrors.fullName}</p>}</div>
-                <div className="space-y-1.5"><Label htmlFor="phone" className="text-sm">Phone Number *</Label><Input id="phone" type="tel" placeholder="9876543210" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className="h-11" />{addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}</div>
-              </div>
-              <div className="space-y-1.5"><Label htmlFor="addr1" className="text-sm">Address Line 1 *</Label><Input id="addr1" placeholder="House no, Building, Street" value={address.addressLine1} onChange={(e) => setAddress({ ...address, addressLine1: e.target.value })} className="h-11" />{addressErrors.addressLine1 && <p className="text-xs text-red-500">{addressErrors.addressLine1}</p>}</div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5"><Label htmlFor="addr2" className="text-sm">Address Line 2</Label><Input id="addr2" value={address.addressLine2} onChange={(e) => setAddress({ ...address, addressLine2: e.target.value })} className="h-11" /></div>
-                <div className="space-y-1.5"><Label htmlFor="landmark" className="text-sm">Landmark</Label><Input id="landmark" placeholder="Near..." value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} className="h-11" /></div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
-                <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
-                <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") })} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
-              </div>
+
+              {/* Saved Addresses Section */}
+              {!addressesLoading && addresses.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-slate-700">Saved Addresses</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {addresses.map((addr) => (
+                      <button
+                        key={addr.id}
+                        type="button"
+                        onClick={() => handleSelectAddress(addr.id)}
+                        className={cn(
+                          "text-left p-4 rounded-xl border-2 transition-all relative",
+                          selectedAddressId === addr.id
+                            ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
+                            : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white"
+                        )}
+                      >
+                        {selectedAddressId === addr.id && (
+                          <div className="absolute top-3 right-3 size-5 rounded-full bg-[#1A6B3C] flex items-center justify-center">
+                            <Check className="size-3 text-white" strokeWidth={3} />
+                          </div>
+                        )}
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="size-8 rounded-lg bg-[#1A6B3C]/10 flex items-center justify-center shrink-0">
+                            <Home className="size-4 text-[#1A6B3C]" />
+                          </div>
+                          <div className="min-w-0 flex-1 pr-6">
+                            <p className="text-sm font-bold text-slate-800 truncate">
+                              {addr.fullName}
+                              {addr.isDefault && (
+                                <span className="ml-2 text-[10px] font-semibold text-[#1A6B3C] bg-[#1A6B3C]/10 px-1.5 py-0.5 rounded-full">
+                                  Default
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-slate-500">{addr.label} · {addr.phone}</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          {addr.houseNo}, {addr.locality}, {addr.city}, {addr.state} - {addr.pincode}
+                        </p>
+                        {addr.gpsVerified && (
+                          <p className="text-[10px] text-green-600 mt-1.5 flex items-center gap-1">
+                            <MapPin className="size-2.5" /> GPS Verified
+                          </p>
+                        )}
+                      </button>
+                    ))}
+
+                    {/* Add New Address Card */}
+                    <button
+                      type="button"
+                      onClick={handleAddNewAddress}
+                      className={cn(
+                        "p-4 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2 min-h-[120px]",
+                        showNewAddressForm
+                          ? "border-[#1A6B3C] bg-[#F3F8F1]"
+                          : "border-slate-300 hover:border-[#1A6B3C]/50 text-slate-500 hover:text-[#1A6B3C]"
+                      )}
+                    >
+                      <Plus className="size-6" />
+                      <span className="text-sm font-medium">Add New Address</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Loading state */}
+              {addressesLoading && (
+                <div className="space-y-2">
+                  <div className="h-4 bg-slate-100 rounded animate-pulse w-32" />
+                  <div className="h-24 bg-slate-100 rounded animate-pulse" />
+                </div>
+              )}
+
+              {/* New Address Form (shown when "Add New" clicked OR no saved addresses) */}
+              {(showNewAddressForm || addresses.length === 0) && (
+                <div className="space-y-3 pt-2">
+                  {addresses.length > 0 && (
+                    <p className="text-sm font-semibold text-slate-700">Enter New Address</p>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5"><Label htmlFor="fullName" className="text-sm">Full Name *</Label><Input id="fullName" value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })} className="h-11" />{addressErrors.fullName && <p className="text-xs text-red-500">{addressErrors.fullName}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="phone" className="text-sm">Phone Number *</Label><Input id="phone" type="tel" placeholder="9876543210" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className="h-11" />{addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}</div>
+                  </div>
+                  <div className="space-y-1.5"><Label htmlFor="addr1" className="text-sm">Address Line 1 *</Label><Input id="addr1" placeholder="House no, Building, Street" value={address.addressLine1} onChange={(e) => setAddress({ ...address, addressLine1: e.target.value })} className="h-11" />{addressErrors.addressLine1 && <p className="text-xs text-red-500">{addressErrors.addressLine1}</p>}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5"><Label htmlFor="addr2" className="text-sm">Address Line 2</Label><Input id="addr2" value={address.addressLine2} onChange={(e) => setAddress({ ...address, addressLine2: e.target.value })} className="h-11" /></div>
+                    <div className="space-y-1.5"><Label htmlFor="landmark" className="text-sm">Landmark</Label><Input id="landmark" placeholder="Near..." value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} className="h-11" /></div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") })} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Link to manage addresses */}
+              {addresses.length > 0 && (
+                <div className="pt-2">
+                  <Link href="/account/addresses" className="text-xs text-[#1A6B3C] hover:underline font-medium">
+                    Manage saved addresses →
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

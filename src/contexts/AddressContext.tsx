@@ -7,7 +7,7 @@
  * GPS verification required for new addresses.
  */
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot, writeBatch } from "firebase/firestore";
 import { firebaseDb, isFirebaseConfigured } from "@/lib/firebase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { appToast } from "@/lib/toast";
@@ -97,13 +97,14 @@ export function AddressProvider({ children }: { children: ReactNode }) {
     if (!existing) return;
     const updated = { ...existing, ...data };
     const userDocRef = doc(firebaseDb, "users", user.id);
-    // Remove old, add new
-    await updateDoc(userDocRef, {
-      addresses: arrayRemove(existing),
-    });
-    await updateDoc(userDocRef, {
-      addresses: arrayUnion(updated),
-    });
+
+    // A10 FIX: Use atomic writeBatch — if either write fails, neither takes effect.
+    // Previously: arrayRemove then arrayUnion as separate calls → data loss if second failed.
+    const batch = writeBatch(firebaseDb);
+    batch.update(userDocRef, { addresses: arrayRemove(existing) });
+    batch.update(userDocRef, { addresses: arrayUnion(updated) });
+    await batch.commit();
+
     appToast.success("Address updated");
   }, [user, addresses, firebaseDb]);
 

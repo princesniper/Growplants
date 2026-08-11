@@ -20,7 +20,10 @@ export function StickyMobileBuyBar({
   };
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 px-4 py-3 flex items-center gap-3 pb-[env(safe-area-inset-bottom)]">
+    <div
+      className="lg:hidden fixed left-0 right-0 z-50 bg-white border-t border-slate-200 px-4 py-3 flex items-center gap-3 shadow-lg"
+      style={{ bottom: "calc(64px + env(safe-area-inset-bottom))" }}
+    >
       <div className="flex-1 min-w-0">
         <p className="text-xs text-slate-400 truncate">{productName}</p>
         <p className="text-lg font-bold text-[#1A6B3C] tabular-nums">{formatINR(displayPrice)}</p>

@@ -151,7 +151,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         image={data.images[0]?.url || ""} categoryName={data.category?.name ?? ""} categorySlug={data.category?.slug ?? ""}
       />
 
-      <div className="min-h-screen bg-[#FAFAF6] pb-24 lg:pb-16">
+      <div className="min-h-screen bg-[#FAFAF6] pb-40 lg:pb-16">
         {/* 1. Breadcrumb */}
         <div className="bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">

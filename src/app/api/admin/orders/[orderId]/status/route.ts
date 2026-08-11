@@ -22,9 +22,10 @@
  * ============================================================================
  */
 import { NextRequest, NextResponse } from "next/server";
-import { initializeApp, getApps, cert, type App as FirebaseAdminApp } from "firebase-admin/app";
-import { getFirestore, type Firestore as AdminFirestore } from "firebase-admin/firestore";
-import { extractBearerToken, verifyFirebaseIdToken } from "@/lib/auth";
+
+// Force dynamic — this route uses server-side Firebase Admin SDK and must not be prerendered
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 // ─── 7-step timeline + cancelled ───
 const VALID_STATUSES = [
@@ -49,11 +50,14 @@ function capitalizeStatus(s: string): string {
 }
 
 // ─── Lazy-init Firebase Admin SDK (bypasses Firestore rules) ───
-let adminApp: FirebaseAdminApp | null = null;
-let adminDb: AdminFirestore | null = null;
+// Use dynamic imports to avoid build-time evaluation of firebase-admin
+let adminDb: any = null;
 
-function getAdminDb(): AdminFirestore {
+async function getAdminDb(): Promise<any> {
   if (adminDb) return adminDb;
+
+  const { initializeApp, getApps, cert } = await import("firebase-admin/app");
+  const { getFirestore } = await import("firebase-admin/firestore");
 
   const projectId =
     process.env.FIREBASE_ADMIN_PROJECT_ID ??
@@ -62,7 +66,7 @@ function getAdminDb(): AdminFirestore {
   const privateKeyRaw = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
 
   if (projectId && clientEmail && privateKeyRaw) {
-    adminApp =
+    const adminApp =
       getApps().length > 0
         ? getApps()[0]
         : initializeApp({
@@ -78,7 +82,7 @@ function getAdminDb(): AdminFirestore {
 
   // If Admin SDK not configured, try Application Default Credentials (emulator/local)
   try {
-    adminApp = getApps().length > 0 ? getApps()[0] : initializeApp({ projectId });
+    const adminApp = getApps().length > 0 ? getApps()[0] : initializeApp({ projectId });
     adminDb = getFirestore(adminApp);
     return adminDb;
   } catch (err) {
@@ -96,6 +100,9 @@ export async function PATCH(
 
   // 1. Verify Firebase ID token
   const authHeader = req.headers.get("authorization");
+  // Dynamically import auth helpers to avoid build-time evaluation
+  const { extractBearerToken, verifyFirebaseIdToken } = await import("@/lib/auth");
+
   const idToken = extractBearerToken(authHeader);
   if (!idToken) {
     return NextResponse.json(
@@ -142,7 +149,7 @@ export async function PATCH(
   const now = new Date().toISOString();
 
   try {
-    const db = getAdminDb();
+    const db = await getAdminDb();
     const orderRef = db.collection("orders").doc(orderId);
     const snap = await orderRef.get();
 

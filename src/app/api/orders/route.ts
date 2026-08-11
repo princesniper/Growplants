@@ -25,19 +25,13 @@
  * ============================================================================
  */
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import {
-  extractBearerToken,
-  verifyFirebaseIdToken,
-  type DecodedFirebaseToken,
-} from "@/lib/auth";
+
+// Force dynamic — this route uses Prisma and must not be prerendered
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 /* ============================================================================
  * In-memory mock fallback (used when Prisma/PostgreSQL is unavailable)
- * ============================================================================
- * If db.$transaction throws (DB down, schema mismatch, etc.), we fall back to
- * pushing the order into this in-memory array so the user still sees a success
- * response. Real-time Firestore write will still happen on the client side.
  */
 interface MockOrderRow {
   id: string;
@@ -119,6 +113,11 @@ interface CreateOrderRequestBody {
 }
 
 export async function POST(req: NextRequest) {
+  // Dynamically import to avoid build-time evaluation
+  const { db } = await import("@/lib/db");
+  const { extractBearerToken, verifyFirebaseIdToken } = await import("@/lib/auth");
+  
+
   // 1. Verify Firebase ID token
   const authHeader = req.headers.get("authorization");
   const idToken = extractBearerToken(authHeader);
@@ -129,7 +128,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const decoded: DecodedFirebaseToken | null = await verifyFirebaseIdToken(idToken);
+  const decoded = await verifyFirebaseIdToken(idToken);
   if (!decoded) {
     return NextResponse.json(
       { success: false, error: "Invalid or expired token" },
@@ -173,14 +172,60 @@ export async function POST(req: NextRequest) {
 
   const orderNumber = generateOrderNumber();
   const paymentMethod = body.paymentMethod ?? "cod";
-  const paymentStatus = paymentMethod === "cod" ? "pending" : "paid";
+  // A3 FIX: Never mark as "paid" without payment verification.
+  // Until Razorpay is integrated, ALL orders start as "pending".
+  const paymentStatus = "pending";
+
+  // ─── A2 FIX: SERVER-SIDE PRICE VALIDATION ─────────────────────────
+  // NEVER trust client-supplied prices. Validate each line item against
+  // the authoritative product database and compute totals server-side.
+  const { validateLineItem, computeOrderTotals } = await import("@/lib/product-pricing");
+
+  const validatedItems: Array<{
+    productId: string;
+    name: string;
+    slug: string;
+    image: string;
+    quantity: number;
+    unitPrice: number;   // SERVER-AUTHORITATIVE
+    lineTotal: number;   // SERVER-COMPUTED
+  }> = [];
+
+  for (const item of body.items!) {
+    const validation = validateLineItem(item.productId, item.quantity);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { success: false, error: validation.error },
+        { status: 400 }
+      );
+    }
+    validatedItems.push({
+      productId: item.productId,
+      name: validation.product.name,         // server-authoritative name
+      slug: item.slug ?? item.productId,
+      image: item.image ?? "",               // image is display-only, safe from client
+      quantity: item.quantity,
+      unitPrice: validation.unitPrice,        // SERVER-AUTHORITATIVE price
+      lineTotal: validation.lineTotal,        // SERVER-COMPUTED
+    });
+  }
+
+  // Compute all totals server-side — client totals are IGNORED
+  const FREE_SHIPPING_THRESHOLD = 499; // ₹499
+  const SHIPPING_FEE = 49;             // ₹49
+  const computedSubtotal = validatedItems.reduce((sum, i) => sum + i.lineTotal, 0);
+  const computedShipping = computedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const totals = computeOrderTotals(
+    validatedItems.map((i) => ({ unitPrice: i.unitPrice, quantity: i.quantity })),
+    { shippingFee: computedShipping },
+  );
 
   // Convert rupees → paise for INTEGER storage
-  const subtotalPaise = Math.round((body.subtotal ?? 0) * 100);
-  const shippingPaise = Math.round((body.shippingCharge ?? 0) * 100);
-  const discountPaise = Math.round((body.discount ?? 0) * 100);
-  const taxPaise = Math.round((body.tax ?? 0) * 100);
-  const totalPaise = Math.round((body.totalAmount ?? 0) * 100);
+  const subtotalPaise = Math.round(totals.subtotal * 100);
+  const shippingPaise = Math.round(totals.shippingFee * 100);
+  const discountPaise = Math.round(totals.discount * 100);
+  const taxPaise = Math.round(totals.tax * 100);
+  const totalPaise = Math.round(totals.total * 100);
 
   // 4. Try Prisma transaction
   try {
@@ -203,7 +248,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // b. Create order
+      // b. Create order — uses SERVER-COMPUTED totals (not client)
       const order = await tx.order.create({
         data: {
           orderNumber,
@@ -221,8 +266,8 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // c. Create order items
-      for (const item of body.items!) {
+      // c. Create order items — uses SERVER-AUTHORITATIVE prices
+      for (const item of validatedItems) {
         const unitPricePaise = Math.round(item.unitPrice * 100);
         const totalPricePaise = unitPricePaise * item.quantity;
         await tx.orderItem.create({
@@ -230,8 +275,8 @@ export async function POST(req: NextRequest) {
             orderId: order.id,
             productId: item.productId,
             name: item.name,
-            slug: item.slug ?? "",
-            image: item.image ?? "",
+            slug: item.slug,
+            image: item.image,
             quantity: item.quantity,
             unitPrice: unitPricePaise,
             totalPrice: totalPricePaise,
@@ -239,8 +284,7 @@ export async function POST(req: NextRequest) {
               productId: item.productId,
               name: item.name,
               slug: item.slug,
-              image: item.image,
-              unitPrice: item.unitPrice,
+              unitPrice: item.unitPrice, // server-authoritative
             }),
           },
         });
@@ -276,9 +320,19 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("[api/orders POST] Prisma transaction failed — falling back to mock:", err);
+    console.error("[api/orders POST] Prisma transaction failed:", err);
 
-    // 5. Fallback: push to in-memory mock array
+    // A6 FIX: In production, database failure = HTTP 500. No mock success.
+    // In development only, fall back to in-memory mock for testing without DB.
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { success: false, error: "Order creation failed. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    // Development fallback: push to in-memory mock array
+    console.warn("[api/orders POST] DEV MODE: falling back to in-memory mock order");
     const mockOrder: MockOrderRow = {
       id: generateId("order"),
       order_number: orderNumber,
@@ -293,14 +347,14 @@ export async function POST(req: NextRequest) {
       tax: taxPaise / 100,
       notes: body.notes ?? null,
       created_at: new Date().toISOString(),
-      items: (body.items ?? []).map((item) => ({
+      items: validatedItems.map((item) => ({
         id: generateId("item"),
         product_id: item.productId,
         name: item.name,
-        image: item.image ?? "",
+        image: item.image,
         quantity: item.quantity,
         unit_price: item.unitPrice,
-        total_price: item.unitPrice * item.quantity,
+        total_price: item.lineTotal,
       })),
       address: {
         full_name: body.address!.fullName!,
@@ -339,6 +393,11 @@ export async function POST(req: NextRequest) {
  * ============================================================================ */
 
 export async function GET(req: NextRequest) {
+  // Dynamically import to avoid build-time evaluation
+  const { db } = await import("@/lib/db");
+  const { extractBearerToken, verifyFirebaseIdToken } = await import("@/lib/auth");
+  
+
   // 1. Verify Firebase ID token
   const authHeader = req.headers.get("authorization");
   const idToken = extractBearerToken(authHeader);
@@ -349,7 +408,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const decoded: DecodedFirebaseToken | null = await verifyFirebaseIdToken(idToken);
+  const decoded = await verifyFirebaseIdToken(idToken);
   if (!decoded) {
     return NextResponse.json(
       { success: false, error: "Invalid or expired token" },

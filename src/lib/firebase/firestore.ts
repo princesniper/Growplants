@@ -64,6 +64,8 @@ export async function createFirestoreUser(
 ): Promise<void> {
   if (!isFirebaseConfigured || !firebaseDb) return;
   const ref = doc(firebaseDb, USERS_COLLECTION, uid);
+  // B9 FIX: Use merge: true so existing user data (addresses, cart, wishlist)
+  // is NOT overwritten on re-login. Only sets fields that don't exist yet.
   await setDoc(ref, {
     uid,
     firstName: data.firstName ?? "",
@@ -80,7 +82,7 @@ export async function createFirestoreUser(
     addresses: data.addresses ?? [],
     wishlist: data.wishlist ?? [],
     cart: data.cart ?? [],
-  } satisfies FirestoreUser);
+  } satisfies FirestoreUser, { merge: true });
 }
 
 export async function updateFirestoreUser(

@@ -56,7 +56,7 @@ export const HERO_SLIDES: HeroSlide[] = [
     headline: "Transform Your Balcony Into A Green Paradise",
     subtitle: "Get expert design, space-saving planters, and premium plant selection.",
     trustBadge: "100% Satisfaction Guarantee",
-    primaryCta: { label: "Get Free Consultation", href: "/services/balcony-setup" },
+    primaryCta: { label: "Get Free Consultation", href: "/services/balcony-garden-setup" },
     secondaryCta: { label: "View Projects", href: "/services" },
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCVpptpcEz4r7LnHtzvTelMWxMjjDfiYA9z4yjhCwbIOQuZXxaer-oZGPY6CcMzI5-Z8k0dKQIjJMiwl8_NZfyj3nlK08qw9QDw8x_KQ0--cbf8PqkQ6TTztknN0J9tmKiultJ-gZ14Y-LUMvOAipRTizzoX_emoH69nWo5e-97oPaHxQSDnXqhwzJjLQKp70Xy2edY9LWrveDcD268jN1nFB3PbEyTuc80vay449tV7qgHihHciK-TloKypRR09t3VJIvsOArVf2Yp",
     imageAlt: "Beautiful balcony garden setup",
@@ -188,7 +188,7 @@ export const SERVICES: Service[] = [
     rating: 4.8, reviewCount: 64, bookingCount: 125,
     priceFrom: 1499, priceUnit: "per session", pricingType: "fixed",
     image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80",
-    href: "/services/balcony-setup",
+    href: "/services/balcony-garden-setup",
   },
   {
     id: "svc-2", categoryBadge: "Garden Maintenance", serviceType: "Recurring",
@@ -206,7 +206,7 @@ export const SERVICES: Service[] = [
     rating: 4.7, reviewCount: 38, bookingCount: 56,
     priceFrom: 0, priceUnit: "", pricingType: "quote_based",
     image: "https://images.unsplash.com/photo-1463936575829-25148e1db1b8?w=600&q=80",
-    href: "/services/terrace-setup",
+    href: "/services/terrace-garden-setup",
   },
 ];
 

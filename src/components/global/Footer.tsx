@@ -98,8 +98,8 @@ export function Footer() {
           <ul className="flex flex-col gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
             {[
               ["Gardener Hiring", "/services/gardener-hiring"],
-              ["Balcony Garden Setup", "/services/balcony-setup"],
-              ["Terrace Garden", "/services/terrace-setup"],
+              ["Balcony Garden Setup", "/services/balcony-garden-setup"],
+              ["Terrace Garden", "/services/terrace-garden-setup"],
               ["Garden Maintenance", "/services/garden-maintenance"],
               ["Landscape Design", "/services/landscape-design"],
               ["Plant Inspection", "/services/plant-health-inspection"],

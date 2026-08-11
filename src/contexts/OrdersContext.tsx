@@ -337,81 +337,93 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const createOrder = useCallback(
     async (data: Omit<Order, "id" | "orderNumber" | "orderStatus" | "paymentStatus" | "createdAt" | "statusHistory">): Promise<Order> => {
       const now = new Date().toISOString();
-      const paymentStatus: PaymentStatus = data.paymentMethod === "cod" ? "pending" : "paid";
+      // A3 FIX: Never mark as "paid" without payment verification.
+      // All orders start as "pending" until Razorpay is integrated.
+      const paymentStatus: PaymentStatus = "pending";
 
-      // Try API first
-      let apiOrderId = "order-" + Date.now();
-      let apiOrderNumber = "ORD-" + Date.now();
+      // A7 FIX: Call API and THROW on failure — do NOT silently create mock order.
+      // The checkout page must catch this error and show it to the user.
+      let apiOrderId = "";
+      let apiOrderNumber = "";
       let apiMock = false;
 
-      try {
-        // Get Firebase ID token
-        const { firebaseAuth } = await import("@/lib/firebase/client");
-        const idToken = firebaseAuth?.currentUser
-          ? await firebaseAuth.currentUser.getIdToken()
-          : null;
+      // Get Firebase ID token
+      const { firebaseAuth } = await import("@/lib/firebase/client");
+      const idToken = firebaseAuth?.currentUser
+        ? await firebaseAuth.currentUser.getIdToken()
+        : null;
 
-        if (idToken) {
-          const res = await fetch("/api/orders", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${idToken}`,
-            },
-            body: JSON.stringify({
-              firebaseUid: user?.id,
-              address: {
-                fullName: data.address.fullName,
-                phone: data.address.phone,
-                addressLine1: data.address.addressLine1,
-                addressLine2: data.address.addressLine2,
-                landmark: data.address.landmark,
-                city: data.address.city,
-                state: data.address.state,
-                pincode: data.address.pincode,
-              },
-              paymentMethod: data.paymentMethod,
-              items: data.items.map((i) => ({
-                productId: i.productId,
-                name: i.name,
-                slug: i.slug,
-                image: i.image,
-                quantity: i.quantity,
-                unitPrice: i.price,
-              })),
-              subtotal: data.subtotal,
-              shippingCharge: data.shipping,
-              discount: data.discount,
-              tax: data.tax,
-              totalAmount: data.total,
-              notes: data.notes,
-            }),
-          });
-
-          if (res.ok) {
-            const json = await res.json();
-            if (json.success && json.order) {
-              apiOrderId = json.order.id;
-              apiOrderNumber = json.order.order_number;
-              apiMock = Boolean(json.order._mock);
-            }
-          } else {
-            console.warn("[Orders] API returned non-OK status:", res.status);
-          }
-        }
-      } catch (err) {
-        console.warn("[Orders] API call failed, falling back to local order:", err);
+      if (!idToken) {
+        throw new Error("Not authenticated. Please log in to place an order.");
       }
 
-      // Build the Order object
+      let apiResponse: { success: boolean; order?: any; error?: string };
+
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            firebaseUid: user?.id,
+            address: {
+              fullName: data.address.fullName,
+              phone: data.address.phone,
+              addressLine1: data.address.addressLine1,
+              addressLine2: data.address.addressLine2,
+              landmark: data.address.landmark,
+              city: data.address.city,
+              state: data.address.state,
+              pincode: data.address.pincode,
+            },
+            paymentMethod: data.paymentMethod,
+            items: data.items.map((i) => ({
+              productId: i.productId,
+              name: i.name,
+              slug: i.slug,
+              image: i.image,
+              quantity: i.quantity,
+              unitPrice: i.price,
+            })),
+            subtotal: data.subtotal,
+            shippingCharge: data.shipping,
+            discount: data.discount,
+            tax: data.tax,
+            totalAmount: data.total,
+            notes: data.notes,
+          }),
+        });
+
+        apiResponse = await res.json();
+
+        if (!res.ok || !apiResponse.success || !apiResponse.order) {
+          // API returned an error — throw with the server's error message
+          throw new Error(apiResponse.error || `Order creation failed (HTTP ${res.status})`);
+        }
+
+        apiOrderId = apiResponse.order.id;
+        apiOrderNumber = apiResponse.order.order_number;
+        apiMock = Boolean(apiResponse.order._mock);
+      } catch (err) {
+        // Network error or API error — re-throw so checkout can handle it
+        console.error("[Orders] createOrder API call failed:", err);
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error("Network error. Please check your connection and try again.");
+      }
+
+      // Build the Order object (only reached on API success)
       const order: Order = {
         ...data,
         id: apiOrderId,
         orderNumber: apiOrderNumber,
-        orderStatus: "pending",
+        orderStatus: "placed",
         paymentStatus,
         createdAt: now,
-        statusHistory: [{ status: "pending", date: now, note: "Order placed" }],
+        statusHistory: [{ status: "placed", date: now, note: "Order placed" }],
         _mock: apiMock,
       };
 
@@ -423,6 +435,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       });
 
       // Firestore dual write (orders/{id} + users/{uid}.orders[])
+      // This is secondary — Prisma is the source of truth. Fail-soft is OK here.
       if (user) {
         try {
           const firestoreOrder = buildOrderObject({
@@ -459,13 +472,13 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             discount: data.discount,
             tax: data.tax,
             paymentMethod: data.paymentMethod === "cod" ? "cod" : "online",
-            paymentStatus: data.paymentMethod === "cod" ? "Pending" : "Paid",
+            paymentStatus: "Pending", // A3 FIX: always Pending until verified
             notes: data.notes,
             status: "placed",
           });
-          // Fire-and-forget — fail-soft
+          // Fire-and-forget — fail-soft (Prisma is source of truth)
           addOrderToUserDocument(user.id, firestoreOrder).catch((e) =>
-            console.warn("[Orders] Firestore dual write failed:", e)
+            console.warn("[Orders] Firestore dual write failed (non-blocking — Prisma has the order):", e)
           );
         } catch (e) {
           console.warn("[Orders] buildOrderObject/addOrderToUserDocument error:", e);

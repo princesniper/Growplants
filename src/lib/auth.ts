@@ -12,9 +12,29 @@ import {
   REFRESH_TOKEN_EXPIRY,
 } from "@/lib/constants";
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "dev-only-secret-change-me";
-const JWT_REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET ?? "dev-only-refresh-secret-change-me";
+// A5 FIX: Never use default JWT secrets in production.
+// In production, the app MUST fail if JWT_SECRET is not set.
+// In development, a default is acceptable for convenience.
+const _rawJwtSecret = process.env.JWT_SECRET;
+const _rawJwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
+
+if (process.env.NODE_ENV === "production") {
+  if (!_rawJwtSecret) {
+    throw new Error(
+      "FATAL: JWT_SECRET environment variable is required in production. " +
+      "Set it to a strong random string (≥32 chars). Refusing to start with insecure default."
+    );
+  }
+  if (!_rawJwtRefreshSecret) {
+    throw new Error(
+      "FATAL: JWT_REFRESH_SECRET environment variable is required in production. " +
+      "Set it to a different strong random string (≥32 chars)."
+    );
+  }
+}
+
+const JWT_SECRET = _rawJwtSecret ?? "dev-only-secret-change-me";
+const JWT_REFRESH_SECRET = _rawJwtRefreshSecret ?? "dev-only-refresh-secret-change-me";
 
 export interface GrowPlantsJwtPayload extends JwtPayload {
   uid: string;
@@ -228,6 +248,10 @@ export function verifyIdTokenDev(
 /**
  * Try Admin SDK first (if configured); fall back to verifyIdTokenDev.
  * Used by API routes that accept Firebase ID tokens in the Authorization header.
+ *
+ * A4 FIX: The dev fallback (verifyIdTokenDev) does NOT verify JWT signatures.
+ * It must NEVER run in production. In production, if Admin SDK is unavailable,
+ * authentication FAILS — no fallback, no bypass.
  */
 export async function verifyFirebaseIdToken(
   idToken: string
@@ -253,9 +277,20 @@ export async function verifyFirebaseIdToken(
       };
     }
   } catch (err) {
-    console.warn("[auth] Admin SDK verify failed, falling back to dev decode:", err);
+    // Admin SDK was configured but verification failed (expired token, invalid signature, etc.)
+    // This is a genuine auth failure — do NOT fall back to dev mode.
+    console.warn("[auth] Admin SDK token verification failed:", err);
+    return null;
   }
 
-  // Dev fallback
+  // A4 FIX: Dev fallback ONLY in development.
+  // In production, if Admin SDK is not configured, authentication FAILS.
+  if (process.env.NODE_ENV === "production") {
+    console.error("[auth] Firebase Admin SDK not configured in production — refusing to verify tokens insecurely");
+    return null;
+  }
+
+  // Development only — allows testing without Admin SDK credentials
+  console.warn("[auth] Using INSECURE dev token fallback — NOT for production");
   return verifyIdTokenDev(idToken);
 }

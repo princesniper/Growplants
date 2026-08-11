@@ -10,6 +10,7 @@ import { StickyMobileBuyBar } from "@/components/product/StickyMobileBuyBar";
 import { RecentlyViewed } from "@/components/product/RecentlyViewed";
 import {
   Sun, Droplets, Thermometer, Wind, Leaf, Ruler, Tag as TagIcon,
+  Wrench, Sprout, Scissors, // D17: Lucide icons for services (replacing emoji)
 } from "lucide-react";
 
 interface ProductPageProps {
@@ -443,7 +444,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {data.services.map((service, i) => (
                   <Link key={i} href="/services" className="bg-white border border-slate-100 rounded-lg p-5 hover:shadow-md transition-all hover:-translate-y-0.5">
-                    <span className="text-3xl">{service.icon}</span>
+                    {/* D17: Lucide icon instead of emoji */}
+                    <div className="size-10 rounded-lg bg-[#F3F8F1] flex items-center justify-center">
+                      {i === 0 ? <Wrench className="size-5 text-[#1A6B3C]" /> : i === 1 ? <Sprout className="size-5 text-[#1A6B3C]" /> : <Scissors className="size-5 text-[#1A6B3C]" />}
+                    </div>
                     <p className="font-semibold text-gray-900 text-sm mt-3">{service.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
                     <p className="text-sm font-bold text-[#1A6B3C] mt-2">{service.price}</p>

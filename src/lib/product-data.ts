@@ -74,7 +74,9 @@ export interface ProductData {
 
 /** Generate SKU from slug */
 function genSKU(slug: string): string {
-  return `GP-${slug.substring(0, 12).toUpperCase().replace(/-/g, "")}`;
+  // D6 FIX: Use full slug (was truncated to 12 chars causing collisions)
+  const clean = slug.toUpperCase().replace(/-/g, "");
+  return `GP-${clean.substring(0, 20)}${clean.length > 20 ? `-${clean.length}` : ""}`;
 }
 
 /** Mock reviews — realistic Indian customer reviews */

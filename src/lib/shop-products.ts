@@ -185,3 +185,19 @@ export const SORT_OPTIONS = [
 ] as const;
 
 export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
+
+
+/** D12: Sort products by the given sort option */
+export function sortProducts(products: ShopProduct[], sortBy: string): ShopProduct[] {
+  const sorted = [...products];
+  switch (sortBy) {
+    case "price-low": return sorted.sort((a, b) => a.price - b.price);
+    case "price-high": return sorted.sort((a, b) => b.price - a.price);
+    case "rating": return sorted.sort((a, b) => b.rating - a.rating);
+    case "newest": return sorted.reverse(); // last added = newest
+    case "discount": return sorted.sort((a, b) => b.discountPercent - a.discountPercent);
+    case "featured":
+    default:
+      return sorted.sort((a, b) => Number(b.isBestseller) - Number(a.isBestseller) || b.rating - a.rating);
+  }
+}

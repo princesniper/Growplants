@@ -39,7 +39,7 @@ const REMOTE_IMAGE_DOMAINS = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  reactStrictMode: false,
+  reactStrictMode: true, // D19: enabled for better dev experience
   turbopack: {
     root: path.resolve(__dirname),
   },

@@ -44,7 +44,8 @@ export default function CheckoutPage() {
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay");
   const [notes, setNotes] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0);
+  // D1: couponDiscount is 0 until coupon feature is implemented
+  const [couponDiscount] = useState(0);
 
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
   // GST 18% on (subtotal - discount). Tax-exclusive model.
@@ -131,7 +132,7 @@ export default function CheckoutPage() {
   const validateAddress = () => {
     const errs: Record<string, string> = {};
     if (!address.fullName.trim()) errs.fullName = "Name is required";
-    if (!address.phone.trim() || !/^\+?91?\s?[6-9]\d{9}$/.test(address.phone.replace(/\s/g, ""))) errs.phone = "Enter a valid Indian phone number";
+    if (!address.phone.trim() || !/^[6-9]\d{9}$/.test(address.phone.replace(/\D/g, ""))) errs.phone = "Enter a valid 10-digit phone number";
     if (!address.addressLine1.trim()) errs.addressLine1 = "Address is required";
     if (!address.city.trim()) errs.city = "City is required";
     if (!address.state.trim()) errs.state = "State is required";
@@ -163,6 +164,8 @@ export default function CheckoutPage() {
       clearCart();
       appToast.success("Order placed!", `Order ${order.orderNumber} confirmed`);
       router.push(`/order-confirmation/${order.id}`);
+      // D3: isPlacing is NOT reset — page navigates away, so it's fine
+      // (the next page mount will have a fresh state)
     } catch (err) {
       console.error("[checkout] createOrder failed:", err);
       // A7 FIX: Show the actual error message from the API; cart is NOT cleared

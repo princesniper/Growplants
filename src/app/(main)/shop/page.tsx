@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, Suspense } from "react";
+import { useState, useMemo, useCallback, Suspense, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { SlidersHorizontal, SearchX, PackageSearch } from "lucide-react";
 import { Container } from "@/components/common/Container";
@@ -50,7 +50,9 @@ function ShopPageInner() {
   const [sort, setSort] = useState<SortValue>("featured");
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const mountedRef = useRef(false);
+  useEffect(() => { if (!mountedRef.current) { mountedRef.current = true; const t = setTimeout(() => setIsLoading(false), 300); return () => clearTimeout(t); } }, []);
 
   // C13 FIX: Sync ALL filters to URL (was missing price, sunlight, difficulty, suitableFor)
   const updateURL = useCallback((newFilters: ShopFilters) => {

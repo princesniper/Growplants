@@ -40,9 +40,9 @@
     "price": 89,
     "deliveryTime": "1-2 business days in Sonipat",
     "oldPrice": 158,
-    "name": "\"First Love\" plant (Xanthostemon chrysanthus",
+    "name": "\"First Love\" Plant (Xanthostemon chrysanthus)",
     "description": "The 'First Love' plant (Xanthostemon chrysanthus) is a breathtaking ornamental shrub celebrated for its radiant yellow blossoms and lush, glossy green leaves. This tropical beauty thrives in warm climates, making it a stunning addition to gardens, patios, or indoor spaces where it can bring a vibrant, exotic flair.",
-    "size": "midium",
+    "size": "Medium",
     "care": {
       "lightRequirements": "The 'First Love' plant flourishes in full sun to partial shade, with at least 6 hours of direct sunlight daily for optimal flowering. Avoid deep shade, as it can weaken blooms and lead to leggy growth. Indoors, position it near a bright, south-facing window or supplement with artificial grow lights to mimic natural sunlight.",
       "wateringInstructions": "Water deeply when the top inch of soil feels dry, ensuring the pot has excellent drainage to prevent root rot. During peak summer heat, increase watering frequency but always allow the soil to dry slightly between sessions. In winter, reduce watering to once every 2-3 weeks, as the plant enters a dormant phase.",
@@ -457,7 +457,7 @@
       "Easy to care for"
     ],
     "price": 89,
-    "size": "midium",
+    "size": "Medium",
     "height": "35-50cm",
     "reviewsCount": 95,
     "stock": 50,
@@ -606,7 +606,7 @@
     "stock": 50,
     "deliveryTime": "1-2 business days in Sonipat",
     "badge": null,
-    "size": "midium",
+    "size": "Medium",
     "care": {
       "wateringInstructions": "Water the plant when the top inch of soil feels dry. Overwatering can lead to root rot, so ensure the pot has drainage holes. Allow excess water to drain completely. Underwatering will cause drooping leaves, which recover quickly after watering. Use room-temperature water to avoid shocking the roots.",
       "temperatureRange": "The ideal temperature range for this plant is between 65°F to 80°F (18°C to 27°C). It can tolerate slightly cooler temperatures but should be kept away from drafts and sudden temperature changes. Avoid placing it near heating vents or air conditioners, as extreme temperatures can stress the plant.",
@@ -1067,7 +1067,7 @@
       "https://m.media-amazon.com/images/I/61UpaYIcF4L._SX425_.jpg"
     ],
     "description": "The Red Sandalwood Plant, or Lal Chandan, is a fragrant and ornamental plant known for its vibrant red heartwood. It thrives in warm climates and is prized for its medicinal and decorative properties.",
-    "size": "midium",
+    "size": "Medium",
     "specialFeatures": [
       "Aromatic red heartwood",
       "Air-purifying properties",
@@ -1107,7 +1107,7 @@
     "oldPrice": 299,
     "description": "The Rudraksha plant is a sacred and spiritually significant tree known for its distinctive seed beads used in meditation and prayer. It thrives in warm climates and requires moderate care to flourish.",
     "badge": null,
-    "size": "midium",
+    "size": "Medium",
     "price": 149,
     "reviewsCount": 152,
     "rating": 4.1
@@ -1546,7 +1546,7 @@
       "indoor",
       "decorative"
     ],
-    "size": "midium",
+    "size": "Medium",
     "description": "The lipstick plant (Aeschynanthus radicans) is a trailing houseplant known for its vibrant red tubular flowers resembling lipstick. It thrives in hanging baskets or shelves, adding a pop of color to indoor spaces.",
     "price": 149,
     "images": [

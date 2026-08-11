@@ -170,6 +170,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // BYPASS FIX: Require GPS coordinates for delivery address
+  if (body.address.latitude === null || body.address.latitude === undefined ||
+      body.address.longitude === null || body.address.longitude === undefined) {
+    return NextResponse.json(
+      { success: false, error: "GPS verification is required for delivery address" },
+      { status: 400 }
+    );
+  }
+
   const orderNumber = generateOrderNumber();
   const paymentMethod = body.paymentMethod ?? "cod";
   // A3 FIX: Never mark as "paid" without payment verification.

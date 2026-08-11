@@ -75,9 +75,18 @@ export function AddressProvider({ children }: { children: ReactNode }) {
       appToast.error("Not connected", "Please log in to save addresses");
       return;
     }
+    // BYPASS FIX: Enforce GPS verification — reject addresses without it
+    if (!addr.gpsVerified) {
+      appToast.error("GPS verification required", "Address must be GPS-verified before saving");
+      return;
+    }
+    if (addr.latitude === null || addr.longitude === null) {
+      appToast.error("GPS coordinates missing", "Address must have GPS coordinates");
+      return;
+    }
     const newAddr: FirestoreAddress = {
       ...addr,
-      id: `addr-${Date.now()}`,
+      id: `addr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       isDefault: addresses.length === 0 || addr.isDefault,
     };
     const userDocRef = doc(firebaseDb, "users", user.id);
@@ -96,10 +105,20 @@ export function AddressProvider({ children }: { children: ReactNode }) {
     const existing = addresses.find((a) => a.id === id);
     if (!existing) return;
     const updated = { ...existing, ...data };
+
+    // BYPASS FIX: Enforce GPS verification on update — can't remove GPS status
+    if (updated.gpsVerified === false) {
+      appToast.error("Cannot remove GPS verification", "GPS verification is required for all addresses");
+      return;
+    }
+    if (updated.gpsVerified && (updated.latitude === null || updated.longitude === null)) {
+      appToast.error("GPS coordinates missing", "Verified address must have GPS coordinates");
+      return;
+    }
+
     const userDocRef = doc(firebaseDb, "users", user.id);
 
     // A10 FIX: Use atomic writeBatch — if either write fails, neither takes effect.
-    // Previously: arrayRemove then arrayUnion as separate calls → data loss if second failed.
     const batch = writeBatch(firebaseDb);
     batch.update(userDocRef, { addresses: arrayRemove(existing) });
     batch.update(userDocRef, { addresses: arrayUnion(updated) });

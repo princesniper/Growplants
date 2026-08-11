@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle } from "lucide-react";
@@ -78,10 +78,15 @@ export default function CheckoutPage() {
     }
   }, [addresses, selectedAddressId]);
 
-  // Handle selecting a saved address
+  // Handle selecting a saved address — BYPASS FIX: only allow GPS-verified addresses
   const handleSelectAddress = (addrId: string) => {
     const addr = addresses.find((a) => a.id === addrId);
     if (!addr) return;
+    // BYPASS FIX: Block selection of non-GPS-verified addresses
+    if (!addr.gpsVerified) {
+      appToast.warning("Address not verified", "This address doesn't have GPS verification. Please verify it in Address Book or add a new address.");
+      return;
+    }
     setSelectedAddressId(addrId);
     setShowNewAddressForm(false);
     setAddress({
@@ -173,6 +178,28 @@ export default function CheckoutPage() {
     }
   }, [selectedAddressId]);
 
+  // BYPASS FIX: Track GPS-verified values — if user edits city/state/pincode after GPS verify, reset
+  const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
+  useEffect(() => {
+    if (gpsState === "verified") {
+      gpsVerifiedRef.current = { city: address.city, state: address.state, pincode: address.pincode };
+    }
+  }, [gpsState]); // intentionally not depending on address to avoid re-trigger
+
+  useEffect(() => {
+    // If GPS was verified and user changes city/state/pincode, reset GPS
+    if (gpsState === "verified" && gpsVerifiedRef.current) {
+      if (
+        gpsVerifiedRef.current.city !== address.city ||
+        gpsVerifiedRef.current.state !== address.state ||
+        gpsVerifiedRef.current.pincode !== address.pincode
+      ) {
+        setGpsState("idle");
+        gpsVerifiedRef.current = null;
+      }
+    }
+  }, [address.city, address.state, address.pincode, gpsState]);
+
   // C3 FIX: Auth guard — redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -207,6 +234,10 @@ export default function CheckoutPage() {
     if (!address.city.trim()) errs.city = "City is required";
     if (!address.state.trim()) errs.state = "State is required";
     if (!isValidPincode(address.pincode)) errs.pincode = "Enter a valid 6-digit pincode";
+    // BYPASS FIX: Require GPS verification for new addresses (not for saved addresses)
+    if (showNewAddressForm && !selectedAddressId && !gpsVerified) {
+      errs.gps = "GPS verification is required for new addresses";
+    }
     setAddressErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -283,7 +314,8 @@ export default function CheckoutPage() {
                           "text-left p-4 rounded-xl border-2 transition-all relative",
                           selectedAddressId === addr.id
                             ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
-                            : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white"
+                            : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white",
+                          !addr.gpsVerified && "opacity-60 cursor-not-allowed hover:border-slate-200"
                         )}
                       >
                         {selectedAddressId === addr.id && (
@@ -310,9 +342,13 @@ export default function CheckoutPage() {
                         <p className="text-xs text-slate-600 leading-relaxed">
                           {addr.houseNo}, {addr.locality}, {addr.city}, {addr.state} - {addr.pincode}
                         </p>
-                        {addr.gpsVerified && (
+                        {addr.gpsVerified ? (
                           <p className="text-[10px] text-green-600 mt-1.5 flex items-center gap-1">
-                            <MapPin className="size-2.5" /> GPS Verified
+                            <ShieldCheck className="size-2.5" /> GPS Verified
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-red-500 mt-1.5 flex items-center gap-1">
+                            <AlertCircle className="size-2.5" /> Not GPS Verified — tap to fix
                           </p>
                         )}
                       </button>
@@ -380,6 +416,11 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     {gpsError && <p className="text-xs text-red-500 mt-2">{gpsError}</p>}
+                    {addressErrors.gps && !gpsVerified && (
+                      <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
+                        <AlertCircle className="size-3.5 shrink-0" />{addressErrors.gps}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

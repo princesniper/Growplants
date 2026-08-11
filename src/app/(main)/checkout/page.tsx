@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home } from "lucide-react";
+import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,11 @@ export default function CheckoutPage() {
     city: "Sonipat", state: "Haryana", pincode: "",
   });
   const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
+
+  // GPS verification for checkout new address
+  const [gpsState, setGpsState] = useState<"idle" | "detecting" | "fetching" | "verified" | "failed">("idle");
+  const [gpsError, setGpsError] = useState("");
+  const gpsVerified = gpsState === "verified";
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay");
@@ -101,7 +106,72 @@ export default function CheckoutPage() {
       city: "Sonipat", state: "Haryana", pincode: "",
     });
     setAddressErrors({});
+    setGpsState("idle");
+    setGpsError("");
   };
+
+  // GPS verification handler for checkout new address
+  const handleGPS = async () => {
+    setGpsState("detecting");
+    setGpsError("");
+    try {
+      if (!navigator.geolocation) {
+        setGpsState("failed");
+        setGpsError("GPS not supported on this device");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          if (accuracy > 100) {
+            setGpsState("failed");
+            setGpsError(`GPS accuracy too low (${Math.round(accuracy)}m). Need within 100m.`);
+            return;
+          }
+          setGpsState("fetching");
+          try {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
+            const res = await fetch(url, {
+              headers: { "Accept-Language": "en", "User-Agent": "GrowPlants/1.0 (hello@growplants.in)" },
+            });
+            if (!res.ok) throw new Error("Reverse geocoding failed");
+            const data = await res.json();
+            const addr = data.address || {};
+            setAddress((prev) => ({
+              ...prev,
+              city: addr.city || addr.town || addr.village || addr.county || prev.city,
+              state: addr.state || prev.state,
+              pincode: addr.postcode || prev.pincode,
+            }));
+            setGpsState("verified");
+            appToast.success("Location verified!", `Accuracy: ${Math.round(accuracy)}m`);
+          } catch (geoErr) {
+            setGpsState("failed");
+            setGpsError("Could not fetch address from GPS. Please enter manually.");
+          }
+        },
+        (err) => {
+          setGpsState("failed");
+          if (err.code === 1) setGpsError("Location permission denied. Please allow location access.");
+          else if (err.code === 2) setGpsError("Location unavailable. Check your GPS settings.");
+          else if (err.code === 3) setGpsError("Location request timed out. Try again.");
+          else setGpsError("Failed to get location.");
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    } catch (err) {
+      setGpsState("failed");
+      setGpsError(err instanceof Error ? err.message : "GPS verification failed");
+    }
+  };
+
+  // Reset GPS when switching to a saved address
+  useEffect(() => {
+    if (selectedAddressId) {
+      setGpsState("idle");
+      setGpsError("");
+    }
+  }, [selectedAddressId]);
 
   // C3 FIX: Auth guard — redirect to login if not authenticated
   useEffect(() => {
@@ -280,9 +350,61 @@ export default function CheckoutPage() {
                   {addresses.length > 0 && (
                     <p className="text-sm font-semibold text-slate-700">Enter New Address</p>
                   )}
+
+                  {/* GPS Verification Button */}
+                  <div className="p-3 bg-[#F3F8F1] rounded-lg border border-[#1A6B3C]/10">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        {gpsVerified ? (
+                          <ShieldCheck className="size-5 text-green-600" />
+                        ) : gpsState === "detecting" || gpsState === "fetching" ? (
+                          <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
+                        ) : gpsState === "failed" ? (
+                          <AlertCircle className="size-5 text-red-500" />
+                        ) : (
+                          <Navigation className="size-5 text-[#1A6B3C]" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">
+                            {gpsVerified ? "Location Verified" : gpsState === "detecting" ? "Detecting location..." : gpsState === "fetching" ? "Fetching address..." : "GPS Verification"}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {gpsVerified ? "City, state, pincode auto-filled from GPS" : "Verify your delivery location (within 100m accuracy)"}
+                          </p>
+                        </div>
+                      </div>
+                      {!gpsVerified && gpsState !== "detecting" && gpsState !== "fetching" && (
+                        <Button type="button" size="sm" variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5" onClick={handleGPS}>
+                          <Navigation className="size-3.5" /> Verify
+                        </Button>
+                      )}
+                    </div>
+                    {gpsError && <p className="text-xs text-red-500 mt-2">{gpsError}</p>}
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1.5"><Label htmlFor="fullName" className="text-sm">Full Name *</Label><Input id="fullName" value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })} className="h-11" />{addressErrors.fullName && <p className="text-xs text-red-500">{addressErrors.fullName}</p>}</div>
-                    <div className="space-y-1.5"><Label htmlFor="phone" className="text-sm">Phone Number *</Label><Input id="phone" type="tel" placeholder="9876543210" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} className="h-11" />{addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}</div>
+                    {/* Phone field with +91 prefix built-in */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
+                      <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1A6B3C]/20 focus-within:border-[#1A6B3C]">
+                        <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">+91</span>
+                        <input
+                          id="phone"
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={10}
+                          placeholder="9876543210"
+                          value={address.phone}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                            setAddress({ ...address, phone: digits });
+                          }}
+                          className="flex-1 px-3 text-sm bg-transparent outline-none"
+                        />
+                      </div>
+                      {addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}
+                    </div>
                   </div>
                   <div className="space-y-1.5"><Label htmlFor="addr1" className="text-sm">Address Line 1 *</Label><Input id="addr1" placeholder="House no, Building, Street" value={address.addressLine1} onChange={(e) => setAddress({ ...address, addressLine1: e.target.value })} className="h-11" />{addressErrors.addressLine1 && <p className="text-xs text-red-500">{addressErrors.addressLine1}</p>}</div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -290,9 +412,9 @@ export default function CheckoutPage() {
                     <div className="space-y-1.5"><Label htmlFor="landmark" className="text-sm">Landmark</Label><Input id="landmark" placeholder="Near..." value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} className="h-11" /></div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
-                    <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
-                    <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") })} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => { setAddress({ ...address, city: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => { setAddress({ ...address, state: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
+                    <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => { setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") }); setGpsState("idle"); }} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
                   </div>
                 </div>
               )}

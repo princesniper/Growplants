@@ -106,7 +106,7 @@ export function CartDrawer() {
             <ScrollArea className="flex-1">
               <ul className="divide-y divide-border">
                 {items.map((item) => (
-                  <li key={item.id} className="p-4 flex gap-3">
+                  <li key={item.id} className="p-4 flex gap-3 animate-slide-in-right">
                     {/* Image */}
                     <Link
                       href={`/product/${item.slug}`}

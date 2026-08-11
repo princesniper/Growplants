@@ -281,7 +281,7 @@ export default function CheckoutPage() {
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2 mb-8">
         {STEPS.map((label, i) => (
-          <div key={label} className="flex items-center gap-2">
+          <div key={label} className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: `${i * 80}ms` }}>
             <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors", i === step ? "bg-[#1A6B3C] text-white" : i < step ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500")}>
               {i < step ? <Check className="size-3.5" /> : <span className="size-5 rounded-full flex items-center justify-center text-xs">{i + 1}</span>}
               {label}
@@ -410,7 +410,7 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                       {!gpsVerified && gpsState !== "detecting" && gpsState !== "fetching" && (
-                        <Button type="button" size="sm" variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5" onClick={handleGPS}>
+                        <Button type="button" size="sm" variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5 animate-pulse-ring" onClick={handleGPS}>
                           <Navigation className="size-3.5" /> Verify
                         </Button>
                       )}

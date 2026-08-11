@@ -97,7 +97,7 @@ export function Header() {
       {/* Sticky container */}
       <div
         className={cn(
-          "sticky top-0 z-40 w-full bg-white transition-all duration-300",
+          "sticky top-0 z-40 w-full backdrop-blur-brand transition-all duration-300 shadow-sm",
           scrolled ? "shadow-md border-b border-slate-100" : "border-b border-slate-200"
         )}
       >

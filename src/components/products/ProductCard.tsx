@@ -36,7 +36,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   };
 
   return (
-    <article className={cn("group relative flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden transition-all duration-200 hover:shadow-md hover:border-[#1A6B3C]/30", className)}>
+    <article className={cn("group relative flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-[#1A6B3C]/30 hover:-translate-y-1 animate-scale-in", className)}>
       {/* C15 FIX: Wishlist button moved OUTSIDE the Link (was invalid HTML) */}
       <div className="relative">
         <Link href={`/product/${product.slug}`} className="relative block aspect-square bg-slate-50 overflow-hidden" aria-label={`View ${product.name}`}>
@@ -47,8 +47,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
             {product.discountPercent && product.discountPercent > 0 && <span className="px-2 py-0.5 rounded text-xs font-bold bg-red-500 text-white">-{product.discountPercent}%</span>}
           </div>
         </Link>
-        {/* Wishlist — sibling of Link, not child */}
-        <button type="button" onClick={handleWishlist} className={cn("absolute top-2 right-2 z-10 size-8 rounded-full bg-white/90 backdrop-blur shadow-sm flex items-center justify-center transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A6B3C]", wishlisted ? "text-red-500" : "text-slate-500 hover:text-[#1A6B3C]")} aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`} aria-pressed={wishlisted}>
+        {/* Wishlist — with heart beat animation on click */}
+        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleWishlist(e); if (!wishlisted) { const el = e.currentTarget.querySelector('svg') as HTMLElement | null; if (el) { el.classList.remove('animate-heart-beat'); void el.offsetWidth; el.classList.add('animate-heart-beat'); } } }} className={cn("absolute top-2 right-2 z-10 size-8 rounded-full bg-white/90 backdrop-blur shadow-sm flex items-center justify-center transition-all hover:bg-white hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A6B3C]", wishlisted ? "text-red-500" : "text-slate-500 hover:text-[#1A6B3C]")} aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`} aria-pressed={wishlisted}>
           <Heart className={cn("size-4", wishlisted && "fill-red-500")} aria-hidden="true" />
         </button>
       </div>

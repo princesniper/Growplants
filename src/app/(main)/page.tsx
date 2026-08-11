@@ -10,6 +10,7 @@ import { BlogPreviewSection } from "@/components/sections/BlogPreviewSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { NewsletterSection } from "@/components/sections/NewsletterSection";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
+import { ScrollReveal } from "@/components/common/ScrollReveal";
 import { FAQ_ITEMS, PRODUCTS } from "@/data/homepageData";
 import { APP_URL, CONTACT_PHONE, CONTACT_EMAIL } from "@/lib/constants";
 
@@ -100,28 +101,44 @@ export default function HomePage() {
       <HeroSection />
 
       {/* 2. Quick Category Grid */}
-      <QuickCategoryGrid />
+      <ScrollReveal variant="up">
+        <QuickCategoryGrid />
+      </ScrollReveal>
 
       {/* 3. Best Sellers */}
-      <BestSellersSection />
+      <ScrollReveal variant="up" delay={100}>
+        <BestSellersSection />
+      </ScrollReveal>
 
       {/* 4. Services + How Booking Works + Trust Badges */}
-      <ServicesSection />
+      <ScrollReveal variant="up">
+        <ServicesSection />
+      </ScrollReveal>
 
       {/* 5. Why Choose Us */}
-      <WhyChooseUsSection />
+      <ScrollReveal variant="left">
+        <WhyChooseUsSection />
+      </ScrollReveal>
 
       {/* 6. Providers */}
-      <ProvidersSection />
+      <ScrollReveal variant="up">
+        <ProvidersSection />
+      </ScrollReveal>
 
       {/* 7. Testimonials + Stats (dark green) */}
-      <TestimonialsSection />
+      <ScrollReveal variant="scale">
+        <TestimonialsSection />
+      </ScrollReveal>
 
       {/* 8. Blog Preview */}
-      <BlogPreviewSection />
+      <ScrollReveal variant="up">
+        <BlogPreviewSection />
+      </ScrollReveal>
 
       {/* 9. FAQ */}
-      <FAQSection />
+      <ScrollReveal variant="up">
+        <FAQSection />
+      </ScrollReveal>
 
       {/* 10. Newsletter (dark green) */}
       <NewsletterSection />

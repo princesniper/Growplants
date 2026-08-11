@@ -9,6 +9,7 @@ import { Leaf, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
  * Background: #0F2419, accent color: #E8930A (orange), text: rgba(255,255,255,0.6/0.65)
  */
 export function Footer() {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="w-full" style={{ backgroundColor: "#0F2419", color: "#fff" }}>
       {/* Main footer */}
@@ -80,8 +81,8 @@ export function Footer() {
               ["Outdoor Plants", "/shop?category=outdoor-plants"],
               ["Flowering Plants", "/shop?category=flowering-plants"],
               ["Succulents", "/shop?category=succulents"],
-              ["Planters", "/shop?category=ceramic-planters"],
-              ["Seeds & Tools", "/shop?category=seeds-bulbs"],
+              ["Planters", "/shop?category=planters"],
+              ["Seeds & Bulbs", "/shop?category=seeds-bulbs"],
               ["New Arrivals", "/shop?filter=new"],
               ["Best Sellers", "/shop?filter=bestseller"],
             ].map(([label, href]) => (
@@ -142,7 +143,7 @@ export function Footer() {
       <div className="border-t border-white/10 py-5">
         <div className="max-w-[1280px] mx-auto px-4 lg:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
           <p className="flex items-center gap-1">
-            © 2024 GrowPlants. All rights reserved. Made with
+            © {currentYear} GrowPlants. All rights reserved. Made with
             <Leaf className="h-3.5 w-3.5" style={{ color: "#1A6B3C" }} aria-hidden="true" />
             in Sonipat, Haryana.
           </p>

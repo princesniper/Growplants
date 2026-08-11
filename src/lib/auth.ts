@@ -234,6 +234,20 @@ export function verifyIdTokenDev(
       if (payload.exp < nowSec) return null;
     }
 
+    // C24 FIX: Validate issuer and audience
+    const expectedProjectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    if (expectedProjectId) {
+      const expectedIss = `https://securetoken.google.com/${expectedProjectId}`;
+      if (payload.iss !== expectedIss) {
+        console.warn("[auth] Token issuer mismatch:", payload.iss);
+        return null;
+      }
+      if (payload.aud !== expectedProjectId) {
+        console.warn("[auth] Token audience mismatch:", payload.aud);
+        return null;
+      }
+    }
+
     // Extract uid: Firebase uses `user_id` or `sub`
     const uid = (payload as unknown as Record<string, unknown>).user_id as string | undefined;
     if (!uid && !payload.sub) return null;

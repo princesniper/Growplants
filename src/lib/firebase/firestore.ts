@@ -456,5 +456,10 @@ function normalizeTime(
   if (typeof (t as Timestamp).toMillis === "function") {
     return (t as Timestamp).toMillis();
   }
+  // C10 FIX: Handle plain objects from SSR hydration ({ seconds, nanoseconds })
+  if (typeof t === "object" && t !== null && "seconds" in t) {
+    return (t as { seconds: number; nanoseconds?: number }).seconds * 1000
+      + ((t as { nanoseconds?: number }).nanoseconds ?? 0) / 1e6;
+  }
   return 0;
 }

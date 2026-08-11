@@ -13,7 +13,6 @@
       "https://www.ugaoo.com/cdn/shop/files/3_3e4f736d-b98f-43b0-ab39-96b317e0c77a.jpg?v=1714637140&width=750"
     ],
     "desc": "Elevate your greenery with the Tokyo High Planter.\nSleek design meets modern height, showcasing your plants in stylish sophistication.\nA perfect statement piece for any space.",
-    "oldPrice": 1299,
     "potFeatures": [
       "Modern Design",
       "Durable Material",
@@ -94,7 +93,7 @@
   "Microgreens-Growing-Tray": {
     "name": "Microgreens Growing Tray",
     "prices": {
-      " 14 inch": 1400
+      "14 inch": 1400
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/7-100_032a2c0f-a9fe-4b7b-a1cd-f4e6a643e7e5.jpg?v=1718882129&width=750",
@@ -109,7 +108,7 @@
   "Gardening-Plates": {
     "name": "Gardening Plates - Terracotta ",
     "prices": {
-      " 4 inch": 149,
+      "4 inch": 149,
       "6 inch": 169,
       "8 inch": 189
     },
@@ -126,7 +125,7 @@
   "Pebble-Shaped-Planter": {
     "name": "Pebble Shaped Planter",
     "prices": {
-      " small": 354
+      "small": 354
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/products/small-white-stone-pebble-planter-32168164917380.jpg?v=1673870055&width=750",
@@ -141,7 +140,7 @@
   "Verona-Eco": {
     "name": "Verona Eco Planter - Set of 3",
     "prices": {
-      " 10cm, 12cm, 20cm": 359
+      "10cm, 12cm, 20cm": 359
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/1_7288ff4d-b41e-4ba0-94ea-599446c11b36.jpg?v=1709274212&width=750",
@@ -156,7 +155,7 @@
   "Sienna-Terracotta": {
     "name": "Sienna Terracotta Pots - Set of 3",
     "prices": {
-      " 11 cm": 299
+      "11 cm": 299
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/1_d87323cc-bf70-4799-a66d-7ff965c8cb2b.jpg?v=1709701882&width=750",
@@ -172,7 +171,7 @@
   "Roma-Ceramic-Pot": {
     "name": "Roma Ceramic Pot",
     "prices": {
-      " 11 cm": 149
+      "11 cm": 149
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/AImagewithplant_971e1e09-f0ca-4a9f-8414-efbeda26c674.jpg?v=1702898668&width=750",
@@ -220,7 +219,7 @@
   "Hum-Fat-Ceramic": {
     "name": "Nature's Hum Fat Ceramic Planter",
     "prices": {
-      " 15cm/9cm": 129
+      "15cm/9cm": 129
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/1_cfa4f27b-f239-43d2-87d2-8583c24d9247.jpg?v=1726305132&width=750",
@@ -236,7 +235,7 @@
   "Pipe-Ceramic": {
     "name": "Pipe Ceramic Pot (3.8 Inch Diameter)",
     "prices": {
-      " 9cm/10cm": 90
+      "9cm/10cm": 90
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/DSC_6228.jpg?v=1718284756&width=750",
@@ -252,7 +251,7 @@
   "Reca-Multicolour": {
     "name": "Reca 40 Multicolour Window Planter - Set of 4",
     "prices": {
-      " 22 inch": 1499
+      "22 inch": 1499
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/products/reca-40-multicolour-window-planter-set-of-4-31257695027332.png?v=1675610471&width=750",
@@ -266,7 +265,7 @@
   "Football-Ceramic": {
     "name": "Football Ceramic Pot (5.3 Inch Diameter)",
     "prices": {
-      " 14/10cm inch": 120
+      "14/10cm inch": 120
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/DSC_6218.jpg?v=1688554404&width=750",
@@ -282,7 +281,7 @@
   "Verona-Planter": {
     "name": "Verona Planter",
     "prices": {
-      " 14/12cm": 229
+      "14/12cm": 229
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/DSC_9309.jpg?v=1692973173&width=750",
@@ -298,7 +297,7 @@
   "Verona-Diamond": {
     "name": "Verona Diamond Planter",
     "prices": {
-      " 11/10cm": 120
+      "11/10cm": 120
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/5_d659ac64-2437-42e1-b3da-c998f1a4990f.jpg?v=1687868295&width=750",
@@ -313,7 +312,7 @@
   "Heraldry-Vase": {
     "name": "Heraldry Vase Ball",
     "prices": {
-      " 15/13cm": 80
+      "15/13cm": 80
     },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/AImageWithPlant_66cd0cdd-f84a-4229-8274-809f735f5fdb.jpg?v=1689226614&width=750",
@@ -384,7 +383,9 @@
   },
   "Tulip-Fantasy-Bowl-Ceramic-Planter": {
     "name": "Tulip Fantasy Bowl Ceramic Planter",
-    "prices": {},
+    "prices": {
+      "Standard": 299
+    },
     "image": [
       "https://www.ugaoo.com/cdn/shop/files/1_07cb01db-a2ac-4ae3-ac33-eaa9f867d46a.jpg?v=1726307948",
       "https://www.ugaoo.com/cdn/shop/files/8_e6540d7b-f429-4f5c-a15d-39d0cc50c5f8.jpg?v=1726307095&width=750",
@@ -575,7 +576,7 @@
   "Mega-pot-white": {
     "name": "Mega pot white",
     "prices": {
-      " 6 inch": 59,
+      "6 inch": 59,
       "8 inch": 79,
       "10 inch": 99,
       "12 inch": 129
@@ -901,17 +902,6 @@
     "desc": "Durable 6.5-inch ceramic planter with speckle finish. Suitable for indoor and outdoor plants, resistant to weather, and ideal for home décor. Neutral black finish complements any setting.",
     "category": [
       "ceramic-planters"
-    ]
-  },
-  "motu-pot": {
-    "name": "motu pot",
-    "prices": {
-      "12 inch": 200
-    },
-    "image": [],
-    "desc": "how are you",
-    "category": [
-      "decorative-planters"
     ]
   }
 }

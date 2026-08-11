@@ -16,8 +16,9 @@ import { useOrders, type OrderAddress, type PaymentMethod } from "@/contexts/Ord
 import { useAddresses } from "@/contexts/AddressContext";
 import { formatINR, isValidPincode } from "@/lib/utils";
 import { appToast } from "@/lib/toast";
-import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
+import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 const STEPS = ["Address", "Review", "Payment"] as const;
 
@@ -25,6 +26,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, itemCount, clearCart } = useCart();
   const { createOrder } = useOrders();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { addresses, isLoading: addressesLoading } = useAddresses();
 
   const [step, setStep] = useState(0);
@@ -100,6 +102,16 @@ export default function CheckoutPage() {
     setAddressErrors({});
   };
 
+  // C3 FIX: Auth guard — redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/login?redirect=/checkout");
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  // C2 FIX: COD max amount enforcement
+  const codExceedsLimit = paymentMethod === "cod" && total > COD_MAX_AMOUNT;
+
   // Empty cart guard
   if (itemCount === 0 && !isPlacing) {
     return (
@@ -134,6 +146,11 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    // C2 FIX: Enforce COD max amount
+    if (paymentMethod === "cod" && total > COD_MAX_AMOUNT) {
+      appToast.error("COD limit exceeded", `Cash on Delivery is only available for orders up to ₹${COD_MAX_AMOUNT}. Please choose online payment.`);
+      return;
+    }
     setIsPlacing(true);
     try {
       const order = await createOrder({
@@ -335,10 +352,25 @@ export default function CheckoutPage() {
                   <div className="flex-1"><p className="text-sm font-semibold text-slate-800">Pay Online</p><p className="text-xs text-slate-500">UPI, Cards, Net Banking, Wallets via Razorpay</p></div>
                   <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "razorpay" && <Check className="size-3 text-white" />}</div>
                 </button>
-                {/* COD */}
-                <button onClick={() => setPaymentMethod("cod")} className={cn("w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left", paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300")}>
+                {/* COD — C2 FIX: disabled when total exceeds COD_MAX_AMOUNT */}
+                <button
+                  onClick={() => !codExceedsLimit && setPaymentMethod("cod")}
+                  disabled={total > COD_MAX_AMOUNT}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left",
+                    total > COD_MAX_AMOUNT ? "border-slate-200 opacity-50 cursor-not-allowed" :
+                    paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300"
+                  )}
+                >
                   <Banknote className="size-5 text-[#1A6B3C]" />
-                  <div className="flex-1"><p className="text-sm font-semibold text-slate-800">Cash on Delivery</p><p className="text-xs text-slate-500">Pay in cash when your order arrives. Available for orders up to ₹5,000.</p></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-800">Cash on Delivery</p>
+                    <p className="text-xs text-slate-500">
+                      {total > COD_MAX_AMOUNT
+                        ? `Not available for orders above ₹${COD_MAX_AMOUNT.toLocaleString()}`
+                        : "Pay in cash when your order arrives. Available for orders up to ₹5,000."}
+                    </p>
+                  </div>
                   <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "cod" && <Check className="size-3 text-white" />}</div>
                 </button>
               </div>

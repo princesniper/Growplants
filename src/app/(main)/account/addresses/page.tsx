@@ -32,7 +32,7 @@ async function getGPSLocation(): Promise<{ lat: number; lng: number; accuracy: n
 
 async function reverseGeocode(lat: number, lng: number): Promise<{ city: string; state: string; pincode: string }> {
   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
-  const res = await fetch(url, { headers: { "Accept-Language": "en" } });
+  const res = await fetch(url, { headers: { "Accept-Language": "en", "User-Agent": "GrowPlants/1.0 (hello@growplants.in)" } });
   if (!res.ok) throw new Error("Failed to fetch address from location");
   const data = await res.json();
   const addr = data.address || {};
@@ -244,7 +244,7 @@ export default function AddressesPage() {
                 </div>
                 <div className="flex gap-1">
                   <button onClick={() => handleEdit(a)} className="p-1.5 text-slate-400 hover:text-[#1A6B3C]"><Edit2 className="size-3.5" /></button>
-                  <button onClick={() => deleteAddress(a.id)} className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="size-3.5" /></button>
+                  <button onClick={() => { if (window.confirm("Delete this address? This cannot be undone.")) deleteAddress(a.id); } } className="p-1.5 text-slate-400 hover:text-red-500"><Trash2 className="size-3.5" /></button>
                 </div>
               </div>
               <p className="text-sm font-semibold text-slate-800">{a.fullName}</p>

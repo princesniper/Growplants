@@ -52,6 +52,7 @@ function ShopPageInner() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading] = useState(false);
 
+  // C13 FIX: Sync ALL filters to URL (was missing price, sunlight, difficulty, suitableFor)
   const updateURL = useCallback((newFilters: ShopFilters) => {
     const params = new URLSearchParams();
     if (newFilters.categories.length === 1) params.set("category", newFilters.categories[0]);
@@ -59,6 +60,12 @@ function ShopPageInner() {
     if (newFilters.minRating > 0) params.set("rating", String(newFilters.minRating));
     if (newFilters.inStockOnly) params.set("in_stock", "true");
     if (newFilters.petSafeOnly) params.set("pet_safe", "true");
+    // C13: Added missing filter params
+    if (newFilters.priceRange[0] > 0) params.set("min_price", String(newFilters.priceRange[0]));
+    if (newFilters.priceRange[1] < 10000) params.set("max_price", String(newFilters.priceRange[1]));
+    if (newFilters.sunlight.length > 0) params.set("sunlight", newFilters.sunlight.join(","));
+    if (newFilters.difficulty.length > 0) params.set("difficulty", newFilters.difficulty.join(","));
+    if (newFilters.suitableFor.length > 0) params.set("suitable_for", newFilters.suitableFor.join(","));
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [router, pathname]);

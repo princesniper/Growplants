@@ -103,7 +103,7 @@ export function Header() {
       >
         {/* ---------- TIER 2: Main marketplace header ---------- */}
         <div className="h-[52px] lg:h-[56px] flex items-center px-4 md:px-6">
-          <div className="max-w-[1400px] mx-auto w-full flex items-center gap-4 lg:gap-6">
+          <div className="max-w-7xl mx-auto w-full flex items-center gap-4 lg:gap-6">
             {/* Hamburger (mobile) */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -347,7 +347,7 @@ export function Header() {
 
         {/* ---------- TIER 3: Category navigation ---------- */}
         <div className="hidden lg:block h-11 border-t border-slate-100">
-          <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex justify-between items-center gap-4">
+          <div className="max-w-7xl mx-auto px-4 lg:px-6 h-full flex justify-between items-center gap-4">
             {/* Categories button — B12 FIX: Link to /shop instead of opening mobile drawer on desktop */}
             <div className="relative h-full flex items-center">
               <Link

@@ -230,8 +230,18 @@ export async function POST(req: NextRequest) {
   // 4. Try Prisma transaction
   try {
     const created = await db.$transaction(async (tx) => {
-      // a. Create address
-      const address = await tx.address.create({
+      // C9 FIX: Check if address already exists (dedup by userId + pincode + addressLine1)
+      const existingAddr = await tx.address.findFirst({
+        where: {
+          userId: firebaseUid,
+          pincode: body.address!.pincode ?? "",
+          addressLine1: body.address!.addressLine1 ?? "",
+        },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      });
+      // Reuse existing address if found, otherwise create new
+      const address = existingAddr ?? await tx.address.create({
         data: {
           userId: firebaseUid,
           fullName: body.address!.fullName!,
@@ -420,19 +430,34 @@ export async function GET(req: NextRequest) {
 
   // 2. Try Prisma
   try {
-    const orders = await db.order.findMany({
-      where: { userId: firebaseUid },
-      orderBy: { createdAt: "desc" },
-      include: {
-        items: true,
-        address: true,
-        statusHistory: { orderBy: { createdAt: "desc" } },
-      },
-    });
+    // C8 FIX: Pagination — default page 1, 20 items per page
+    const url = new URL(req.url);
+    const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+    const perPage = 20;
+    const skip = (page - 1) * perPage;
+
+    const [orders, totalCount] = await Promise.all([
+      db.order.findMany({
+        where: { userId: firebaseUid },
+        orderBy: { createdAt: "desc" },
+        include: {
+          items: true,
+          address: true,
+          statusHistory: { orderBy: { createdAt: "desc" } },
+        },
+        take: perPage,
+        skip,
+      }),
+      db.order.count({ where: { userId: firebaseUid } }),
+    ]);
 
     return NextResponse.json({
       success: true,
-      orders: orders.map((o) => ({
+      page,
+      perPage,
+      total: totalCount,
+      totalPages: Math.ceil(totalCount / perPage),
+      orders: (Array.isArray(orders) ? orders : []).map((o: any) => ({
         id: o.id,
         order_number: o.orderNumber,
         status: o.status,

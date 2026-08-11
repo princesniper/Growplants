@@ -4,7 +4,7 @@
     "name": "Poinsettia Pink Plant",
     "size": "Medium",
     "oldPrice": 399,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "care": {
       "fertilizerSchedule": "During the blooming season, no fertilizer is needed. Once the bracts fade, resume feeding with a balanced, water-soluble fertilizer every 4-6 weeks in spring and summer. Reduce feeding in fall to encourage dormancy. If you plan to rebloom your Poinsettia, a diluted fertilizer helps support new growth, but avoid over-fertilizing, which can lead to weak stems and fewer bracts.",
       "temperatureRange": "Maintain temperatures between **18°C to 22°C (65°F to 72°F)** for optimal growth. Avoid placing the plant near drafty windows, heating vents, or doors, as sudden temperature changes can cause stress. If temperatures drop below 15°C (60°F), the bracts may wilt or drop prematurely. A stable, cozy environment will keep your Poinsettia thriving through the season.",
@@ -38,7 +38,7 @@
     "reviewsCount": 67,
     "stock": 100,
     "price": 89,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "oldPrice": 158,
     "name": "\"First Love\" plant (Xanthostemon chrysanthus",
     "description": "The 'First Love' plant (Xanthostemon chrysanthus) is a breathtaking ornamental shrub celebrated for its radiant yellow blossoms and lush, glossy green leaves. This tropical beauty thrives in warm climates, making it a stunning addition to gardens, patios, or indoor spaces where it can bring a vibrant, exotic flair.",
@@ -66,7 +66,7 @@
       "Natural pollinator magnet"
     ],
     "rating": 4.6,
-    "badge": "",
+    "badge": null,
     "height": "90-120cm"
   },
   "anthurium-red-plant": {
@@ -84,7 +84,10 @@
       "humidityNeeds": "Requires high humidity (60%+). **Mist daily** or place in a naturally humid area like a kitchen or bathroom, or use a dedicated humidifier for optimal health and flowering."
     },
     "oldPrice": 999,
-    "name": "Anthurium Red Plant"
+    "name": "Anthurium Red Plant",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "peace-lily": {
     "price": 109,
@@ -98,7 +101,7 @@
       "temperatureRange": "Ideal temperatures are between **18°C and 24°C (65°F to 75°F)**. Protect from cold drafts and temperatures below 13°C (55°F).",
       "lightRequirements": "Prefers **Medium to Low Indirect Light**. Too much light can scorch the leaves, while too little will prevent blooming. An ideal sign for correct watering is a slight droop in the leaves."
     },
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "stock": 0,
     "specialFeatures": [
       "Air-purifying",
@@ -118,7 +121,7 @@
     ],
     "oldPrice": 250,
     "badge": "Best Seller",
-    "height": ""
+    "height": null
   },
   "money-plant-golden": {
     "about": "",
@@ -195,11 +198,11 @@
       "outdoor"
     ],
     "rating": 4.6,
-    "badge": ""
+    "badge": null
   },
   "all-spice-plant": {
-    "badge": "",
-    "deliveryTime": "",
+    "badge": null,
+    "deliveryTime": "1-2 business days in Sonipat",
     "name": "All Spice Plant",
     "price": 89,
     "description": "The All Spice Plant, scientifically known as Pimenta dioica, is a versatile and aromatic evergreen shrub. It is prized for its culinary, medicinal, and ornamental uses, making it a valuable addition to gardens and kitchens alike.",
@@ -218,9 +221,9 @@
       "https://m.media-amazon.com/images/I/61fLJIk7w8L._SX425_.jpg",
       "https://m.media-amazon.com/images/I/61Dgpg2o40L._SY450_.jpg"
     ],
-    "rating": 0,
+    "rating": null,
     "stock": 75,
-    "reviewsCount": 0,
+    "reviewsCount": null,
     "care": {
       "fertilizerSchedule": "Fertilize the All Spice Plant every 4-6 weeks during the growing season with a balanced, water-soluble fertilizer. Use a fertilizer with equal NPK ratios (e.g., 10-10-10) to support healthy foliage and berry production. Reduce fertilization in winter when growth slows, and avoid over-fertilizing, as this can lead to excessive leaf growth at the expense of berries.",
       "temperatureRange": "The All Spice Plant prefers temperatures between 60°F and 85°F (15°C to 29°C) and is not frost-tolerant. Protect it from temperatures below 50°F (10°C), as prolonged exposure can damage the plant. In cooler climates, grow it in containers and bring it indoors during winter to maintain optimal conditions.",
@@ -250,9 +253,9 @@
       "wateringInstructions": "Water the plant when the top 1-2 inches of soil feel dry. Ensure the pot has drainage holes to prevent waterlogging. Overwatering can cause root rot, so allow excess water to drain completely. Underwatering may lead to brown, crispy leaf tips. Use room-temperature water to avoid shocking the roots.",
       "fertilizerSchedule": "Fertilize the Stand Kamini plant every 4-6 weeks during the growing season (spring and summer) with a balanced, water-soluble houseplant fertilizer. Dilute the fertilizer to half strength to avoid overfeeding, which can damage the roots. Reduce fertilization in fall and winter, as the plant's growth slows. Yellowing leaves may indicate overfertilization, while slow growth may suggest a need for more nutrients."
     },
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "size": "Medium",
-    "badge": "",
+    "badge": null,
     "rating": 4.4,
     "specialFeatures": [
       "Air-purifying",
@@ -272,10 +275,10 @@
     ]
   },
   "monstera-deliciosa-plant": {
-    "rating": 0,
-    "reviewsCount": 0,
+    "rating": null,
+    "reviewsCount": null,
     "name": "Monstera Deliciosa Plant",
-    "height": "",
+    "height": null,
     "badge": "Best Seller",
     "description": "Iconic split‑leaf tropical with dramatic foliage; grows well in bright, indirect light.",
     "specialFeatures": [
@@ -287,7 +290,7 @@
     "images": [
       "https://www.ugaoo.com/cdn/shop/files/1_44713654-fadc-43c3-868b-966b8c624bbf.jpg?v=1706608270&width=750"
     ],
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "care": {
       "humidityNeeds": "Prefers high humidity (60% or higher). **Mist the aerial roots and leaves frequently**, use a humidifier, or place in a bathroom to promote lush, healthy growth.",
       "temperatureRange": "The ideal range is 20°C to 30°C (68°F to 86°F). Protect from temperatures below 15°C (60°F) and cold drafts.",
@@ -306,7 +309,7 @@
     "stock": 0
   },
   "dalchini-plant-true-cinnamon-tree": {
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "images": [
       "https://m.media-amazon.com/images/I/6131JpzW1GL.jpg",
       "https://m.media-amazon.com/images/I/61Lfg7nofpL._SY606_.jpg",
@@ -317,7 +320,7 @@
     "category": [
       "outdoor"
     ],
-    "badge": "",
+    "badge": null,
     "stock": 10,
     "height": "35-50cm",
     "specialFeatures": [
@@ -329,7 +332,7 @@
     "description": "The Dalchini Plant, or true cinnamon tree (Cinnamomum verum), is a fragrant evergreen known for its aromatic bark. It thrives in warm climates and is prized for its culinary and medicinal uses. This plant adds a tropical touch to indoor spaces while purifying the air.",
     "price": 149,
     "name": "Dalchini Plant - True cinnamon tree",
-    "rating": 0,
+    "rating": null,
     "size": "Medium",
     "care": {
       "wateringInstructions": "Water the Dalchini Plant when the top inch of soil feels dry. Ensure the pot has drainage holes to prevent waterlogging. Overwatering can lead to root rot, so allow the soil to dry slightly between waterings. Reduce watering in winter when the plant's growth slows down.",
@@ -340,12 +343,12 @@
     },
     "oldPrice": 199,
     "about": "## INTRODUCTION\nThe Dalchini Plant, scientifically known as Cinnamomum verum, is a tropical evergreen tree native to Sri Lanka and southern India. Renowned for its aromatic bark, which is used to produce true cinnamon, this plant is a valuable addition to both gardens and indoor spaces. Its glossy leaves and fragrant presence make it a popular choice for plant enthusiasts.\n\n## KEY HIGHLIGHTS\n- Produces true cinnamon bark, highly valued in culinary and medicinal applications.\n- Acts as a natural air purifier, improving indoor air quality.\n- Thrives in warm, humid environments, making it ideal for tropical climates.\n- Low-maintenance plant with moderate care requirements.\n\n## USAGE / CARE OVERVIEW\nThe Dalchini Plant requires consistent care to ensure healthy growth. It benefits from well-draining soil, regular watering, and indirect sunlight. Pruning helps maintain its shape and encourages new growth. Avoid overwatering and exposure to cold drafts to prevent root rot and leaf damage.\n\n## SUITABILITY\nThis plant is well-suited for indoor cultivation in warm, humid environments. It thrives in kitchens, living rooms, or sunrooms where it can receive indirect sunlight. The Dalchini Plant is also a great choice for gardeners looking to grow their own cinnamon bark.",
-    "reviewsCount": 0
+    "reviewsCount": null
   },
   "tej-patta-plant-cinnamomum-tamala": {
     "about": "INTRODUCTION\n\nThe Tej Patta plant, or Indian bay leaf, is a versatile and aromatic evergreen tree native to the Indian subcontinent. Its glossy, fragrant leaves are widely used in traditional medicine and culinary dishes, making it a valuable addition to both gardens and kitchens. With its lush foliage and adaptable nature, this plant is a favorite among plant enthusiasts and homeowners alike.\n\nKEY HIGHLIGHTS\n\n- **Aromatic Leaves**: The leaves release a strong, pleasant fragrance when crushed, enhancing indoor air quality.\n- **Medicinal Uses**: Traditionally used to aid digestion and relieve respiratory ailments.\n- **Low Maintenance**: Thrives with minimal care, making it ideal for beginners.\n- **Air-Purifying**: Helps remove toxins from the air, promoting a healthier living environment.\n\nUSAGE / CARE OVERVIEW\n\nThe Tej Patta plant requires moderate care, including consistent moisture, bright indirect light, and occasional pruning to maintain its shape. It is drought-tolerant once established but benefits from regular watering during the growing season. Fertilizing in spring and summer supports healthy growth and leaf production.\n\nSUITABILITY\n\nThis plant is well-suited for indoor and outdoor cultivation in warm, humid climates. It thrives in containers, making it a great choice for balconies, patios, and indoor spaces. Its air-purifying properties make it an excellent addition to homes and offices.",
     "description": "The Tej Patta plant, scientifically known as Cinnamomum tamala, is a fragrant evergreen tree prized for its aromatic leaves used in cooking and traditional medicine. Its glossy, lance-shaped leaves release a warm, spicy scent when crushed, making it a versatile addition to both culinary and ornamental gardens. This hardy plant thrives in tropical and subtropical climates, offering both beauty and functionality.",
-    "rating": 0,
+    "rating": null,
     "care": {
       "humidityNeeds": "High humidity is ideal for Tej Patta plants, mimicking their natural tropical habitat. Place the pot on a tray of pebbles filled with water to increase humidity around the plant. Grouping plants together or using a humidifier can also help maintain optimal moisture levels. If the air is too dry, leaves may turn brown or crispy at the edges.",
       "wateringInstructions": "Water the plant deeply when the top 1-2 inches of soil feel dry, ensuring the soil remains consistently moist but not waterlogged. Overwatering can lead to root rot, so allow excess water to drain freely from the pot. During hot summer months, increase watering frequency, while in winter, reduce watering to prevent soggy soil. A well-draining potting mix with organic matter works best.",
@@ -367,7 +370,7 @@
     "name": "Tej Patta plant (Cinnamomum tamala)",
     "stock": 50,
     "deliveryTime": "under 24 hours",
-    "badge": "",
+    "badge": null,
     "size": "small",
     "images": [
       "https://m.media-amazon.com/images/I/718tWX4z5ML._SL1500_.jpg",
@@ -392,7 +395,10 @@
     },
     "name": "Croton Petra XL",
     "price": 450,
-    "oldPrice": 1999
+    "oldPrice": 1999,
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "rose-plant": {
     "care": {
@@ -405,13 +411,13 @@
     "category": [
       "outdoor"
     ],
-    "reviewsCount": 0,
-    "badge": "",
+    "reviewsCount": null,
+    "badge": null,
     "oldPrice": 199,
     "deliveryTime": "under 24 hours",
     "specialFeatures": [],
-    "rating": 0,
-    "height": "",
+    "rating": null,
+    "height": null,
     "description": "A vibrant red rose plant suitable for outdoor gardens. Prefers sunny spots with partial shade during summer. Requires well-drained soil enriched with manure.",
     "price": 109,
     "about": "",
@@ -477,7 +483,7 @@
       "https://m.media-amazon.com/images/I/61uLJ59oYkL._AC_SL1000_.jpg",
       "https://m.media-amazon.com/images/I/61BbZCr6HnL._AC_SX679_.jpg"
     ],
-    "badge": "",
+    "badge": null,
     "reviewsCount": 128,
     "rating": 4,
     "description": "Red Hibiscus live seedling, hardy and well rooted, approx 9-12 inch tall, suitable for patio or garden planting.",
@@ -515,7 +521,10 @@
       "temperatureRange": "Ideal range is **20°C to 26°C (68°F to 78°F)**. It can tolerate warmer temperatures but must be protected from frost and temperatures below 10°C (50°F).",
       "fertilizerSchedule": "Fertilize sparingly—**once a year in the spring**—with a balanced liquid fertilizer formulated for succulents or cacti, diluted to half-strength.",
       "lightRequirements": "Prefers **Bright Light** with a few hours of **Direct Sun** (morning or late afternoon) daily. Place in a south or west-facing window. Insufficient light leads to weak, floppy growth."
-    }
+    },
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "crassula-plant": {
     "rating": 4.2,
@@ -552,7 +561,7 @@
       "Symbol of prosperity and good luck in many cultures",
       "Easy to propagate from stem or leaf cuttings"
     ],
-    "badge": ""
+    "badge": null
   },
   "dieffenbachia-plant": {
     "size": "Large",
@@ -572,7 +581,10 @@
       "winter"
     ],
     "price": 129,
-    "description": "Indoor / outdoor broadleaf evergreen with shiny green leaves (possibly variegated); suitable for home decor."
+    "description": "Indoor / outdoor broadleaf evergreen with shiny green leaves (possibly variegated); suitable for home decor.",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "white-chandni-plant": {
     "name": "white chandni plant",
@@ -592,8 +604,8 @@
     ],
     "height": "50-80cm",
     "stock": 50,
-    "deliveryTime": "",
-    "badge": "",
+    "deliveryTime": "1-2 business days in Sonipat",
+    "badge": null,
     "size": "midium",
     "care": {
       "wateringInstructions": "Water the plant when the top inch of soil feels dry. Overwatering can lead to root rot, so ensure the pot has drainage holes. Allow excess water to drain completely. Underwatering will cause drooping leaves, which recover quickly after watering. Use room-temperature water to avoid shocking the roots.",
@@ -627,10 +639,13 @@
     ],
     "price": 289,
     "size": "Medium",
-    "oldPrice": 999
+    "oldPrice": 999,
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "aglaonema-snow-white": {
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "images": [
       "https://www.ugaoo.com/cdn/shop/files/DSC_2511.jpg?v=1693284618&width=750",
       "https://www.ugaoo.com/cdn/shop/files/Detail_7fc171f9-b357-4a7e-8aa7-d1b0715c9dc7.jpg?v=1693284618&width=750",
@@ -681,7 +696,10 @@
       "temperatureRange": "Ideal range is **18°C to 24°C (65°F to 75°F)**. It is sensitive to cold and should be kept above 15°C (60°F).",
       "lightRequirements": "Thrives in **Bright Indirect Light**. This light level is crucial for maintaining the plant's vibrant pink coloration. Low light will cause the color to fade to green."
     },
-    "size": "medium"
+    "size": "medium",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "aglaonema-pink-beauty-plant": {
     "care": {
@@ -703,7 +721,10 @@
       "winter"
     ],
     "description": "Also called the Chinese Evergreen, this Aglaonema Pink Beauty thrives in low indirect light with little water. Its bright pink variegated leaves give a lovely pop of colour suited for indoor décor.",
-    "size": "Medium"
+    "size": "Medium",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "peperomia-green-plant": {
     "category": [
@@ -712,7 +733,7 @@
     ],
     "stock": 25,
     "description": "The Peperomia Green Plant is a compact, low-maintenance houseplant with glossy, heart-shaped leaves. It thrives in various conditions and adds a touch of greenery to any space.",
-    "badge": "",
+    "badge": null,
     "rating": 4.1,
     "deliveryTime": "Under 24 hours",
     "reviewsCount": 158,
@@ -760,7 +781,7 @@
     "deliveryTime": "Under 24 hours",
     "size": "small",
     "oldPrice": 110,
-    "badge": "",
+    "badge": null,
     "description": "The Snake Plant, also known as Sansevieria, is a resilient and stylish houseplant with striking, upright leaves that add a modern touch to any space. Its air-purifying qualities make it a must-have for improving indoor air quality, while its low-maintenance nature makes it ideal for beginners and forgetful plant parents. Thriving in a variety of conditions, this plant is both practical and visually appealing.",
     "price": 49,
     "name": "Snake Plant",
@@ -778,7 +799,7 @@
       "air-purifying"
     ],
     "badge": "Best Seller",
-    "height": "",
+    "height": null,
     "specialFeatures": [
       "Pest-repelling properties",
       "Edible flowers",
@@ -803,7 +824,7 @@
       "https://dukaan.b-cdn.net/700x700/webp/media/3fd9d478-ad76-4dc0-a31d-45f6e5ac83b3.png"
     ],
     "stock": 0,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "name": "Marigold Plant",
     "about": "## INTRODUCTION\nThe Marigold Plant (Tagetes spp.) is a popular annual flower celebrated for its cheerful colors and hardy nature. Native to Mexico and Central America, it has been cultivated for centuries for its ornamental and medicinal uses. Marigolds are not only visually appealing but also serve practical purposes, such as deterring pests in gardens.\n\n## KEY HIGHLIGHTS\n- Bright, long-lasting flowers in shades of yellow, orange, and gold.\n- Natural pest repellent, particularly effective against nematodes and certain insects.\n- Drought-tolerant once established, making it ideal for low-maintenance gardens.\n- Edible flowers used in culinary dishes and traditional remedies.\n\n## USAGE / CARE OVERVIEW\nMarigolds are versatile and can be grown in garden beds, borders, or containers. They require minimal care but benefit from regular deadheading to encourage continuous blooming. Proper spacing and well-draining soil are essential for healthy growth.\n\n## SUITABILITY\nThis plant is well-suited for both novice and experienced gardeners. It thrives in warm climates but can also be grown as an annual in cooler regions. Marigolds are often used in companion planting to protect other plants from pests.",
     "reviewsCount": 128
@@ -856,7 +877,7 @@
       "https://m.media-amazon.com/images/I/71UZatZlG+L._SX569_.jpg",
       "https://m.media-amazon.com/images/I/51EmeYI9daL._SX569_.jpg"
     ],
-    "badge": "",
+    "badge": null,
     "oldPrice": 254,
     "deliveryTime": "under 24 hours",
     "reviewsCount": 128,
@@ -918,7 +939,7 @@
       "humidityNeeds": "Tolerates average household humidity but will thrive with higher levels (50%+). Increase humidity by placing it on a pebble tray with water or by using a room humidifier."
     },
     "name": "Money Plant",
-    "badge": "",
+    "badge": null,
     "deliveryTime": "24 hours",
     "rating": 4,
     "reviewsCount": 48,
@@ -939,11 +960,14 @@
       "temperatureRange": "Ideal range is **20°C to 26°C (68°F to 78°F)**. Protect from cold drafts and temperatures below 15°C (60°F).",
       "fertilizerSchedule": "Fertilize once or twice during the **Spring and Summer** with a balanced liquid houseplant fertilizer diluted to half-strength. Do not fertilize in fall or winter.",
       "lightRequirements": "Tolerates **Low Light** but thrives best in **Bright Indirect Light**. Lower light may reduce the vibrancy of the variegation. Avoid direct sun, which burns the leaves."
-    }
+    },
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "gardenia-white-gandharaj-flowers": {
     "about": "## INTRODUCTION\nThe Gardenia white, scientifically known as *Gardenia jasminoides*, is a beloved ornamental plant celebrated for its glossy evergreen foliage and highly fragrant white flowers. Native to Asia, this plant has been cultivated for centuries in gardens and homes, valued for its aesthetic appeal and therapeutic properties. Its flowers are often used in perfumes, teas, and traditional medicine.\n\n## KEY HIGHLIGHTS\n- **Fragrant blooms**: Produces highly aromatic white flowers that release a sweet, jasmine-like scent.\n- **Evergreen foliage**: Glossy, dark green leaves that remain vibrant year-round.\n- **Air-purifying**: Helps improve indoor air quality by filtering common pollutants.\n- **Versatile use**: Suitable for gardens, indoor pots, and landscaping.\n\n## USAGE / CARE OVERVIEW\nThe Gardenia white requires consistent care to thrive, including proper light, water, and humidity. It is sensitive to environmental changes, so maintaining stable conditions is crucial. Regular pruning and fertilization can promote healthy growth and abundant flowering.\n\n## SUITABILITY\nIdeal for warm, humid climates, this plant thrives in USDA hardiness zones 7-10. It can be grown outdoors in gardens or indoors in pots, provided it receives adequate light and humidity.",
-    "badge": "",
+    "badge": null,
     "stock": 100,
     "specialFeatures": [
       "Highly fragrant flowers",
@@ -952,7 +976,7 @@
       "Versatile ornamental use"
     ],
     "price": 69,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "images": [
       "https://m.media-amazon.com/images/I/61TtNcXywoL._SL1368_.jpg",
       "https://m.media-amazon.com/images/I/71spJ0J16FL._SL1372_.jpg",
@@ -979,7 +1003,7 @@
   },
   "table-kamini": {
     "oldPrice": 137,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "size": "small",
     "height": "25-40cm",
     "price": 59,
@@ -988,7 +1012,7 @@
       "air-purifying"
     ],
     "stock": 100,
-    "badge": "",
+    "badge": null,
     "rating": 4.3,
     "description": "The Table Kamini is a compact, elegant houseplant known for its air-purifying qualities and low-maintenance care. Its lush foliage adds a touch of greenery to any indoor space, making it a popular choice for homes and offices.",
     "care": {
@@ -1020,13 +1044,13 @@
       "outdoor"
     ],
     "price": 79,
-    "rating": 0,
+    "rating": null,
     "about": "## INTRODUCTION\nThe Red Sandalwood Plant, scientifically known as *Pterocarpus santalinus*, is a slow-growing tree native to India. Its distinctive red heartwood has been valued for centuries in traditional medicine, perfumery, and woodcraft. The plant is also celebrated for its air-purifying qualities and aesthetic appeal in gardens.\n\n## KEY HIGHLIGHTS\n- **Aromatic Wood**: The heartwood emits a sweet, woody fragrance when cut or polished.\n- **Medicinal Uses**: Traditionally used in Ayurveda for skin conditions and inflammation.\n- **Drought Tolerant**: Adapts well to dry conditions once established.\n- **Ornamental Value**: Attractive foliage and red bark make it a garden centerpiece.\n\n## USAGE / CARE OVERVIEW\nThe Red Sandalwood Plant requires minimal maintenance but benefits from well-drained soil and occasional pruning. It is best grown outdoors in full sun to partial shade, with moderate watering during the growing season.\n\n## SUITABILITY\nIdeal for warm climates, this plant thrives in USDA hardiness zones 10-12. It is suitable for gardens, landscapes, and as a potted plant in containers.",
     "stock": 50,
     "name": "Red Sandalwood Plant | Lal Chandan Plant for Garden",
     "oldPrice": 219,
     "height": "25-40cm",
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "care": {
       "fertilizerSchedule": "Fertilize lightly in spring and summer with a balanced, slow-release fertilizer. Avoid over-fertilizing, as it can lead to excessive foliage growth at the expense of wood quality. Use organic compost or a diluted liquid fertilizer every 4-6 weeks during the growing season.",
       "humidityNeeds": "Moderate humidity levels are ideal, but the plant adapts well to dry conditions. Mist the leaves occasionally if the air is very dry. Avoid placing it near heating vents or air conditioners, as extreme dryness can cause leaf drop.",
@@ -1034,8 +1058,8 @@
       "lightRequirements": "The Red Sandalwood Plant thrives in full sun to partial shade. Place it in a location where it receives at least 6 hours of direct sunlight daily. Avoid deep shade, as it can stunt growth and reduce flowering. If grown indoors, ensure it gets bright, indirect light near a south-facing window.",
       "temperatureRange": "The plant prefers warm temperatures between 68°F to 86°F (20°C to 30°C). It is sensitive to frost and should be protected from temperatures below 50°F (10°C). In colder climates, grow it in containers and bring it indoors during winter."
     },
-    "reviewsCount": 0,
-    "badge": "",
+    "reviewsCount": null,
+    "badge": null,
     "images": [
       "https://m.media-amazon.com/images/I/71F8p8QM9bL._SX425_.jpg",
       "https://m.media-amazon.com/images/I/71Cf6TUeFQL._SX425_.jpg",
@@ -1082,7 +1106,7 @@
     "height": "35-50cm",
     "oldPrice": 299,
     "description": "The Rudraksha plant is a sacred and spiritually significant tree known for its distinctive seed beads used in meditation and prayer. It thrives in warm climates and requires moderate care to flourish.",
-    "badge": "",
+    "badge": null,
     "size": "midium",
     "price": 149,
     "reviewsCount": 152,
@@ -1103,7 +1127,10 @@
       "https://www.ugaoo.com/cdn/shop/products/GroPot_b025ad6f-e776-4187-8c3e-4ce50dd7af2a.jpg?v=1748851129&width=750"
     ],
     "size": "Medium",
-    "oldPrice": 447
+    "oldPrice": 447,
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "broken-heart-plant": {
     "care": {
@@ -1120,7 +1147,10 @@
     "images": [
       "https://www.ugaoo.com/cdn/shop/files/GroPot_958f4786-d1ed-4b37-923c-d067a44fb201.jpg?v=1714570877&width=750"
     ],
-    "name": "Broken Heart Plant"
+    "name": "Broken Heart Plant",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "dieffenbachia-pinky": {
     "care": {
@@ -1136,7 +1166,7 @@
       "indoor",
       "air-purifying"
     ],
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "specialFeatures": [
       "Vibrant pink and green variegation",
       "Air-purifying properties",
@@ -1157,7 +1187,7 @@
     "size": "Medium",
     "price": 59,
     "oldPrice": 134,
-    "badge": ""
+    "badge": null
   },
   "fiddle-leaf": {
     "size": "Large",
@@ -1174,7 +1204,10 @@
       "fertilizerSchedule": "Feed monthly from **Spring through early Autumn** with a liquid fertilizer formulated for trees or a balanced houseplant food. Suspend feeding during the cooler, darker months.",
       "lightRequirements": "Requires copious amounts of **Bright, Filtered Light** to thrive. Place in a south or west-facing window, protected from intense midday sun. Insufficient light leads to leaf drop."
     },
-    "description": "Broad glossy leaves create a sculptural look; prefers bright, filtered light—trendy indoor tree."
+    "description": "Broad glossy leaves create a sculptural look; prefers bright, filtered light—trendy indoor tree.",
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "chinese-orange-sweet-narangi-dwarf-calamondin-orange-hybrid-fruit-plant": {
     "height": "25-40cm",
@@ -1196,14 +1229,14 @@
       "Drought-tolerant once established"
     ],
     "oldPrice": 156,
-    "reviewsCount": 0,
+    "reviewsCount": null,
     "stock": 200,
     "category": [
       "air-purifying",
       "decorative"
     ],
-    "badge": "",
-    "rating": 0,
+    "badge": null,
+    "rating": null,
     "images": [
       "https://m.media-amazon.com/images/I/616LM674XiL.jpg",
       "https://m.media-amazon.com/images/I/61Y1VsH7oML.jpg",
@@ -1211,7 +1244,7 @@
       "https://m.media-amazon.com/images/I/51UcstGJmwL.jpg",
       "https://m.media-amazon.com/images/I/61mqaqIBVxL.jpg"
     ],
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "price": 78
   },
   "jade-plant": {
@@ -1236,7 +1269,10 @@
     "price": 109,
     "category": [
       "winter"
-    ]
+    ],
+    "badge": null,
+    "height": null,
+    "stock": null
   },
   "peace-lily-plant": {
     "badge": "Best Seller",
@@ -1268,7 +1304,7 @@
     "reviewsCount": 23,
     "price": 159,
     "size": "Medium",
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "category": [
       "indoor",
       "air-purifying"
@@ -1281,7 +1317,7 @@
     "stock": 25,
     "rating": 4.6,
     "description": "Tiny clustered pink flowers on evergreen shrub; great for balconies or patios, thrives in sunlight.",
-    "height": "",
+    "height": null,
     "specialFeatures": [
       "Long-lasting pink flowers",
       "Drought-tolerant once established",
@@ -1321,10 +1357,10 @@
     "rating": 4.1,
     "oldPrice": 498,
     "stock": 50,
-    "badge": "",
+    "badge": null,
     "description": "The Foxtail Palm (Wodyetia bifurcata) is a striking, fast-growing palm with feathery, arching fronds resembling a foxtail. Native to Australia, it thrives in tropical climates and adds a lush, exotic touch to landscapes. This palm is low-maintenance and drought-tolerant once established.",
     "size": "Large",
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "price": 179,
     "category": [
       "outdoor",
@@ -1348,14 +1384,14 @@
   },
   "chandani-yellow": {
     "reviewsCount": 28,
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "specialFeatures": [
       "Air-purifying",
       "Low-maintenance",
       "Compact size",
       "Bright yellow foliage"
     ],
-    "badge": "",
+    "badge": null,
     "rating": 3.9,
     "category": [
       "summer",
@@ -1391,7 +1427,7 @@
     "name": "Parijaat Harsingar",
     "reviewsCount": 128,
     "height": "8-12 inches",
-    "badge": "",
+    "badge": null,
     "specialFeatures": [
       "Night-blooming fragrant flowers",
       "Air-purifying properties",
@@ -1425,7 +1461,7 @@
   },
   "mogra-flower-plant": {
     "specialFeatures": [],
-    "height": "",
+    "height": null,
     "stock": 0,
     "care": {
       "fertilizerSchedule": "Feed every 2-4 weeks with a fertilizer rich in phosphorus and potassium (a 'bloom booster') throughout the active blooming season (**Spring to Fall**). Stop feeding in the late fall/winter.",
@@ -1436,7 +1472,7 @@
     },
     "about": "",
     "description": "A fragrant jasmine plant with pure white blooms, ideal for balconies and gardens. Comes in a 6-inch plastic pot, perfect for gifting or home decor.",
-    "reviewsCount": 0,
+    "reviewsCount": null,
     "images": [
       "https://m.media-amazon.com/images/I/61xreWtQL6L._SX569_.jpg",
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQl87MPEe4UXI2nXt3lwp2TJvkJP4G-fWVCkiBC8XirnbHvfGmxegm9WDyfaJgarccnHVE&usqp=CAU",
@@ -1445,9 +1481,9 @@
     ],
     "name": "Mogra Flower Plant",
     "size": "Medium",
-    "rating": 0,
-    "badge": "",
-    "deliveryTime": "",
+    "rating": null,
+    "badge": null,
+    "deliveryTime": "1-2 business days in Sonipat",
     "price": 109
   },
   "rubber-plant-black": {
@@ -1477,7 +1513,7 @@
     "rating": 4.6,
     "height": "1.5-2.5 feet",
     "description": "The Rubber Plant Black (Ficus elastica 'Black Pearl') is a striking houseplant with deep, glossy black leaves. It's known for its air-purifying qualities and low-maintenance nature, making it ideal for beginners and seasoned plant owners alike.",
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "images": [
       "https://nurserylive.com/cdn/shop/products/nurserylive-rubber-tree-rubber-plant-ficus-elastica-small-plant-819163_600x600.jpg?v=1751717872",
       "https://nurserylive.com/cdn/shop/products/nurserylive-plants-rubber-tree-rubber-plant-ficus-elastica-small-plant-16969285337228_600x600.jpg?v=1751717854",
@@ -1523,7 +1559,7 @@
     "about": "## INTRODUCTION\nThe lipstick plant is a popular choice for indoor gardening, prized for its glossy green leaves and striking red flowers. Native to Southeast Asia, this plant adapts well to indoor conditions, making it a favorite among plant enthusiasts.\n\n## KEY HIGHLIGHTS\n- Produces tubular red flowers that resemble lipstick.\n- Thrives in hanging baskets or shelves with trailing vines.\n- Low-maintenance and suitable for beginners.\n- Air-purifying qualities improve indoor air quality.\n\n## USAGE / CARE OVERVIEW\nThe lipstick plant requires moderate care, including bright, indirect light and consistent moisture. Avoid overwatering and ensure proper drainage to prevent root rot. Regular pruning encourages bushier growth and more flowers.\n\n## SUITABILITY\nIdeal for indoor spaces such as living rooms, offices, and bathrooms with high humidity. Not frost-tolerant, so keep it away from cold drafts.",
     "name": "Aglaonema Lipstick Plant",
     "height": "25-40cm",
-    "deliveryTime": "",
+    "deliveryTime": "1-2 business days in Sonipat",
     "reviewsCount": 1223
   }
 }

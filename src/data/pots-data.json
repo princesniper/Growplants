@@ -1,764 +1,917 @@
 {
-    "tokyo-high-planter": {
-        "name": "Tokyo High Planter",
-        "prices": {
-            "10cm": 4299,
-            "12cm": 4599,
-            "14cm": 4899
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_6f52953c-9a5e-4866-a0c3-cec504e608f1.jpg?v=1714637130&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/7_b6e7f7d9-8105-4d89-922a-2d1626d99187.jpg?v=1714637134&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/2_ae237fb5-007c-4a9d-b503-329dfa8c1fff.jpg?v=1714637139&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_3e4f736d-b98f-43b0-ab39-96b317e0c77a.jpg?v=1714637140&width=750"
-        ],
-        "desc": "Elevate your greenery with the Tokyo High Planter.\nSleek design meets modern height, showcasing your plants in stylish sophistication.\nA perfect statement piece for any space.",
-        "oldPrice": 1299,
-        "potFeatures": [
-            "Modern Design",
-            "Durable Material",
-            "Weather Resistant",
-            "Lightweight"
-        ],
-        "category": [
-            "indoor",
-            "outdoor",
-            "decorative",
-            "plastic"
-        ]
+  "tokyo-high-planter": {
+    "name": "Tokyo High Planter",
+    "prices": {
+      "10cm": 4299,
+      "12cm": 4599,
+      "14cm": 4899
     },
-    "milano-short-planter": {
-        "name": "Milano Short Planter",
-        "prices": {
-            "50cm": 1099
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/AI_50_Sand_NUHP0008.jpg?v=1749298779&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/AI_50_Gray_NUHP0007.jpg?v=1749298779&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/7_67bf1cb8-6bb5-4241-be49-ec17e1d93ecd.jpg?v=1749298779&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_838098ae-efd5-4152-9807-82425cd05fee.jpg?v=1749298779&width=750"
-        ],
-        "desc": "Milano Short Planter कॉम्पैक्ट और स्टाइलिश डिज़ाइन वाला गमला है, जो छोटे पौधों के लिए परफेक्ट है।"
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_6f52953c-9a5e-4866-a0c3-cec504e608f1.jpg?v=1714637130&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/7_b6e7f7d9-8105-4d89-922a-2d1626d99187.jpg?v=1714637134&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/2_ae237fb5-007c-4a9d-b503-329dfa8c1fff.jpg?v=1714637139&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_3e4f736d-b98f-43b0-ab39-96b317e0c77a.jpg?v=1714637140&width=750"
+    ],
+    "desc": "Elevate your greenery with the Tokyo High Planter.\nSleek design meets modern height, showcasing your plants in stylish sophistication.\nA perfect statement piece for any space.",
+    "oldPrice": 1299,
+    "potFeatures": [
+      "Modern Design",
+      "Durable Material",
+      "Weather Resistant",
+      "Lightweight"
+    ],
+    "category": [
+      "indoor",
+      "outdoor",
+      "decorative",
+      "plastic"
+    ]
+  },
+  "milano-short-planter": {
+    "name": "Milano Short Planter",
+    "prices": {
+      "50cm": 1099
     },
-    "Tulsi-Pot": {
-        "name": "Tulsi Pot for Home",
-        "prices": {
-            "30cm": 999
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_74f92de2-aa97-4704-b121-4a85c2e1cfdc.jpg?v=1749646887&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/2_3aaa3910-9b95-447a-bf0a-2ccf3d1431ce.jpg?v=1749646887&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/5_54255846-dce3-40ee-985c-c74592c67dff.jpg?v=1749646887&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/8_6a06f40c-1b05-460c-8d23-c5e2b7d607d3.jpg?v=1749646887&width=750"
-        ],
-        "desc": "Special pot designed for growing Tulsi at home with proper drainage and aesthetic design.",
-        "category": [
-            "indoor",
-            "outdoor",
-            "decorative",
-            "ceramic"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/AI_50_Sand_NUHP0008.jpg?v=1749298779&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/AI_50_Gray_NUHP0007.jpg?v=1749298779&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/7_67bf1cb8-6bb5-4241-be49-ec17e1d93ecd.jpg?v=1749298779&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_838098ae-efd5-4152-9807-82425cd05fee.jpg?v=1749298779&width=750"
+    ],
+    "desc": "Milano Short Planter कॉम्पैक्ट और स्टाइलिश डिज़ाइन वाला गमला है, जो छोटे पौधों के लिए परफेक्ट है।",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Tulsi-Pot": {
+    "name": "Tulsi Pot for Home",
+    "prices": {
+      "30cm": 999
     },
-    "Gardening-Pots": {
-        "name": "Gardening Pots - Terracotta",
-        "prices": {
-            "4 inch": 60,
-            "6 inch": 80,
-            "8 inch": 130
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/products/4-inch-set-of-6-gardening-pots-terracotta-32268879855748.jpg?v=1675635127&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_74f92de2-aa97-4704-b121-4a85c2e1cfdc.jpg?v=1749646887&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/2_3aaa3910-9b95-447a-bf0a-2ccf3d1431ce.jpg?v=1749646887&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/5_54255846-dce3-40ee-985c-c74592c67dff.jpg?v=1749646887&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/8_6a06f40c-1b05-460c-8d23-c5e2b7d607d3.jpg?v=1749646887&width=750"
+    ],
+    "desc": "Special pot designed for growing Tulsi at home with proper drainage and aesthetic design.",
+    "category": [
+      "indoor",
+      "outdoor",
+      "decorative",
+      "ceramic"
+    ]
+  },
+  "Gardening-Pots": {
+    "name": "Gardening Pots - Terracotta",
+    "prices": {
+      "4 inch": 60,
+      "6 inch": 80,
+      "8 inch": 130
     },
-    "Gardening-Pots-black": {
-        "name": "Gardening Pots - black",
-        "prices": {
-            "4 inch": 60,
-            "6 inch": 90,
-            "8 inch": 120,
-            "10 inch": 180
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/products/4-inch-set-of-6-gardening-pots-black-32268416548996.jpg?v=1675635129&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/products/4-inch-set-of-6-gardening-pots-terracotta-32268879855748.jpg?v=1675635127&width=750"
+    ],
+    "category": [
+      "terracotta-planters"
+    ]
+  },
+  "Gardening-Pots-black": {
+    "name": "Gardening Pots - black",
+    "prices": {
+      "4 inch": 60,
+      "6 inch": 90,
+      "8 inch": 120,
+      "10 inch": 180
     },
-    "Microgreens-Growing-Tray": {
-        "name": "Microgreens Growing Tray",
-        "prices": {
-            " 14 inch": 1400
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/7-100_032a2c0f-a9fe-4b7b-a1cd-f4e6a643e7e5.jpg?v=1718882129&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/8-100_056419f4-034f-4272-80cb-cc1a260ee8b6.jpg?v=1718882129&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/1-100.jpg?v=1718882129&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/4-100_862186f1-463d-4779-8537-ce2fd65ddc18.jpg?v=1718882135&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/products/4-inch-set-of-6-gardening-pots-black-32268416548996.jpg?v=1675635129&width=750"
+    ],
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Microgreens-Growing-Tray": {
+    "name": "Microgreens Growing Tray",
+    "prices": {
+      " 14 inch": 1400
     },
-    "Gardening-Plates": {
-        "name": "Gardening Plates - Terracotta ",
-        "prices": {
-            " 4 inch": 149,
-            "6 inch": 169,
-            "8 inch": 189
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/products/baseplatesbrownsetof6-4inch_f2b49906-1284-4302-aa3c-f05625fde9a2.jpg?v=1677507373&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/baseplates-04.jpg?v=1677507385&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/baseplates-04_42a423a1-e0ac-4d38-b3bc-0a1c69619fd1.jpg?v=1677507367&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/baseplates-04_5591d49f-33d5-43b2-b406-5d04d7f32b55.jpg?v=1677507343&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/7-100_032a2c0f-a9fe-4b7b-a1cd-f4e6a643e7e5.jpg?v=1718882129&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/8-100_056419f4-034f-4272-80cb-cc1a260ee8b6.jpg?v=1718882129&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/1-100.jpg?v=1718882129&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/4-100_862186f1-463d-4779-8537-ce2fd65ddc18.jpg?v=1718882135&width=750"
+    ],
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Gardening-Plates": {
+    "name": "Gardening Plates - Terracotta ",
+    "prices": {
+      " 4 inch": 149,
+      "6 inch": 169,
+      "8 inch": 189
     },
-    "Pebble-Shaped-Planter": {
-        "name": "Pebble Shaped Planter",
-        "prices": {
-            " small": 354
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/products/small-white-stone-pebble-planter-32168164917380.jpg?v=1673870055&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168164786308.jpg?v=1673869316&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168226488452.jpg?v=1673870226&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168164491396.jpg?v=1673870037&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/products/baseplatesbrownsetof6-4inch_f2b49906-1284-4302-aa3c-f05625fde9a2.jpg?v=1677507373&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/baseplates-04.jpg?v=1677507385&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/baseplates-04_42a423a1-e0ac-4d38-b3bc-0a1c69619fd1.jpg?v=1677507367&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/baseplates-04_5591d49f-33d5-43b2-b406-5d04d7f32b55.jpg?v=1677507343&width=750"
+    ],
+    "category": [
+      "terracotta-planters"
+    ]
+  },
+  "Pebble-Shaped-Planter": {
+    "name": "Pebble Shaped Planter",
+    "prices": {
+      " small": 354
     },
-    "Verona-Eco": {
-        "name": "Verona Eco Planter - Set of 3",
-        "prices": {
-            " 10cm, 12cm, 20cm": 359
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_7288ff4d-b41e-4ba0-94ea-599446c11b36.jpg?v=1709274212&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_b06eafcb-5355-453c-a2e3-90ff6bd3b26c.jpg?v=1709274155&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/4_a12fda8c-0935-4b6b-9b3c-ae85313f018a.jpg?v=1709274156&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/6_6c20f1f4-5477-4e81-8efe-dd0d76176d55.jpg?v=1709274155&width=750"
-        ]
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/products/small-white-stone-pebble-planter-32168164917380.jpg?v=1673870055&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168164786308.jpg?v=1673869316&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168226488452.jpg?v=1673870226&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/pebble-planter-32168164491396.jpg?v=1673870037&width=750"
+    ],
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Verona-Eco": {
+    "name": "Verona Eco Planter - Set of 3",
+    "prices": {
+      " 10cm, 12cm, 20cm": 359
     },
-    "Sienna-Terracotta": {
-        "name": "Sienna Terracotta Pots - Set of 3",
-        "prices": {
-            " 11 cm": 299
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_d87323cc-bf70-4799-a66d-7ff965c8cb2b.jpg?v=1709701882&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_ae7fdfaf-41fe-48d2-a5c4-0d387babf1e5.png?v=1736848546&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/4_15ffaa0f-086f-4d3e-a7cd-1da3b543026b.png?v=1709702015&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/6_66d33a7b-f4ed-4502-bffc-66561d4ae463.png?v=1709702011&width=750"
-        ],
-        "desc": "*Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_7288ff4d-b41e-4ba0-94ea-599446c11b36.jpg?v=1709274212&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_b06eafcb-5355-453c-a2e3-90ff6bd3b26c.jpg?v=1709274155&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/4_a12fda8c-0935-4b6b-9b3c-ae85313f018a.jpg?v=1709274156&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/6_6c20f1f4-5477-4e81-8efe-dd0d76176d55.jpg?v=1709274155&width=750"
+    ],
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Sienna-Terracotta": {
+    "name": "Sienna Terracotta Pots - Set of 3",
+    "prices": {
+      " 11 cm": 299
     },
-    "Roma-Ceramic-Pot": {
-        "name": "Roma Ceramic Pot",
-        "prices": {
-            " 11 cm": 149
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/AImagewithplant_971e1e09-f0ca-4a9f-8414-efbeda26c674.jpg?v=1702898668&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Detail_7098f910-57b1-400d-a8a9-7b18f6c8a69c.jpg?v=1702898668&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Sizemeup_af15bc22-5c43-48ee-9f8c-3616fb6b9200.jpg?v=1702898668&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Top_cd9b8b9b-7c5e-4843-8527-64e50ac1d985.jpg?v=1702898668&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_d87323cc-bf70-4799-a66d-7ff965c8cb2b.jpg?v=1709701882&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_ae7fdfaf-41fe-48d2-a5c4-0d387babf1e5.png?v=1736848546&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/4_15ffaa0f-086f-4d3e-a7cd-1da3b543026b.png?v=1709702015&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/6_66d33a7b-f4ed-4502-bffc-66561d4ae463.png?v=1709702011&width=750"
+    ],
+    "desc": "*Plants are only for representation purpose.",
+    "category": [
+      "terracotta-planters"
+    ]
+  },
+  "Roma-Ceramic-Pot": {
+    "name": "Roma Ceramic Pot",
+    "prices": {
+      " 11 cm": 149
     },
-    "Apple-Ceramic": {
-        "name": "Apple Ceramic Pot (3.8 Inch Diameter)",
-        "prices": {
-            "10 cm": 120
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6756.jpg?v=1688808767&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6810.jpg?v=1688808767&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6764.jpg?v=1688808931&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Apple_green_3.8.jpg?v=1688808767&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/AImagewithplant_971e1e09-f0ca-4a9f-8414-efbeda26c674.jpg?v=1702898668&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Detail_7098f910-57b1-400d-a8a9-7b18f6c8a69c.jpg?v=1702898668&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Sizemeup_af15bc22-5c43-48ee-9f8c-3616fb6b9200.jpg?v=1702898668&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Top_cd9b8b9b-7c5e-4843-8527-64e50ac1d985.jpg?v=1702898668&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Apple-Ceramic": {
+    "name": "Apple Ceramic Pot (3.8 Inch Diameter)",
+    "prices": {
+      "10 cm": 120
     },
-    "Lilac-Ceramic": {
-        "name": "Lilac Stories Bowl Ceramic Planter",
-        "prices": {
-            "14cm/9cm": 119
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_e01ae45c-4ca2-4066-a8ba-430d69c9f45e.jpg?v=1716982177&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_7e29f0e7-01b9-464d-9fd8-003f878fb3a0.jpg?v=1726309403&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/5_c7697d2f-b691-4810-9785-5a199c984716.jpg?v=1718266407&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/8_bbe1a3be-163c-4f10-b836-2d38a643e653.png?v=1718266530&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6756.jpg?v=1688808767&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6810.jpg?v=1688808767&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6764.jpg?v=1688808931&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Apple_green_3.8.jpg?v=1688808767&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Lilac-Ceramic": {
+    "name": "Lilac Stories Bowl Ceramic Planter",
+    "prices": {
+      "14cm/9cm": 119
     },
-    "Hum-Fat-Ceramic": {
-        "name": "Nature's Hum Fat Ceramic Planter",
-        "prices": {
-            " 15cm/9cm": 129
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_cfa4f27b-f239-43d2-87d2-8583c24d9247.jpg?v=1726305132&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/3_688666b8-5edc-4392-be86-b631338fef9f.jpg?v=1726305036&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/5_c14f2d50-e428-4c29-9509-d4a892c2096e.jpg?v=1726304996&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/8_2388c973-d2d5-4cb8-bc7a-14d9b0d0d013.jpg?v=1726305125&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_e01ae45c-4ca2-4066-a8ba-430d69c9f45e.jpg?v=1716982177&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_7e29f0e7-01b9-464d-9fd8-003f878fb3a0.jpg?v=1726309403&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/5_c7697d2f-b691-4810-9785-5a199c984716.jpg?v=1718266407&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/8_bbe1a3be-163c-4f10-b836-2d38a643e653.png?v=1718266530&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Hum-Fat-Ceramic": {
+    "name": "Nature's Hum Fat Ceramic Planter",
+    "prices": {
+      " 15cm/9cm": 129
     },
-    "Pipe-Ceramic": {
-        "name": "Pipe Ceramic Pot (3.8 Inch Diameter)",
-        "prices": {
-            " 9cm/10cm": 90
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6228.jpg?v=1718284756&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6249.jpg?v=1718284756&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Pipe_3.8_Orange_8d9a71fb-efce-4dc0-8fdc-86e61d29604d.jpg?v=1718284552&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6257.jpg?v=1718284756&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_cfa4f27b-f239-43d2-87d2-8583c24d9247.jpg?v=1726305132&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/3_688666b8-5edc-4392-be86-b631338fef9f.jpg?v=1726305036&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/5_c14f2d50-e428-4c29-9509-d4a892c2096e.jpg?v=1726304996&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/8_2388c973-d2d5-4cb8-bc7a-14d9b0d0d013.jpg?v=1726305125&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Pipe-Ceramic": {
+    "name": "Pipe Ceramic Pot (3.8 Inch Diameter)",
+    "prices": {
+      " 9cm/10cm": 90
     },
-    "Reca-Multicolour": {
-        "name": "Reca 40 Multicolour Window Planter - Set of 4",
-        "prices": {
-            " 22 inch": 1499
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/products/reca-40-multicolour-window-planter-set-of-4-31257695027332.png?v=1675610471&width=750",
-            "https://www.ugaoo.com/cdn/shop/products/reca-40-multicolour-window-planter-set-of-4-31257695256708.png?v=1675610635&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6228.jpg?v=1718284756&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6249.jpg?v=1718284756&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Pipe_3.8_Orange_8d9a71fb-efce-4dc0-8fdc-86e61d29604d.jpg?v=1718284552&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6257.jpg?v=1718284756&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Reca-Multicolour": {
+    "name": "Reca 40 Multicolour Window Planter - Set of 4",
+    "prices": {
+      " 22 inch": 1499
     },
-    "Football-Ceramic": {
-        "name": "Football Ceramic Pot (5.3 Inch Diameter)",
-        "prices": {
-            " 14/10cm inch": 120
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6218.jpg?v=1688554404&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6245.jpg?v=1688553961&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6267.jpg?v=1688553916&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Football_White.jpg?v=1688554612&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/products/reca-40-multicolour-window-planter-set-of-4-31257695027332.png?v=1675610471&width=750",
+      "https://www.ugaoo.com/cdn/shop/products/reca-40-multicolour-window-planter-set-of-4-31257695256708.png?v=1675610635&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Football-Ceramic": {
+    "name": "Football Ceramic Pot (5.3 Inch Diameter)",
+    "prices": {
+      " 14/10cm inch": 120
     },
-    "Verona-Planter": {
-        "name": "Verona Planter",
-        "prices": {
-            " 14/12cm": 229
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/DSC_9309.jpg?v=1692973173&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_9343.jpg?v=1692973186&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_9310.jpg?v=1692973159&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/x_39708dfb-fa6c-45e2-bfb0-ae9d9ec5dbe5.jpg?v=1692973207&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6218.jpg?v=1688554404&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6245.jpg?v=1688553961&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6267.jpg?v=1688553916&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Football_White.jpg?v=1688554612&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Verona-Planter": {
+    "name": "Verona Planter",
+    "prices": {
+      " 14/12cm": 229
     },
-    "Verona-Diamond": {
-        "name": "Verona Diamond Planter",
-        "prices": {
-            " 11/10cm": 120
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/5_d659ac64-2437-42e1-b3da-c998f1a4990f.jpg?v=1687868295&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/verona-diamond-planter-32907823612036.png?v=1688728133&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Texture-2_41087899-17c3-42d0-94a1-fe645e8a1922.jpg?v=1687868295&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/DSC_9309.jpg?v=1692973173&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_9343.jpg?v=1692973186&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_9310.jpg?v=1692973159&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/x_39708dfb-fa6c-45e2-bfb0-ae9d9ec5dbe5.jpg?v=1692973207&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Verona-Diamond": {
+    "name": "Verona Diamond Planter",
+    "prices": {
+      " 11/10cm": 120
     },
-    "Heraldry-Vase": {
-        "name": "Heraldry Vase Ball",
-        "prices": {
-            " 15/13cm": 80
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/AImageWithPlant_66cd0cdd-f84a-4229-8274-809f735f5fdb.jpg?v=1689226614&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Texture_8e7efede-d824-405f-b1f9-c095f574e8a1.jpg?v=1689226614&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Heladry_Vase_Base_Small_bcf5a348-eb49-4611-a00d-1f39048e9fd1.jpg?v=1689226614&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/Heladry_Vase_Base_Small_bcf5a348-eb49-4611-a00d-1f39048e9fd1.jpg?v=1689226614&width=750"
-        ],
-        "desc": "Plants are only for representation purpose."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/5_d659ac64-2437-42e1-b3da-c998f1a4990f.jpg?v=1687868295&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/verona-diamond-planter-32907823612036.png?v=1688728133&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Texture-2_41087899-17c3-42d0-94a1-fe645e8a1922.jpg?v=1687868295&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Heraldry-Vase": {
+    "name": "Heraldry Vase Ball",
+    "prices": {
+      " 15/13cm": 80
     },
-    "Orbit-Wooden-Planter-Set-of-2": {
-        "name": "Orbit Wooden Planter - Set of 2",
-        "prices": {
-            "Default": 1399
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_33b8bfaa-0a57-4586-bcc6-df156a6c694e.jpg?v=1709700211",
-            "https://www.ugaoo.com/cdn/shop/files/3_eb0fd7b5-63df-48f7-9813-1694bcae292f.png?v=1736848469",
-            "https://www.ugaoo.com/cdn/shop/files/2_6279c879-9a21-489b-ac97-b1dce675ffe8.png?v=1736848469",
-            "https://www.ugaoo.com/cdn/shop/files/4_b9adf128-0f34-459e-be0c-3f9270af5f50.png?v=1709700214",
-            "https://www.ugaoo.com/cdn/shop/files/5_9bfada87-f947-45aa-8230-6606625c4167.png?v=1709700209",
-            "https://www.ugaoo.com/cdn/shop/files/6_12be073f-479c-4574-a6a9-e34c31516e69.png?v=1709700213",
-            "https://www.ugaoo.com/cdn/shop/files/7_8280be14-f1e7-482a-8138-5f5c36e6abb7.jpg?v=1709700082"
-        ],
-        "desc": "The Set of 2 of these Orbit Wooden Planters are everything you want - sleek, modern, and aesthetic. They add an elegant charm to any space and every plant. With intricately carved designs, they are resistant to weathering and are thus durable and lasting!"
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/AImageWithPlant_66cd0cdd-f84a-4229-8274-809f735f5fdb.jpg?v=1689226614&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Texture_8e7efede-d824-405f-b1f9-c095f574e8a1.jpg?v=1689226614&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Heladry_Vase_Base_Small_bcf5a348-eb49-4611-a00d-1f39048e9fd1.jpg?v=1689226614&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/Heladry_Vase_Base_Small_bcf5a348-eb49-4611-a00d-1f39048e9fd1.jpg?v=1689226614&width=750"
+    ],
+    "desc": "Plants are only for representation purpose.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Orbit-Wooden-Planter-Set-of-2": {
+    "name": "Orbit Wooden Planter - Set of 2",
+    "prices": {
+      "Default": 1399
     },
-    "Lilac-Stories-Bundle-Sandle": {
-        "name": "Lilac Stories Bundle  Sandle",
-        "prices": {
-            "Default": 1999
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_52313c2f-7005-4ba7-820f-4bd3d3427748.jpg?v=1724315959",
-            "https://www.ugaoo.com/cdn/shop/files/2_13894284-0b78-446b-9666-fadb8f305a46.jpg?v=1724315958",
-            "https://www.ugaoo.com/cdn/shop/files/3_f4f91702-1963-4856-922c-2a040981cd94.jpg?v=1724315959",
-            "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_3.jpg?v=1726303818",
-            "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_2.jpg?v=1726303817",
-            "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_1.png?v=1726303822"
-        ],
-        "desc": "A set of three stunning and premium quality ceramic planters for your home that will elevate your plant babies to the next level. Our ceramic pot bundle has three pots in carefully designed shapes, a weighted base, and drainage hole to keep your plants happy and healthy. Their rich Sandle colour and beautiful glossy sheen make them the best fit for all decor styles."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_33b8bfaa-0a57-4586-bcc6-df156a6c694e.jpg?v=1709700211",
+      "https://www.ugaoo.com/cdn/shop/files/3_eb0fd7b5-63df-48f7-9813-1694bcae292f.png?v=1736848469",
+      "https://www.ugaoo.com/cdn/shop/files/2_6279c879-9a21-489b-ac97-b1dce675ffe8.png?v=1736848469",
+      "https://www.ugaoo.com/cdn/shop/files/4_b9adf128-0f34-459e-be0c-3f9270af5f50.png?v=1709700214",
+      "https://www.ugaoo.com/cdn/shop/files/5_9bfada87-f947-45aa-8230-6606625c4167.png?v=1709700209",
+      "https://www.ugaoo.com/cdn/shop/files/6_12be073f-479c-4574-a6a9-e34c31516e69.png?v=1709700213",
+      "https://www.ugaoo.com/cdn/shop/files/7_8280be14-f1e7-482a-8138-5f5c36e6abb7.jpg?v=1709700082"
+    ],
+    "desc": "The Set of 2 of these Orbit Wooden Planters are everything you want - sleek, modern, and aesthetic. They add an elegant charm to any space and every plant. With intricately carved designs, they are resistant to weathering and are thus durable and lasting!",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Lilac-Stories-Bundle-Sandle": {
+    "name": "Lilac Stories Bundle  Sandle",
+    "prices": {
+      "Default": 1999
     },
-    "Sienna-Terracotta-Pots-Set-of-3": {
-        "name": "Sienna Terracotta Pots - Set of 3",
-        "prices": {
-            "Default": 999
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_d87323cc-bf70-4799-a66d-7ff965c8cb2b.jpg?v=1709701882",
-            "https://www.ugaoo.com/cdn/shop/files/2_908ceb44-4faf-4eb6-b12b-4769ebf5ee54.png?v=1736848546",
-            "https://www.ugaoo.com/cdn/shop/files/3_ae7fdfaf-41fe-48d2-a5c4-0d387babf1e5.png?v=1736848546",
-            "https://www.ugaoo.com/cdn/shop/files/4_15ffaa0f-086f-4d3e-a7cd-1da3b543026b.png?v=1709702015",
-            "https://www.ugaoo.com/cdn/shop/files/5_1cf06156-de61-4381-914d-2cd3f6a80ad0.png?v=1709702013",
-            "https://www.ugaoo.com/cdn/shop/files/6_66d33a7b-f4ed-4502-bffc-66561d4ae463.png?v=1709702011",
-            "https://www.ugaoo.com/cdn/shop/files/7_3f945ec6-7a80-4fc4-b43f-1afed900f80e.jpg?v=1709701884"
-        ],
-        "desc": "The Sienna Terracotta Set of 3 Pots brings you three premium pots in aesthetic colors, adorned with elegant designs. These pots are sturdy, strong, and durable, making them the perfect companions for your plants. Find luxury and convenience all in one with these stunning terracotta pots."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_52313c2f-7005-4ba7-820f-4bd3d3427748.jpg?v=1724315959",
+      "https://www.ugaoo.com/cdn/shop/files/2_13894284-0b78-446b-9666-fadb8f305a46.jpg?v=1724315958",
+      "https://www.ugaoo.com/cdn/shop/files/3_f4f91702-1963-4856-922c-2a040981cd94.jpg?v=1724315959",
+      "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_3.jpg?v=1726303818",
+      "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_2.jpg?v=1726303817",
+      "https://www.ugaoo.com/cdn/shop/files/Lilac_Sandal_1.png?v=1726303822"
+    ],
+    "desc": "A set of three stunning and premium quality ceramic planters for your home that will elevate your plant babies to the next level. Our ceramic pot bundle has three pots in carefully designed shapes, a weighted base, and drainage hole to keep your plants happy and healthy. Their rich Sandle colour and beautiful glossy sheen make them the best fit for all decor styles.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Sienna-Terracotta-Pots-Set-of-3": {
+    "name": "Sienna Terracotta Pots - Set of 3",
+    "prices": {
+      "Default": 999
     },
-    "Tulip-Fantasy-Bowl-Ceramic-Planter": {
-        "name": "Tulip Fantasy Bowl Ceramic Planter",
-        "prices": {},
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_07cb01db-a2ac-4ae3-ac33-eaa9f867d46a.jpg?v=1726307948",
-            "https://www.ugaoo.com/cdn/shop/files/8_e6540d7b-f429-4f5c-a15d-39d0cc50c5f8.jpg?v=1726307095&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/1_75bd2351-255e-4b69-821e-ee82d78977b6.jpg?v=1726307943",
-            "https://www.ugaoo.com/cdn/shop/files/1_160c4b87-dbd0-44f2-98c1-86a033068403.jpg?v=1726307942",
-            "https://www.ugaoo.com/cdn/shop/files/1_8a502737-16d5-4c0d-85c2-645f58b52a40.jpg?v=1726307821",
-            "https://www.ugaoo.com/cdn/shop/files/1_01d58bfa-6359-499b-b0a4-7eee9305ca78.jpg?v=1726307804",
-            "https://www.ugaoo.com/cdn/shop/files/1_6db451dc-c484-4333-b5b7-fc9cb14f0861.jpg?v=1726307781",
-            "https://www.ugaoo.com/cdn/shop/files/1_74556b4e-b18e-4660-80ef-36b92ef27d46.jpg?v=1726307094",
-            "https://www.ugaoo.com/cdn/shop/files/1_0a78aa5c-6639-456d-8b52-0ca790d55ef4.jpg?v=1726307403"
-        ],
-        "desc": "This premium ceramic planter has a beautiful glossy glaze to lend it a chic vibe. The rich colour will elevate the beauty of your plant babies and also up your décor game. The planter has a weighted base with a drainage hole to save your plant babies from overwatering. The shape has been designed to complement all plants and elevate their overall look."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_d87323cc-bf70-4799-a66d-7ff965c8cb2b.jpg?v=1709701882",
+      "https://www.ugaoo.com/cdn/shop/files/2_908ceb44-4faf-4eb6-b12b-4769ebf5ee54.png?v=1736848546",
+      "https://www.ugaoo.com/cdn/shop/files/3_ae7fdfaf-41fe-48d2-a5c4-0d387babf1e5.png?v=1736848546",
+      "https://www.ugaoo.com/cdn/shop/files/4_15ffaa0f-086f-4d3e-a7cd-1da3b543026b.png?v=1709702015",
+      "https://www.ugaoo.com/cdn/shop/files/5_1cf06156-de61-4381-914d-2cd3f6a80ad0.png?v=1709702013",
+      "https://www.ugaoo.com/cdn/shop/files/6_66d33a7b-f4ed-4502-bffc-66561d4ae463.png?v=1709702011",
+      "https://www.ugaoo.com/cdn/shop/files/7_3f945ec6-7a80-4fc4-b43f-1afed900f80e.jpg?v=1709701884"
+    ],
+    "desc": "The Sienna Terracotta Set of 3 Pots brings you three premium pots in aesthetic colors, adorned with elegant designs. These pots are sturdy, strong, and durable, making them the perfect companions for your plants. Find luxury and convenience all in one with these stunning terracotta pots.",
+    "category": [
+      "terracotta-planters"
+    ]
+  },
+  "Tulip-Fantasy-Bowl-Ceramic-Planter": {
+    "name": "Tulip Fantasy Bowl Ceramic Planter",
+    "prices": {},
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_07cb01db-a2ac-4ae3-ac33-eaa9f867d46a.jpg?v=1726307948",
+      "https://www.ugaoo.com/cdn/shop/files/8_e6540d7b-f429-4f5c-a15d-39d0cc50c5f8.jpg?v=1726307095&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/1_75bd2351-255e-4b69-821e-ee82d78977b6.jpg?v=1726307943",
+      "https://www.ugaoo.com/cdn/shop/files/1_160c4b87-dbd0-44f2-98c1-86a033068403.jpg?v=1726307942",
+      "https://www.ugaoo.com/cdn/shop/files/1_8a502737-16d5-4c0d-85c2-645f58b52a40.jpg?v=1726307821",
+      "https://www.ugaoo.com/cdn/shop/files/1_01d58bfa-6359-499b-b0a4-7eee9305ca78.jpg?v=1726307804",
+      "https://www.ugaoo.com/cdn/shop/files/1_6db451dc-c484-4333-b5b7-fc9cb14f0861.jpg?v=1726307781",
+      "https://www.ugaoo.com/cdn/shop/files/1_74556b4e-b18e-4660-80ef-36b92ef27d46.jpg?v=1726307094",
+      "https://www.ugaoo.com/cdn/shop/files/1_0a78aa5c-6639-456d-8b52-0ca790d55ef4.jpg?v=1726307403"
+    ],
+    "desc": "This premium ceramic planter has a beautiful glossy glaze to lend it a chic vibe. The rich colour will elevate the beauty of your plant babies and also up your décor game. The planter has a weighted base with a drainage hole to save your plant babies from overwatering. The shape has been designed to complement all plants and elevate their overall look.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Natures-Hum-Fat-Ceramic-Planter": {
+    "name": "Nature's Hum Fat Ceramic Planter",
+    "prices": {
+      "15/9cm": 499
     },
-    "Natures-Hum-Fat-Ceramic-Planter": {
-        "name": "Nature's Hum Fat Ceramic Planter",
-        "prices": {
-            "15/9cm": 499
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_58b561d2-9966-4cdd-938d-da741f1442ea.jpg?v=1726305159",
-            "https://www.ugaoo.com/cdn/shop/files/8_2388c973-d2d5-4cb8-bc7a-14d9b0d0d013.jpg?v=1726305125&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/5_b0100f4c-0ef8-4ada-83fd-b76a71118133.jpg?v=1726305126&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/1_cfa4f27b-f239-43d2-87d2-8583c24d9247.jpg?v=1726305132",
-            "https://www.ugaoo.com/cdn/shop/files/1_6a32e4a8-78c7-4a51-ab07-cd4cb78856be.jpg?v=1726305128",
-            "https://www.ugaoo.com/cdn/shop/files/1_a2f165b9-7c36-4896-91d0-6e8514265e7b.jpg?v=1726305120",
-            "https://www.ugaoo.com/cdn/shop/files/1_17fe2227-6d27-4a11-ba91-631e0075324c.jpg?v=1726305096",
-            "https://www.ugaoo.com/cdn/shop/files/1_4e4cb41a-93d8-463f-8945-c8637daeb934.jpg?v=1726305053",
-            "https://www.ugaoo.com/cdn/shop/files/1_164d1eb7-3027-48ac-b26e-218d8215bd26.jpg?v=1726305042",
-            "https://www.ugaoo.com/cdn/shop/files/1_1f38639d-e3ee-4acc-bfba-c670e152c54b.jpg?v=1726305029"
-        ],
-        "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_58b561d2-9966-4cdd-938d-da741f1442ea.jpg?v=1726305159",
+      "https://www.ugaoo.com/cdn/shop/files/8_2388c973-d2d5-4cb8-bc7a-14d9b0d0d013.jpg?v=1726305125&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/5_b0100f4c-0ef8-4ada-83fd-b76a71118133.jpg?v=1726305126&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/1_cfa4f27b-f239-43d2-87d2-8583c24d9247.jpg?v=1726305132",
+      "https://www.ugaoo.com/cdn/shop/files/1_6a32e4a8-78c7-4a51-ab07-cd4cb78856be.jpg?v=1726305128",
+      "https://www.ugaoo.com/cdn/shop/files/1_a2f165b9-7c36-4896-91d0-6e8514265e7b.jpg?v=1726305120",
+      "https://www.ugaoo.com/cdn/shop/files/1_17fe2227-6d27-4a11-ba91-631e0075324c.jpg?v=1726305096",
+      "https://www.ugaoo.com/cdn/shop/files/1_4e4cb41a-93d8-463f-8945-c8637daeb934.jpg?v=1726305053",
+      "https://www.ugaoo.com/cdn/shop/files/1_164d1eb7-3027-48ac-b26e-218d8215bd26.jpg?v=1726305042",
+      "https://www.ugaoo.com/cdn/shop/files/1_1f38639d-e3ee-4acc-bfba-c670e152c54b.jpg?v=1726305029"
+    ],
+    "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Monsoon-Medley-Ceramic-Planter": {
+    "name": "Monsoon Medley Ceramic Planter",
+    "prices": {
+      "14cm": 150
     },
-    "Monsoon-Medley-Ceramic-Planter": {
-        "name": "Monsoon Medley Ceramic Planter",
-        "prices": {
-            "14cm": 150
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_e4f5ead6-8026-40db-b987-a063f03b8274.jpg?v=1716980133",
-            "https://www.ugaoo.com/cdn/shop/files/2_c1acaf75-1732-40be-9d78-b05142cf40cc.jpg?v=1716980130",
-            "https://www.ugaoo.com/cdn/shop/files/3_c07b715b-dc00-4d00-9bfd-c88c87ee337f.jpg?v=1716980131",
-            "https://www.ugaoo.com/cdn/shop/files/4_1b28eca2-8a4f-4e7a-8022-153e6f38d758.jpg?v=1716980129",
-            "https://www.ugaoo.com/cdn/shop/files/5_42893d30-150a-4509-b1ef-7483801dd4d6.jpg?v=1716980134",
-            "https://www.ugaoo.com/cdn/shop/files/6_e25f24e5-c783-43e8-a54b-5954f5044db1.jpg?v=1716980124",
-            "https://www.ugaoo.com/cdn/shop/files/7_74889336-436b-4449-80be-8179314f15da.jpg?v=1716980128",
-            "https://www.ugaoo.com/cdn/shop/files/8_8081365b-e6e3-4a8f-8eee-31644fc8b386.jpg?v=1716980126",
-            "https://www.ugaoo.com/cdn/shop/files/1_d14e6a9f-5417-4103-855c-f93a269cd89a.jpg?v=1716980253",
-            "https://www.ugaoo.com/cdn/shop/files/1_ed366a73-dd81-48c0-bbbe-0678e38eebe7.jpg?v=1726304779",
-            "https://www.ugaoo.com/cdn/shop/files/1_a3b6f8f6-dc02-451e-a15b-1a9b1cfbf5ff.jpg?v=1726304781"
-        ],
-        "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_e4f5ead6-8026-40db-b987-a063f03b8274.jpg?v=1716980133",
+      "https://www.ugaoo.com/cdn/shop/files/2_c1acaf75-1732-40be-9d78-b05142cf40cc.jpg?v=1716980130",
+      "https://www.ugaoo.com/cdn/shop/files/3_c07b715b-dc00-4d00-9bfd-c88c87ee337f.jpg?v=1716980131",
+      "https://www.ugaoo.com/cdn/shop/files/4_1b28eca2-8a4f-4e7a-8022-153e6f38d758.jpg?v=1716980129",
+      "https://www.ugaoo.com/cdn/shop/files/5_42893d30-150a-4509-b1ef-7483801dd4d6.jpg?v=1716980134",
+      "https://www.ugaoo.com/cdn/shop/files/6_e25f24e5-c783-43e8-a54b-5954f5044db1.jpg?v=1716980124",
+      "https://www.ugaoo.com/cdn/shop/files/7_74889336-436b-4449-80be-8179314f15da.jpg?v=1716980128",
+      "https://www.ugaoo.com/cdn/shop/files/8_8081365b-e6e3-4a8f-8eee-31644fc8b386.jpg?v=1716980126",
+      "https://www.ugaoo.com/cdn/shop/files/1_d14e6a9f-5417-4103-855c-f93a269cd89a.jpg?v=1716980253",
+      "https://www.ugaoo.com/cdn/shop/files/1_ed366a73-dd81-48c0-bbbe-0678e38eebe7.jpg?v=1726304779",
+      "https://www.ugaoo.com/cdn/shop/files/1_a3b6f8f6-dc02-451e-a15b-1a9b1cfbf5ff.jpg?v=1726304781"
+    ],
+    "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Argyle-Ceramic": {
+    "name": "Argyle Ceramic Pot (6.2 Inch Diameter)",
+    "prices": {
+      "16cm": 99
     },
-    "Argyle-Ceramic": {
-        "name": "Argyle Ceramic Pot (6.2 Inch Diameter)",
-        "prices": {
-            "16cm": 99
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/blue-argyle-ceramic-pot-6-2-inch-diameter-32944060137604.jpg?v=1688711757",
-            "https://www.ugaoo.com/cdn/shop/files/argyle-ceramic-pot-6-2-inch-diameter-32944060203140.jpg?v=1688711918",
-            "https://www.ugaoo.com/cdn/shop/files/Argyle6.2_Darkblue.jpg?v=1688555138",
-            "https://www.ugaoo.com/cdn/shop/files/light-green-argyle-ceramic-pot-6-2-inch-diameter-32944060694660.jpg?v=1688711925",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6874.jpg?v=1688555368",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6880.jpg?v=1688555368",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6869.jpg?v=1688555138",
-            "https://www.ugaoo.com/cdn/shop/files/DSC_6878.jpg?v=1688555247"
-        ],
-        "desc": "The classic planter shape has been levelled up with stunning textural details that make it oh so chic! Made of premium quality ceramic with a lovely glaze that lends itself beautifully to the stunning colour tones. The planter also has a weighted bottom for durability and the plant life saving drainage hole. A great companion for all your plants."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/blue-argyle-ceramic-pot-6-2-inch-diameter-32944060137604.jpg?v=1688711757",
+      "https://www.ugaoo.com/cdn/shop/files/argyle-ceramic-pot-6-2-inch-diameter-32944060203140.jpg?v=1688711918",
+      "https://www.ugaoo.com/cdn/shop/files/Argyle6.2_Darkblue.jpg?v=1688555138",
+      "https://www.ugaoo.com/cdn/shop/files/light-green-argyle-ceramic-pot-6-2-inch-diameter-32944060694660.jpg?v=1688711925",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6874.jpg?v=1688555368",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6880.jpg?v=1688555368",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6869.jpg?v=1688555138",
+      "https://www.ugaoo.com/cdn/shop/files/DSC_6878.jpg?v=1688555247"
+    ],
+    "desc": "The classic planter shape has been levelled up with stunning textural details that make it oh so chic! Made of premium quality ceramic with a lovely glaze that lends itself beautifully to the stunning colour tones. The planter also has a weighted bottom for durability and the plant life saving drainage hole. A great companion for all your plants.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Tranquil-Tales-Ceramic-Planter": {
+    "name": "Tranquil Tales Ceramic Planter",
+    "prices": {
+      "25cm": 149
     },
-    "Tranquil-Tales-Ceramic-Planter": {
-        "name": "Tranquil Tales Ceramic Planter",
-        "prices": {
-            "25cm": 149
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_cebb154f-05cb-4b56-aeca-a4b16c700b49.jpg?v=1718711020",
-            "https://www.ugaoo.com/cdn/shop/files/2_f2afff60-439c-4d3e-b6b6-07c14eba37fd.jpg?v=1718711021",
-            "https://www.ugaoo.com/cdn/shop/files/3_e21cc3fc-e677-4242-b620-5ac28c61290d.jpg?v=1718711016",
-            "https://www.ugaoo.com/cdn/shop/files/4_6347f741-4308-4c63-8743-a0787c1fbe00.jpg?v=1718711010",
-            "https://www.ugaoo.com/cdn/shop/files/5_fda331b0-fb58-41b7-ad79-d1ddc49102c2.jpg?v=1718711014",
-            "https://www.ugaoo.com/cdn/shop/files/6_1525b2e7-dee1-4d1c-a5e9-5b476e638145.jpg?v=1718711330",
-            "https://www.ugaoo.com/cdn/shop/files/7_12ef015d-d3c3-4834-ad1f-7b45efc48ca0.jpg?v=1718711018",
-            "https://www.ugaoo.com/cdn/shop/files/8_09866b9e-d084-40e0-9a7f-b760ff94b6b7.jpg?v=1718711009",
-            "https://www.ugaoo.com/cdn/shop/files/1_61f42a7d-d34b-43a3-8e4e-17aadfaea078.jpg?v=1718711017"
-        ],
-        "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_cebb154f-05cb-4b56-aeca-a4b16c700b49.jpg?v=1718711020",
+      "https://www.ugaoo.com/cdn/shop/files/2_f2afff60-439c-4d3e-b6b6-07c14eba37fd.jpg?v=1718711021",
+      "https://www.ugaoo.com/cdn/shop/files/3_e21cc3fc-e677-4242-b620-5ac28c61290d.jpg?v=1718711016",
+      "https://www.ugaoo.com/cdn/shop/files/4_6347f741-4308-4c63-8743-a0787c1fbe00.jpg?v=1718711010",
+      "https://www.ugaoo.com/cdn/shop/files/5_fda331b0-fb58-41b7-ad79-d1ddc49102c2.jpg?v=1718711014",
+      "https://www.ugaoo.com/cdn/shop/files/6_1525b2e7-dee1-4d1c-a5e9-5b476e638145.jpg?v=1718711330",
+      "https://www.ugaoo.com/cdn/shop/files/7_12ef015d-d3c3-4834-ad1f-7b45efc48ca0.jpg?v=1718711018",
+      "https://www.ugaoo.com/cdn/shop/files/8_09866b9e-d084-40e0-9a7f-b760ff94b6b7.jpg?v=1718711009",
+      "https://www.ugaoo.com/cdn/shop/files/1_61f42a7d-d34b-43a3-8e4e-17aadfaea078.jpg?v=1718711017"
+    ],
+    "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Moonlight-Drama-Ceramic-Planter": {
+    "name": "Moonlight Drama Ceramic Planter",
+    "prices": {
+      "21/25cm": 159
     },
-    "Moonlight-Drama-Ceramic-Planter": {
-        "name": "Moonlight Drama Ceramic Planter",
-        "prices": {
-            "21/25cm": 159
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_a36c84c2-d0e2-4fa9-b33c-76994668c971.jpg?v=1718347774",
-            "https://www.ugaoo.com/cdn/shop/files/2_c53f8a44-c01c-4192-868f-fa41b12abb1d.jpg?v=1718347769",
-            "https://www.ugaoo.com/cdn/shop/files/3_6e2a0a2e-ada3-4129-b3cc-4c99abbe3c08.jpg?v=1718347768",
-            "https://www.ugaoo.com/cdn/shop/files/4_6bef14d5-e331-4d62-8d9e-ffcc0434850e.jpg?v=1718347770",
-            "https://www.ugaoo.com/cdn/shop/files/5_e8d638fc-8b43-4c31-97a5-d2aacb50ee9f.jpg?v=1718347767",
-            "https://www.ugaoo.com/cdn/shop/files/6_91796e82-1481-44c8-bc80-5fc794d4688e.jpg?v=1718347772",
-            "https://www.ugaoo.com/cdn/shop/files/7_a57bb473-856c-45b3-b446-f7f0c7b5e37c.jpg?v=1718347765",
-            "https://www.ugaoo.com/cdn/shop/files/8_889ded4f-9e98-4a5d-b304-f80f7cc60e7e.jpg?v=1718347764",
-            "https://www.ugaoo.com/cdn/shop/files/1_de242f60-0217-4490-bc45-e0ea5fba8834.jpg?v=1718347909",
-            "https://www.ugaoo.com/cdn/shop/files/1_8916ed4c-112c-4140-853c-30ad4101ec62.jpg?v=1718347911",
-            "https://www.ugaoo.com/cdn/shop/files/1_d5b93881-ef7c-4d6b-9ffc-ac3e4673148e.jpg?v=1718348221",
-            "https://www.ugaoo.com/cdn/shop/files/1_105e6773-58ae-4bad-9d5d-2cf3a46f08e6.jpg?v=1718347899",
-            "https://www.ugaoo.com/cdn/shop/files/1_3dadca17-fa3a-4f29-9979-3dd75804bc5e.jpg?v=1718347894"
-        ],
-        "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_a36c84c2-d0e2-4fa9-b33c-76994668c971.jpg?v=1718347774",
+      "https://www.ugaoo.com/cdn/shop/files/2_c53f8a44-c01c-4192-868f-fa41b12abb1d.jpg?v=1718347769",
+      "https://www.ugaoo.com/cdn/shop/files/3_6e2a0a2e-ada3-4129-b3cc-4c99abbe3c08.jpg?v=1718347768",
+      "https://www.ugaoo.com/cdn/shop/files/4_6bef14d5-e331-4d62-8d9e-ffcc0434850e.jpg?v=1718347770",
+      "https://www.ugaoo.com/cdn/shop/files/5_e8d638fc-8b43-4c31-97a5-d2aacb50ee9f.jpg?v=1718347767",
+      "https://www.ugaoo.com/cdn/shop/files/6_91796e82-1481-44c8-bc80-5fc794d4688e.jpg?v=1718347772",
+      "https://www.ugaoo.com/cdn/shop/files/7_a57bb473-856c-45b3-b446-f7f0c7b5e37c.jpg?v=1718347765",
+      "https://www.ugaoo.com/cdn/shop/files/8_889ded4f-9e98-4a5d-b304-f80f7cc60e7e.jpg?v=1718347764",
+      "https://www.ugaoo.com/cdn/shop/files/1_de242f60-0217-4490-bc45-e0ea5fba8834.jpg?v=1718347909",
+      "https://www.ugaoo.com/cdn/shop/files/1_8916ed4c-112c-4140-853c-30ad4101ec62.jpg?v=1718347911",
+      "https://www.ugaoo.com/cdn/shop/files/1_d5b93881-ef7c-4d6b-9ffc-ac3e4673148e.jpg?v=1718348221",
+      "https://www.ugaoo.com/cdn/shop/files/1_105e6773-58ae-4bad-9d5d-2cf3a46f08e6.jpg?v=1718347899",
+      "https://www.ugaoo.com/cdn/shop/files/1_3dadca17-fa3a-4f29-9979-3dd75804bc5e.jpg?v=1718347894"
+    ],
+    "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Lilac-Stories-Extra-Small": {
+    "name": "Lilac Stories Extra small Ceramic Planter",
+    "prices": {
+      "10/13cm": 89
     },
-    "Lilac-Stories-Extra-Small": {
-        "name": "Lilac Stories Extra small Ceramic Planter",
-        "prices": {
-            "10/13cm": 89
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_9d2cf4dd-7869-4c19-b7ea-a2d3b05ab26f.jpg?v=1726303830",
-            "https://www.ugaoo.com/cdn/shop/files/8_9e1cbe8b-f591-404c-a136-6c432ab68457.jpg?v=1726306138&width=750",
-            "https://www.ugaoo.com/cdn/shop/files/1_d63f1f45-36a3-4ec8-9b36-5a6d9d19b4e2.jpg?v=1726303829",
-            "https://www.ugaoo.com/cdn/shop/files/1_ccb4824d-1820-458e-84d2-0da54633b9ec.jpg?v=1726303685",
-            "https://www.ugaoo.com/cdn/shop/files/1_982e4494-ffe9-44a7-b8fd-f972a097e3bd.jpg?v=1726303672",
-            "https://www.ugaoo.com/cdn/shop/files/1_e5532dab-e203-4719-9e63-324b778e8cd5.jpg?v=1726303671",
-            "https://www.ugaoo.com/cdn/shop/files/1_eb81b939-d625-4d4e-8285-1dfddaf65fbc.jpg?v=1726303654",
-            "https://www.ugaoo.com/cdn/shop/files/1_5444d19f-a895-4796-b75a-20df513550b6.jpg?v=1726303827",
-            "https://www.ugaoo.com/cdn/shop/files/1_ca0f4074-7dbd-4e46-bfee-0c10d5a57bbb.jpg?v=1726304138"
-        ],
-        "desc": "A beautiful planter to show off the stunning foliage of your plant babies. This stunning planter is made of premium ceramic with beautiful glaze in lovely pop shades and has a weighted bottom with drainage hole to save your plant from overwatering. Use this subtle chic planter in a floor or tabletop setting to elevate the beauty of your plants."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_9d2cf4dd-7869-4c19-b7ea-a2d3b05ab26f.jpg?v=1726303830",
+      "https://www.ugaoo.com/cdn/shop/files/8_9e1cbe8b-f591-404c-a136-6c432ab68457.jpg?v=1726306138&width=750",
+      "https://www.ugaoo.com/cdn/shop/files/1_d63f1f45-36a3-4ec8-9b36-5a6d9d19b4e2.jpg?v=1726303829",
+      "https://www.ugaoo.com/cdn/shop/files/1_ccb4824d-1820-458e-84d2-0da54633b9ec.jpg?v=1726303685",
+      "https://www.ugaoo.com/cdn/shop/files/1_982e4494-ffe9-44a7-b8fd-f972a097e3bd.jpg?v=1726303672",
+      "https://www.ugaoo.com/cdn/shop/files/1_e5532dab-e203-4719-9e63-324b778e8cd5.jpg?v=1726303671",
+      "https://www.ugaoo.com/cdn/shop/files/1_eb81b939-d625-4d4e-8285-1dfddaf65fbc.jpg?v=1726303654",
+      "https://www.ugaoo.com/cdn/shop/files/1_5444d19f-a895-4796-b75a-20df513550b6.jpg?v=1726303827",
+      "https://www.ugaoo.com/cdn/shop/files/1_ca0f4074-7dbd-4e46-bfee-0c10d5a57bbb.jpg?v=1726304138"
+    ],
+    "desc": "A beautiful planter to show off the stunning foliage of your plant babies. This stunning planter is made of premium ceramic with beautiful glaze in lovely pop shades and has a weighted bottom with drainage hole to save your plant from overwatering. Use this subtle chic planter in a floor or tabletop setting to elevate the beauty of your plants.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Echoing-Eternity-Ceramic-Planter": {
+    "name": "Echoing Eternity Ceramic Planter",
+    "prices": {
+      "30/25": 129
     },
-    "Echoing-Eternity-Ceramic-Planter": {
-        "name": "Echoing Eternity Ceramic Planter",
-        "prices": {
-            "30/25": 129
-        },
-        "image": [
-            "https://www.ugaoo.com/cdn/shop/files/1_29cb8efd-53dc-48b3-af13-46fcc0036cff.jpg?v=1726301922",
-            "https://www.ugaoo.com/cdn/shop/files/2_02e7b7d8-5f00-41a3-a457-a65bb150c95d.jpg?v=1726301919",
-            "https://www.ugaoo.com/cdn/shop/files/3_96d53bb3-3543-4eb5-be1c-ec1fdd6a6a55.jpg?v=1726301913",
-            "https://www.ugaoo.com/cdn/shop/files/4_0e0bcceb-dc2f-4926-b907-a043f1b4d1f7.jpg?v=1726301921",
-            "https://www.ugaoo.com/cdn/shop/files/5_30689ac7-422a-448e-98ec-f12f3fcc6d7a.jpg?v=1726301918",
-            "https://www.ugaoo.com/cdn/shop/files/6_f9f1578b-d054-4cc2-9c8e-e3ce8267756f.jpg?v=1726302224",
-            "https://www.ugaoo.com/cdn/shop/files/7_0f705658-574d-481d-9376-577b23d44e23.jpg?v=1726302232",
-            "https://www.ugaoo.com/cdn/shop/files/8_5d9a383e-f19f-4ca2-9894-0c7a7bba04eb.jpg?v=1726302228",
-            "https://www.ugaoo.com/cdn/shop/files/1_e6df1a8c-d50b-4cfe-988e-3443765005ff.jpg?v=1726301924",
-            "https://www.ugaoo.com/cdn/shop/files/1_21b075e3-78f7-4eee-8e63-f9e21d08b8c9.jpg?v=1726302234"
-        ],
-        "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm."
+    "image": [
+      "https://www.ugaoo.com/cdn/shop/files/1_29cb8efd-53dc-48b3-af13-46fcc0036cff.jpg?v=1726301922",
+      "https://www.ugaoo.com/cdn/shop/files/2_02e7b7d8-5f00-41a3-a457-a65bb150c95d.jpg?v=1726301919",
+      "https://www.ugaoo.com/cdn/shop/files/3_96d53bb3-3543-4eb5-be1c-ec1fdd6a6a55.jpg?v=1726301913",
+      "https://www.ugaoo.com/cdn/shop/files/4_0e0bcceb-dc2f-4926-b907-a043f1b4d1f7.jpg?v=1726301921",
+      "https://www.ugaoo.com/cdn/shop/files/5_30689ac7-422a-448e-98ec-f12f3fcc6d7a.jpg?v=1726301918",
+      "https://www.ugaoo.com/cdn/shop/files/6_f9f1578b-d054-4cc2-9c8e-e3ce8267756f.jpg?v=1726302224",
+      "https://www.ugaoo.com/cdn/shop/files/7_0f705658-574d-481d-9376-577b23d44e23.jpg?v=1726302232",
+      "https://www.ugaoo.com/cdn/shop/files/8_5d9a383e-f19f-4ca2-9894-0c7a7bba04eb.jpg?v=1726302228",
+      "https://www.ugaoo.com/cdn/shop/files/1_e6df1a8c-d50b-4cfe-988e-3443765005ff.jpg?v=1726301924",
+      "https://www.ugaoo.com/cdn/shop/files/1_21b075e3-78f7-4eee-8e63-f9e21d08b8c9.jpg?v=1726302234"
+    ],
+    "desc": "The stunning ceramic planters are hand-crafted with the finest clay, locally sourced from Hyderabad and Andhra Pradesh. These beautiful planters are built to last and promise to stay with your plants for more than 20 years without fading, chipping or losing their charm. The ceramic is skillfully baked and vitrified at 1200°C, giving it a stronger built and a longer-lasting life. The classic, evergreen designs of these planters gives your home a timless elegance and a wonderful charm.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "Normal-plastic-Planter-red": {
+    "name": "Normal plastic Planter red",
+    "prices": {
+      "10 inch": 39,
+      "12 inch": 49
     },
-    "Normal-plastic-Planter-red": {
-        "name": "Normal plastic Planter red",
-        "prices": {
-            "10 inch": 39,
-            "12 inch": 49
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/81dK1xvkp2L._UF1000,1000_QL80_FMwebp_.jpg",
-            "https://m.media-amazon.com/images/I/91tydLBUs9L._UF1000,1000_QL80_FMwebp_.jpg",
-            "https://m.media-amazon.com/images/I/81D7GRoQeHL._UF1000,1000_QL80_FMwebp_.jpg",
-            "https://m.media-amazon.com/images/I/61OwM0sdxzL._UF1000,1000_QL80_FMwebp_.jpg"
-        ],
-        "desc": "Round Pots for Plants | Modern Design | Indoor and Outdoor Flower Pot for Home/Office/Table/Garden/Balcony Decoration |"
+    "image": [
+      "https://m.media-amazon.com/images/I/81dK1xvkp2L._UF1000,1000_QL80_FMwebp_.jpg",
+      "https://m.media-amazon.com/images/I/91tydLBUs9L._UF1000,1000_QL80_FMwebp_.jpg",
+      "https://m.media-amazon.com/images/I/81D7GRoQeHL._UF1000,1000_QL80_FMwebp_.jpg",
+      "https://m.media-amazon.com/images/I/61OwM0sdxzL._UF1000,1000_QL80_FMwebp_.jpg"
+    ],
+    "desc": "Round Pots for Plants | Modern Design | Indoor and Outdoor Flower Pot for Home/Office/Table/Garden/Balcony Decoration |",
+    "category": [
+      "plastic-planters"
+    ]
+  },
+  "Mega-pot-white": {
+    "name": "Mega pot white",
+    "prices": {
+      " 6 inch": 59,
+      "8 inch": 79,
+      "10 inch": 99,
+      "12 inch": 129
     },
-    "Mega-pot-white": {
-        "name": "Mega pot white",
-        "prices": {
-            " 6 inch": 59,
-            "8 inch": 79,
-            "10 inch": 99,
-            "12 inch": 129
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/51xKq61Tq5L._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/61CN2LjiaDL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/51OGdBchVLL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/51Xgy5LC1jL._SX569_.jpg"
-        ],
-        "desc": "EcoGrow Ventures Plastic Round Flower Pots for Home Planters, Terrace, Garden Etc| White | Suitable for Home Indoor & Outdoor Gardening Plants."
+    "image": [
+      "https://m.media-amazon.com/images/I/51xKq61Tq5L._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/61CN2LjiaDL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/51OGdBchVLL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/51Xgy5LC1jL._SX569_.jpg"
+    ],
+    "desc": "EcoGrow Ventures Plastic Round Flower Pots for Home Planters, Terrace, Garden Etc| White | Suitable for Home Indoor & Outdoor Gardening Plants.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Tower-Planter": {
+    "name": "Tower Planter",
+    "prices": {
+      "14 inch": 199,
+      "16 inch": 299,
+      "18 inch": 399
     },
-    "Tower-Planter": {
-        "name": "Tower Planter",
-        "prices": {
-            "14 inch": 199,
-            "16 inch": 299,
-            "18 inch": 399
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/71TKv00-x8L._SX679_.jpg",
-            "https://m.media-amazon.com/images/I/61La+ls3mhL._SX679_.jpg",
-            "https://m.media-amazon.com/images/I/81rlnPaj8SL._SX679_.jpg",
-            "https://m.media-amazon.com/images/I/81PHabBpVSL._SX679_.jpg",
-            "https://images.meesho.com/images/products/460316748/net2u_512.avif?width=512"
-        ],
-        "desc": "Indoor-Outdoor Plants Stand | Flower Pot for Garden | Flower Pot for Home-Office | Flower Gamla for Balcony | Plain Tower | White"
+    "image": [
+      "https://m.media-amazon.com/images/I/71TKv00-x8L._SX679_.jpg",
+      "https://m.media-amazon.com/images/I/61La+ls3mhL._SX679_.jpg",
+      "https://m.media-amazon.com/images/I/81rlnPaj8SL._SX679_.jpg",
+      "https://m.media-amazon.com/images/I/81PHabBpVSL._SX679_.jpg",
+      "https://images.meesho.com/images/products/460316748/net2u_512.avif?width=512"
+    ],
+    "desc": "Indoor-Outdoor Plants Stand | Flower Pot for Garden | Flower Pot for Home-Office | Flower Gamla for Balcony | Plain Tower | White",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Sunlight-planter": {
+    "name": "Sunlight Planter",
+    "prices": {
+      "10 inch": 149,
+      "12 inch": 199
     },
-    "Sunlight-planter": {
-        "name": "Sunlight Planter",
-        "prices": {
-            "10 inch": 149,
-            "12 inch": 199
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/81bzJ20RkCL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/819HNkQe1rL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/619U8OSKZYL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/81BkYViKpfL._SL1500_.jpg"
-        ],
-        "desc": "Heart Home, Plain Sawera Design Flower Plant Pot for Home, Kitchen & Garden | Stylish Pots for Plants Balcony | Ideal for Home Decor & Office Spaces | White"
+    "image": [
+      "https://m.media-amazon.com/images/I/81bzJ20RkCL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/819HNkQe1rL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/619U8OSKZYL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/81BkYViKpfL._SL1500_.jpg"
+    ],
+    "desc": "Heart Home, Plain Sawera Design Flower Plant Pot for Home, Kitchen & Garden | Stylish Pots for Plants Balcony | Ideal for Home Decor & Office Spaces | White",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "TechHark-planter": {
+    "name": "TechHark planter",
+    "prices": {
+      "5 inch": 55,
+      "Pack of 5": 119
     },
-    "TechHark-planter": {
-        "name": "TechHark planter",
-        "prices": {
-            "5 inch": 55,
-            "Pack of 5": 119
-        },
-        "image": [
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/u/m/v/5-plant-con-norvium-original-imah33rt9yzhvupa.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/p/b/h/5-plant-con-norvium-original-imah33rtgfjhhe8s.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/t/0/q/5-plant-con-norvium-original-imah33rt922sekyt.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/p/a/j/5-plant-con-norvium-original-imah3fquqjketmab.jpeg?q=90"
-        ],
-        "desc": " TechHark Crystal Flower Pots with tray for Home & Decoration Planters, Terrace, Garden Plant Container Set  (Pack of 5, Plastic) "
+    "image": [
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/u/m/v/5-plant-con-norvium-original-imah33rt9yzhvupa.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/p/b/h/5-plant-con-norvium-original-imah33rtgfjhhe8s.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/t/0/q/5-plant-con-norvium-original-imah33rt922sekyt.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/p/a/j/5-plant-con-norvium-original-imah3fquqjketmab.jpeg?q=90"
+    ],
+    "desc": " TechHark Crystal Flower Pots with tray for Home & Decoration Planters, Terrace, Garden Plant Container Set  (Pack of 5, Plastic) ",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "PlantsHub-planter": {
+    "name": "PlantsHub planter",
+    "prices": {
+      "5 inch": 29,
+      "Pack of 5": 119
     },
-    "PlantsHub-planter": {
-        "name": "PlantsHub planter",
-        "prices": {
-            "5 inch": 29,
-            "Pack of 5": 119
-        },
-        "image": [
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/n/8/2/6-square-sterling03-meepo-original-imahfmaqpgktgtj6.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/q/h/q/5-planters-color-square-sterling5-p05-meepo-original-imah59h4ypnvmwq6.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/a/h/m/5-planters-color-square-sterling5-p05-meepo-original-imah59h4karhdgnu.jpeg?q=90",
-            "https://rukminim1.flixcart.com/image/461/461/krdtlzk0/plant-container-set/o/m/r/4-12-inch-square-shape-planter-for-indoor-outdoor-gardening-original-imag56g8rb7swbku.jpeg?q=90"
-        ],
-        "desc": "Crystal Flower Pots for Home & Decoration Planters, Terrace, Garden Plant Container Set (Planter only ₹29)"
+    "image": [
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/n/8/2/6-square-sterling03-meepo-original-imahfmaqpgktgtj6.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/q/h/q/5-planters-color-square-sterling5-p05-meepo-original-imah59h4ypnvmwq6.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/xif0q/plant-container-set/a/h/m/5-planters-color-square-sterling5-p05-meepo-original-imah59h4karhdgnu.jpeg?q=90",
+      "https://rukminim1.flixcart.com/image/461/461/krdtlzk0/plant-container-set/o/m/r/4-12-inch-square-shape-planter-for-indoor-outdoor-gardening-original-imag56g8rb7swbku.jpeg?q=90"
+    ],
+    "desc": "Crystal Flower Pots for Home & Decoration Planters, Terrace, Garden Plant Container Set (Planter only ₹29)",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Kishti-Window-Planters": {
+    "name": "Kishti Window Planters",
+    "prices": {
+      "17 inch": 379
     },
-    "Kishti-Window-Planters": {
-        "name": "Kishti Window Planters",
-        "prices": {
-            "17 inch": 379
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/71SipyqWWpL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/71iDTHZ79OL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/61mzl0MjPNL._SX569_.jpg",
-            "https://m.media-amazon.com/images/I/71x0v14N4rL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/71gx4pOtfcL._SL1500_.jpg"
-        ],
-        "desc": "Kuber Industries 2 Pcs Window Planters | 17 Inches Flower Pots for Balcony, Home Decoration and Gardening Area | Floor Jupiter Gamla Container Plants Pot for Indoor & Outdoor - (White)"
+    "image": [
+      "https://m.media-amazon.com/images/I/71SipyqWWpL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/71iDTHZ79OL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/61mzl0MjPNL._SX569_.jpg",
+      "https://m.media-amazon.com/images/I/71x0v14N4rL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/71gx4pOtfcL._SL1500_.jpg"
+    ],
+    "desc": "Kuber Industries 2 Pcs Window Planters | 17 Inches Flower Pots for Balcony, Home Decoration and Gardening Area | Floor Jupiter Gamla Container Plants Pot for Indoor & Outdoor - (White)",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "Megapot-New-planter": {
+    "name": "Megapot New planter",
+    "prices": {
+      "11 inch": 119
     },
-    "Megapot-New-planter": {
-        "name": "Megapot New planter",
-        "prices": {
-            "11 inch": 119
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/812ajUvFYyL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/71mSuqMGbDL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/711N1prvnLL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/71pnCdzi4fL._SL1500_.jpg"
-        ],
-        "desc": "Flower Pots for Gardening/Planters for Home/Garden Decoration, (11In Diameter) - for Balcony and Living Room - White"
+    "image": [
+      "https://m.media-amazon.com/images/I/812ajUvFYyL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/71mSuqMGbDL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/711N1prvnLL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/71pnCdzi4fL._SL1500_.jpg"
+    ],
+    "desc": "Flower Pots for Gardening/Planters for Home/Garden Decoration, (11In Diameter) - for Balcony and Living Room - White",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "groot-plastic-woven-look-hanging-pot-with-chain-plastic-flower-pot-basket-plant-container-set": {
+    "name": "GROOT Plastic Woven look Hanging Pot with Chain Plastic Flower Pot Basket Plant Container Set",
+    "prices": {
+      "Pack of 1": "89",
+      "Pack of 10": "699"
     },
-    "groot-plastic-woven-look-hanging-pot-with-chain-plastic-flower-pot-basket-plant-container-set": {
-        "name": "GROOT Plastic Woven look Hanging Pot with Chain Plastic Flower Pot Basket Plant Container Set",
-        "prices": {
-            "Pack of 1": "89",
-            "Pack of 10": "699"
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/61SVOGs1jzL.jpg",
-            "https://m.media-amazon.com/images/I/61o8GcQtRYL.jpg",
-            "https://m.media-amazon.com/images/I/71e7cICso7L.UF894,1000_QL80.jpg",
-            "https://m.media-amazon.com/images/I/71o6EXhgVML.UF894,1000_QL80.jpg",
-            "https://m.media-amazon.com/images/I/71XSGnrzOqL.jpg",
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/y/e/v/10-plastic-woven-look-hanging-pot-with-chain-plastic-flower-pot-original-imahew6uezzqufhf.jpeg?q=70",
-            "https://amd.deodap.com/cdn/shop/files/6_f14f7728-0df1-4257-9f09-457a67fb6aca_1024x1024.jpg?v=1690461396",
-            "https://m.media-amazon.com/images/I/71-HzoUpmZL.jpg",
-            "https://m.media-amazon.com/images/I/81y-ycIt5nL.UF894,1000_QL80.jpg",
-            "https://m.media-amazon.com/images/I/511MtPaI5pL.jpg"
-        ],
-        "desc": "Attractive woven look hanging pot made of plastic, resembling rattan, complete with chain for easy hanging. Ideal for indoor and outdoor use to hold flowers and plants, bringing a green touch to your home or garden."
+    "image": [
+      "https://m.media-amazon.com/images/I/61SVOGs1jzL.jpg",
+      "https://m.media-amazon.com/images/I/61o8GcQtRYL.jpg",
+      "https://m.media-amazon.com/images/I/71e7cICso7L.UF894,1000_QL80.jpg",
+      "https://m.media-amazon.com/images/I/71o6EXhgVML.UF894,1000_QL80.jpg",
+      "https://m.media-amazon.com/images/I/71XSGnrzOqL.jpg",
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/y/e/v/10-plastic-woven-look-hanging-pot-with-chain-plastic-flower-pot-original-imahew6uezzqufhf.jpeg?q=70",
+      "https://amd.deodap.com/cdn/shop/files/6_f14f7728-0df1-4257-9f09-457a67fb6aca_1024x1024.jpg?v=1690461396",
+      "https://m.media-amazon.com/images/I/71-HzoUpmZL.jpg",
+      "https://m.media-amazon.com/images/I/81y-ycIt5nL.UF894,1000_QL80.jpg",
+      "https://m.media-amazon.com/images/I/511MtPaI5pL.jpg"
+    ],
+    "desc": "Attractive woven look hanging pot made of plastic, resembling rattan, complete with chain for easy hanging. Ideal for indoor and outdoor use to hold flowers and plants, bringing a green touch to your home or garden.",
+    "category": [
+      "plastic-planters"
+    ]
+  },
+  "groot-hanging-railing-pots-plants-flower-planter-ideal-outdoor-balcony-plant-container-set": {
+    "name": "GROOT Hanging/Railing Pots for Plants and Flower Pots Planter Ideal for Outdoor Balcony Plant Container Set (Pack of 10, Plastic)",
+    "prices": {
+      "Pack of 1": 59,
+      "Pack of 10": 277
     },
-    "groot-hanging-railing-pots-plants-flower-planter-ideal-outdoor-balcony-plant-container-set": {
-        "name": "GROOT Hanging/Railing Pots for Plants and Flower Pots Planter Ideal for Outdoor Balcony Plant Container Set (Pack of 10, Plastic)",
-        "prices": {
-            "Pack of 1": 59,
-            "Pack of 10": 277
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/kqpj4i80/plant-container-set/v/l/g/5-victor-pot-pack-of-5-maanit-original-imag4nvxhwpk6834.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/kqb8pzk0/artificial-plant/p/7/y/plastic-hook-hanging-pot-multicolor-as-traderss-original-imag4cnupuwhr5hy.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/kixgtjk0-0/plant-container-set/e/o/g/hook-pot-hanging-railing-pot-asian-aura-original-imafym8qjvcnrad8.jpeg?q=70&crop=false"
-        ],
-        "desc": "A Plastic Attractive Pot with Hook to hang from your balcony railings. This set makes an attractive addition to your balconies. Perfect for your Kitchen Gardening, Flowers, Creepers, Shrubs etc...."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/kqpj4i80/plant-container-set/v/l/g/5-victor-pot-pack-of-5-maanit-original-imag4nvxhwpk6834.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/kqb8pzk0/artificial-plant/p/7/y/plastic-hook-hanging-pot-multicolor-as-traderss-original-imag4cnupuwhr5hy.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/kixgtjk0-0/plant-container-set/e/o/g/hook-pot-hanging-railing-pot-asian-aura-original-imafym8qjvcnrad8.jpeg?q=70&crop=false"
+    ],
+    "desc": "A Plastic Attractive Pot with Hook to hang from your balcony railings. This set makes an attractive addition to your balconies. Perfect for your Kitchen Gardening, Flowers, Creepers, Shrubs etc....",
+    "category": [
+      "plastic-planters"
+    ]
+  },
+  "pottery-mart-premium-tulsi-ceramic-pot-medium-sized-indoor-outdoor-home-office-pooja-plant-container-set": {
+    "name": "Pottery Mart \"Premium\" Tulsi Ceramic Pot Medium Sized for Indoor, Outdoor, Home Office, Pooja Plant Container Set (Ceramic)",
+    "prices": {
+      "10 in": 173,
+      "12 in": 229
     },
-    "pottery-mart-premium-tulsi-ceramic-pot-medium-sized-indoor-outdoor-home-office-pooja-plant-container-set": {
-        "name": "Pottery Mart \"Premium\" Tulsi Ceramic Pot Medium Sized for Indoor, Outdoor, Home Office, Pooja Plant Container Set (Ceramic)",
-        "prices": {
-            "10 in": 173,
-            "12 in": 229
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/c/i/m/1-36-pottery-mart-original-imah8wnydhq2hrfg.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/m/o/z/1-36-pottery-mart-original-imah6wfnuun646rx.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/4/p/p/1-36-pottery-mart-original-imah6wfng96g4f6s.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/m/c/u/1-36-pottery-mart-original-imah6wfndh4jsrrv.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/v/1/p/1-36-pottery-mart-original-imah6wfnzrjawgvz.jpeg?q=70&crop=false"
-        ],
-        "desc": "The “Ceramic Tulsi” is a garden decor planter pot made of ceramic with a drain hole. It features White-colored hand-painting, making it an ideal addition to your garden, balcony, home, office, or pooja area."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/c/i/m/1-36-pottery-mart-original-imah8wnydhq2hrfg.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/m/o/z/1-36-pottery-mart-original-imah6wfnuun646rx.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/4/p/p/1-36-pottery-mart-original-imah6wfng96g4f6s.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/m/c/u/1-36-pottery-mart-original-imah6wfndh4jsrrv.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/shopsy-plant-container-set/v/1/p/1-36-pottery-mart-original-imah6wfnzrjawgvz.jpeg?q=70&crop=false"
+    ],
+    "desc": "The “Ceramic Tulsi” is a garden decor planter pot made of ceramic with a drain hole. It features White-colored hand-painting, making it an ideal addition to your garden, balcony, home, office, or pooja area.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "ecofynd-5-inches-tulsi-ceramic-plant-pots-flower-pot-drainage-hole-container-set": {
+    "name": "ecofynd 5 inches Tulsi Ceramic Plant Pots, Flower Pot with Drainage Hole Plant Container Set (Ceramic)",
+    "prices": {
+      "Pack of 1 (5 inches)": 67
     },
-    "ecofynd-5-inches-tulsi-ceramic-plant-pots-flower-pot-drainage-hole-container-set": {
-        "name": "ecofynd 5 inches Tulsi Ceramic Plant Pots, Flower Pot with Drainage Hole Plant Container Set (Ceramic)",
-        "prices": {
-            "Pack of 1 (5 inches)": 67
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/j/4/3/1-cpot016-05-ivr-ecofynd-original-imahf6fkxkwufghy.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/k/e/k/1-cpot016-05-ivr-ecofynd-original-imahf6fkupwvmukd.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/w/w/i/1-cpot016-05-ivr-ecofynd-original-imahf6fkwmtzeh9x.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/j/9/s/1-cpot016-05-ivr-ecofynd-original-imahf6fkvmbrue5j.jpeg?q=70&crop=false"
-        ],
-        "desc": "Elevate your indoor sanctuary with these elegant 5-inch ceramic floor planters. Perfectly sized for small plants like succulents and jade, these pots feature drainage holes for optimal plant health. Their sleek, modern Off-White look seamlessly blends with any indoor or outdoor decor."
+    "image": [
+      "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/j/4/3/1-cpot016-05-ivr-ecofynd-original-imahf6fkxkwufghy.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/k/e/k/1-cpot016-05-ivr-ecofynd-original-imahf6fkupwvmukd.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/w/w/i/1-cpot016-05-ivr-ecofynd-original-imahf6fkwmtzeh9x.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/xif0q/plant-container-set/j/9/s/1-cpot016-05-ivr-ecofynd-original-imahf6fkvmbrue5j.jpeg?q=70&crop=false"
+    ],
+    "desc": "Elevate your indoor sanctuary with these elegant 5-inch ceramic floor planters. Perfectly sized for small plants like succulents and jade, these pots feature drainage holes for optimal plant health. Their sleek, modern Off-White look seamlessly blends with any indoor or outdoor decor.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "r-h-d-enterprises-ceramic-plant-container-tulsa-ji-pot-perfect-puja-ghar-small-bansoi-set": {
+    "name": "R H D Enterprises Ceramic Plant Container Tulsa Ji Pot, Perfect For Puja Ghar, Small Bansoi Plant Container Set (Ceramic)",
+    "prices": {
+      "10cm Height": 79
     },
-    "r-h-d-enterprises-ceramic-plant-container-tulsa-ji-pot-perfect-puja-ghar-small-bansoi-set": {
-        "name": "R H D Enterprises Ceramic Plant Container Tulsa Ji Pot, Perfect For Puja Ghar, Small Bansoi Plant Container Set (Ceramic)",
-        "prices": {
-            "10cm Height": 79
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/w/k/z/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaasvufwdt2.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/l/1/y/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaa3f8gcpjj.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/c/j/l/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaahzjm9hyu.jpeg?q=70&crop=false"
-        ],
-        "desc": "RHD Brings a cute adorable planter that adds a touch of elegance and brightens up your home or office space. This white ceramic succulent planter is gorgeous, clean, elegant, beautiful, and crisp looking. It is perfect for planting succulents, seedlings, hydroponics, and herb plants in your home or office. This versatile pot can also be used as a decorative desktop organizer for candles, pens, keys, coins, and other miscellaneous items."
+    "image": [
+      "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/w/k/z/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaasvufwdt2.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/l/1/y/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaa3f8gcpjj.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/l1b1oy80/plant-container-set/c/j/l/1-white-tulsi-1-r-h-d-enterprises-original-imagcwaahzjm9hyu.jpeg?q=70&crop=false"
+    ],
+    "desc": "RHD Brings a cute adorable planter that adds a touch of elegance and brightens up your home or office space. This white ceramic succulent planter is gorgeous, clean, elegant, beautiful, and crisp looking. It is perfect for planting succulents, seedlings, hydroponics, and herb plants in your home or office. This versatile pot can also be used as a decorative desktop organizer for candles, pens, keys, coins, and other miscellaneous items.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "buddha-plant-container-set": {
+    "name": "OriginalCeramics Plant Container Set (Ceramic)",
+    "prices": {
+      "Pack of 1 (13cm Height)": 176
     },
-    "buddha-plant-container-set": {
-        "name": "OriginalCeramics Plant Container Set (Ceramic)",
-        "prices": {
-            "Pack of 1 (13cm Height)": 176
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/416/416/k6mibgw0/plant-container/d/b/e/buddha-planter-ceramic-flower-vases-pot-nayi-umang-original-imafpf9jyp4zgumz.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/k6mibgw0/plant-container/d/b/e/buddha-planter-ceramic-flower-vases-pot-nayi-umang-original-imafpf9kywzszbvq.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/k7gikcw0/plant-container/m/h/h/20036-bright-shop-original-imafpzxqp6jbrfhz.jpeg?q=70&crop=false",
-            "https://rukminim2.flixcart.com/image/416/416/k7gikcw0/plant-container/m/h/h/20036-bright-shop-original-imafpzxqzhhu5yca.jpeg?q=70&crop=false"
-        ],
-        "desc": "No specific short description is available on the page. Highlights mention: Type: Pot, Shape: Oval, Height: 13 cm, Material: Ceramic, Color: White."
+    "image": [
+      "https://rukminim2.flixcart.com/image/416/416/k6mibgw0/plant-container/d/b/e/buddha-planter-ceramic-flower-vases-pot-nayi-umang-original-imafpf9jyp4zgumz.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/k6mibgw0/plant-container/d/b/e/buddha-planter-ceramic-flower-vases-pot-nayi-umang-original-imafpf9kywzszbvq.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/k7gikcw0/plant-container/m/h/h/20036-bright-shop-original-imafpzxqp6jbrfhz.jpeg?q=70&crop=false",
+      "https://rukminim2.flixcart.com/image/416/416/k7gikcw0/plant-container/m/h/h/20036-bright-shop-original-imafpzxqzhhu5yca.jpeg?q=70&crop=false"
+    ],
+    "desc": "No specific short description is available on the page. Highlights mention: Type: Pot, Shape: Oval, Height: 13 cm, Material: Ceramic, Color: White.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "originalceramics-plant-container-set": {
+    "name": "OriginalCeramics Plant Container Set (Ceramic)",
+    "prices": {
+      "Standard Pack": "99"
     },
-    "originalceramics-plant-container-set": {
-        "name": "OriginalCeramics Plant Container Set (Ceramic)",
-        "prices": {
-            "Standard Pack": "99"
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/khtghow0-0/plant-container-set/r/w/v/yellow-pineapple-bowl-shape-ceramic-pot-agarwals-enterprises-original-imafxr9yqdsgqqz8.jpeg?q=70&crop=false"
-        ],
-        "desc": "Yellow pineapple bowl-shaped ceramic pot set from OriginalCeramics, ideal for indoor plants and decorative use."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/khtghow0-0/plant-container-set/r/w/v/yellow-pineapple-bowl-shape-ceramic-pot-agarwals-enterprises-original-imafxr9yqdsgqqz8.jpeg?q=70&crop=false"
+    ],
+    "desc": "Yellow pineapple bowl-shaped ceramic pot set from OriginalCeramics, ideal for indoor plants and decorative use.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "originalceramics-plant-container": {
+    "name": "OriginalCeramics Plant Container Set (Ceramic)",
+    "prices": {
+      "Standard Pack": "₹99"
     },
-    "originalceramics-plant-container": {
-        "name": "OriginalCeramics Plant Container Set (Ceramic)",
-        "prices": {
-            "Standard Pack": "₹99"
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/khtghow0-0/plant-container-set/r/m/o/pineapple-bowl-shape-ceramic-pot-agarwals-enterprises-original-imafxr8yvhwtudru.jpeg?q=70&crop=false"
-        ],
-        "desc": "Green pineapple bowl-shaped ceramic pot set from OriginalCeramics, contemporary design, 11 cm height, ideal for indoor plants."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/khtghow0-0/plant-container-set/r/m/o/pineapple-bowl-shape-ceramic-pot-agarwals-enterprises-original-imafxr8yvhwtudru.jpeg?q=70&crop=false"
+    ],
+    "desc": "Green pineapple bowl-shaped ceramic pot set from OriginalCeramics, contemporary design, 11 cm height, ideal for indoor plants.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "your-local-store-white-diamond-shape-ceramic-planter": {
+    "name": "Your Local Store White Diamond Shape Ceramic Planter Indoor Outdoor Flower Pot Plant Container Set (Ceramic)",
+    "prices": {
+      "Standard Pack": "99"
     },
-    "your-local-store-white-diamond-shape-ceramic-planter": {
-        "name": "Your Local Store White Diamond Shape Ceramic Planter Indoor Outdoor Flower Pot Plant Container Set (Ceramic)",
-        "prices": {
-            "Standard Pack": "99"
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/ktn9pjk0/plant-container-set/h/x/d/1-white-diamond-planter-pot-your-local-store-original-imag6yeawah4sz7g.jpeg?q=70&crop=false"
-        ],
-        "desc": "White diamond-shaped ceramic planter pot with drainage hole, suitable for indoor and outdoor plants. UV protected, ideal for herbs, shrubs, and decorative use."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/ktn9pjk0/plant-container-set/h/x/d/1-white-diamond-planter-pot-your-local-store-original-imag6yeawah4sz7g.jpeg?q=70&crop=false"
+    ],
+    "desc": "White diamond-shaped ceramic planter pot with drainage hole, suitable for indoor and outdoor plants. UV protected, ideal for herbs, shrubs, and decorative use.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "rsal-7-inch-buddha-plastic-white-flower-pot": {
+    "name": "RSAL 7 INCH Buddha Plastic White Flower Pot for Home Decor, Washroom and Office Decor Plant Container Set (Plastic)",
+    "prices": {
+      "Standard Pack": "139"
     },
-    "rsal-7-inch-buddha-plastic-white-flower-pot": {
-        "name": "RSAL 7 INCH Buddha Plastic White Flower Pot for Home Decor, Washroom and Office Decor Plant Container Set (Plastic)",
-        "prices": {
-            "Standard Pack": "139"
-        },
-        "image": [
-            "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/x/8/y/2-budha-face-flower-pot-for-living-room-peaceful-calm-plant-original-imaghg9zfnydkrjs.jpeg?q=70&crop=false"
-        ],
-        "desc": "7-inch Buddha face plastic white flower pot, ideal for home, washroom, and office décor. Lightweight, durable, and perfect for indoor plants."
+    "image": [
+      "https://rukminim2.flixcart.com/image/832/832/xif0q/plant-container-set/x/8/y/2-budha-face-flower-pot-for-living-room-peaceful-calm-plant-original-imaghg9zfnydkrjs.jpeg?q=70&crop=false"
+    ],
+    "desc": "7-inch Buddha face plastic white flower pot, ideal for home, washroom, and office décor. Lightweight, durable, and perfect for indoor plants.",
+    "category": [
+      "plastic-planters"
+    ]
+  },
+  "generic-g001-gobhi-cermaic-planter": {
+    "name": "Generic G001 GOBHI CERMAIC Planter",
+    "prices": {
+      "Pack of 1": "139"
     },
-    "generic-g001-gobhi-cermaic-planter": {
-        "name": "Generic G001 GOBHI CERMAIC Planter",
-        "prices": {
-            "Pack of 1": "139"
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/41ZW98RktWL._SL1080_.jpg",
-            "https://m.media-amazon.com/images/I/41Q4u8Pzr9L._SL1080_.jpg",
-            "https://m.media-amazon.com/images/I/41r9NaY4roL._SL1080_.jpg",
-            "https://m.media-amazon.com/images/I/41ia9wJFJCL._SL1080_.jpg"
-        ],
-        "desc": "A charming, cauliflower-shaped ceramic planter pot (Gobhi design), perfect for adding a unique and whimsical touch to your indoor or outdoor garden decor. Made from high-quality ceramic material, this pot is an ideal choice for small to medium-sized plants and succulents."
+    "image": [
+      "https://m.media-amazon.com/images/I/41ZW98RktWL._SL1080_.jpg",
+      "https://m.media-amazon.com/images/I/41Q4u8Pzr9L._SL1080_.jpg",
+      "https://m.media-amazon.com/images/I/41r9NaY4roL._SL1080_.jpg",
+      "https://m.media-amazon.com/images/I/41ia9wJFJCL._SL1080_.jpg"
+    ],
+    "desc": "A charming, cauliflower-shaped ceramic planter pot (Gobhi design), perfect for adding a unique and whimsical touch to your indoor or outdoor garden decor. Made from high-quality ceramic material, this pot is an ideal choice for small to medium-sized plants and succulents.",
+    "category": [
+      "decorative-planters"
+    ]
+  },
+  "kashi-crafts-premium-ceramic-plant-pots": {
+    "name": "Kashi Crafts Set of 3 Premium Ceramic Plant Pots - 10/9/8 inch | with Drainage Hole | Indoor & Outdoor | Decorative Flower Planters for Home & Balcony Garden (Blue, Design2)",
+    "prices": {
+      "8 inch": 129,
+      "9 inch": 169,
+      "10 inch": 279,
+      "set of 3": 549
     },
-    "kashi-crafts-premium-ceramic-plant-pots": {
-        "name": "Kashi Crafts Set of 3 Premium Ceramic Plant Pots - 10/9/8 inch | with Drainage Hole | Indoor & Outdoor | Decorative Flower Planters for Home & Balcony Garden (Blue, Design2)",
-        "prices": {
-            "8 inch": 129,
-            "9 inch": 169,
-            "10 inch": 279,
-            "set of 3": 549
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/61xqoy3xnJL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/6185F-cWmQL._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/610lVnfxFML._SL1500_.jpg",
-            "https://m.media-amazon.com/images/I/51Ls5qqzwgL._SL1500_.jpg"
-        ],
-        "desc": "Set of 3 handcrafted premium ceramic plant pots (10, 9, and 8 inch) with drainage holes. Blue polished finish, suitable for indoor and outdoor plants. Ideal for home and balcony garden décor."
+    "image": [
+      "https://m.media-amazon.com/images/I/61xqoy3xnJL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/6185F-cWmQL._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/610lVnfxFML._SL1500_.jpg",
+      "https://m.media-amazon.com/images/I/51Ls5qqzwgL._SL1500_.jpg"
+    ],
+    "desc": "Set of 3 handcrafted premium ceramic plant pots (10, 9, and 8 inch) with drainage holes. Blue polished finish, suitable for indoor and outdoor plants. Ideal for home and balcony garden décor.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "medhini-earth-store-speckle-ceramic-planter": {
+    "name": "Medhini by Earth Store Speckle 6.5 Inch Ceramic Planter for Indoor Outdoor Plants, Living Room, Garden, Balcony, Home Decor Flower Pot | Planter Pot Set of 1 (Plants Not Included)",
+    "prices": {
+      "Set of 1 (6.5 Inch)": "₹742"
     },
-    "medhini-earth-store-speckle-ceramic-planter": {
-        "name": "Medhini by Earth Store Speckle 6.5 Inch Ceramic Planter for Indoor Outdoor Plants, Living Room, Garden, Balcony, Home Decor Flower Pot | Planter Pot Set of 1 (Plants Not Included)",
-        "prices": {
-            "Set of 1 (6.5 Inch)": "₹742"
-        },
-        "image": [
-            "https://m.media-amazon.com/images/I/41uVHjBkGtL._SS500_.jpg",
-            "https://m.media-amazon.com/images/I/41mACezQpcL._SS500_.jpg",
-            "https://m.media-amazon.com/images/I/41KxfFucGbL._SS500_.jpg",
-            "https://m.media-amazon.com/images/I/41Xgg2Ixf4L._SS500_.jpg",
-            "https://m.media-amazon.com/images/I/31wA5VISMlL._SS500_.jpg",
-            "https://m.media-amazon.com/images/I/41vgAbox5VL._SS500_.jpg"
-        ],
-        "desc": "Durable 6.5-inch ceramic planter with speckle finish. Suitable for indoor and outdoor plants, resistant to weather, and ideal for home décor. Neutral black finish complements any setting."
+    "image": [
+      "https://m.media-amazon.com/images/I/41uVHjBkGtL._SS500_.jpg",
+      "https://m.media-amazon.com/images/I/41mACezQpcL._SS500_.jpg",
+      "https://m.media-amazon.com/images/I/41KxfFucGbL._SS500_.jpg",
+      "https://m.media-amazon.com/images/I/41Xgg2Ixf4L._SS500_.jpg",
+      "https://m.media-amazon.com/images/I/31wA5VISMlL._SS500_.jpg",
+      "https://m.media-amazon.com/images/I/41vgAbox5VL._SS500_.jpg"
+    ],
+    "desc": "Durable 6.5-inch ceramic planter with speckle finish. Suitable for indoor and outdoor plants, resistant to weather, and ideal for home décor. Neutral black finish complements any setting.",
+    "category": [
+      "ceramic-planters"
+    ]
+  },
+  "motu-pot": {
+    "name": "motu pot",
+    "prices": {
+      "12 inch": 200
     },
-    "motu-pot": {
-        "name": "motu pot",
-        "prices": {
-            "12 inch": 200
-        },
-        "image": [],
-        "desc": "how are you"
-    }
+    "image": [],
+    "desc": "how are you",
+    "category": [
+      "decorative-planters"
+    ]
+  }
 }

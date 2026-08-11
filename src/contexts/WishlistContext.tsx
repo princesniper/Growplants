@@ -70,9 +70,21 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const isWishlisted = useCallback((productId: string) => wishlistIds.includes(productId), [wishlistIds]);
 
+  // B14 FIX: Maximum wishlist size to prevent Firestore document size overflow (1 MiB limit)
+  const WISHLIST_MAX_ITEMS = 100;
+
   const toggleWishlist = useCallback((productId: string) => {
     setWishlistIds((prev) => {
-      const newIds = prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId];
+      if (prev.includes(productId)) {
+        const newIds = prev.filter((id) => id !== productId);
+        syncToFirestore(newIds);
+        return newIds;
+      }
+      if (prev.length >= WISHLIST_MAX_ITEMS) {
+        import("@/lib/toast").then(({ appToast }) => appToast.warning("Wishlist full", `Maximum ${WISHLIST_MAX_ITEMS} items allowed`));
+        return prev;
+      }
+      const newIds = [...prev, productId];
       syncToFirestore(newIds);
       return newIds;
     });
@@ -81,6 +93,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const addToWishlist = useCallback((productId: string) => {
     setWishlistIds((prev) => {
       if (prev.includes(productId)) return prev;
+      if (prev.length >= WISHLIST_MAX_ITEMS) {
+        import("@/lib/toast").then(({ appToast }) => appToast.warning("Wishlist full", `Maximum ${WISHLIST_MAX_ITEMS} items allowed`));
+        return prev;
+      }
       const newIds = [...prev, productId];
       syncToFirestore(newIds);
       return newIds;

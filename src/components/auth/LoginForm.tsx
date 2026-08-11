@@ -52,7 +52,7 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: LoginFormPro
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      {/* Identifier (email or phone) */}
+      {/* B15 FIX: Email-only login (phone OTP not implemented) */}
       <div className="space-y-2">
         <Label htmlFor="login-identifier" className="text-body-sm font-medium">
           {t("auth.identifier")}
@@ -66,9 +66,9 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: LoginFormPro
           />
           <Input
             id="login-identifier"
-            type="text"
-            autoComplete="username"
-            placeholder="you@email.com or +91 98765 43210"
+            type="email"
+            autoComplete="email"
+            placeholder="you@email.com"
             className="pl-9 h-12 rounded-md"
             aria-invalid={!!errors.identifier}
             aria-describedby={errors.identifier ? "login-identifier-error" : undefined}

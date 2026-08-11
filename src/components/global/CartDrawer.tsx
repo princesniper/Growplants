@@ -43,6 +43,7 @@ export function CartDrawer() {
     closeDrawer,
     updateQuantity,
     removeItem,
+    addItem,
   } = useCart();
   const { t } = useBilingual();
 
@@ -135,7 +136,30 @@ export function CartDrawer() {
                         </Link>
                         <button
                           type="button"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => {
+                            // B4 FIX: Undo on cart item removal
+                            const removedItem = { ...item };
+                            removeItem(item.id);
+                            import("sonner").then(({ toast }) => {
+                              toast("Item removed from cart", {
+                                description: removedItem.name,
+                                action: {
+                                  label: "Undo",
+                                  onClick: () => addItem({
+                                    productId: removedItem.productId,
+                                    variantId: removedItem.variantId,
+                                    name: removedItem.name,
+                                    slug: removedItem.slug,
+                                    price: removedItem.price,
+                                    image: removedItem.image,
+                                    quantity: removedItem.quantity,
+                                    inStock: removedItem.inStock,
+                                  }),
+                                },
+                                duration: 5000,
+                              });
+                            });
+                          }}
                           className="text-muted-foreground hover:text-destructive shrink-0 p-1 -m-1 rounded"
                           aria-label={t("cart.removeItem")}
                         >

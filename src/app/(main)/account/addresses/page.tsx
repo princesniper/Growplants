@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Plus, MapPin, Edit2, Trash2, Check, X, Navigation, Loader2, ShieldCheck, AlertCircle, Locate } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
@@ -75,6 +75,32 @@ function AddressForm({ initial, onSave, onCancel }: { initial: Partial<Firestore
   };
 
   const gpsVerified = gpsState === "verified" && gpsData !== null;
+
+  // B10 FIX: If user edits GPS-verified fields (city, state, pincode), reset verification.
+  // Store the GPS-verified values to compare against.
+  const gpsVerifiedValues = useRef<{ city: string; state: string; pincode: string } | null>(null);
+
+  // When GPS is verified, capture the verified values
+  useEffect(() => {
+    if (gpsState === "verified" && gpsData) {
+      gpsVerifiedValues.current = { city: form.city, state: form.state, pincode: form.pincode };
+    }
+  }, [gpsState, gpsData]);
+
+  // Check if verified fields have been manually changed
+  const gpsFieldsChanged = gpsVerified && gpsVerifiedValues.current && (
+    gpsVerifiedValues.current.city !== form.city ||
+    gpsVerifiedValues.current.state !== form.state ||
+    gpsVerifiedValues.current.pincode !== form.pincode
+  );
+
+  // If fields changed, reset GPS verification
+  useEffect(() => {
+    if (gpsFieldsChanged) {
+      setGpsState("idle");
+      gpsVerifiedValues.current = null;
+    }
+  }, [gpsFieldsChanged]);
 
   const validate = () => {
     const e: Record<string, string> = {};

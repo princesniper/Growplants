@@ -159,7 +159,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log("[Auth] Register called with:", data.email, "isConfigured:", isFirebaseConfigured, "hasAuth:", !!firebaseAuth);
         // Step 1: Create Firebase Auth user
         const cred = await createUserWithEmailAndPassword(firebaseAuth, data.email, data.password);
-        await updateProfile(cred.user, { displayName: data.fullName });
+
+        // B5 FIX: Wrap updateProfile in its own try/catch — if it fails, don't orphan the user.
+        // updateProfile is a convenience call (sets displayName); failure shouldn't block registration.
+        try {
+          await updateProfile(cred.user, { displayName: data.fullName });
+        } catch (profileErr) {
+          console.warn("[Auth] updateProfile failed (non-blocking — user is still created):", profileErr);
+        }
 
         // Step 2: Save user data to Firestore (NON-BLOCKING — don't fail registration if Firestore fails)
         if (firebaseDb) {

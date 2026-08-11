@@ -492,18 +492,50 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const getOrder = useCallback((id: string) => orders.find((o) => o.id === id) ?? null, [orders]);
 
-  const cancelOrder = useCallback((id: string, reason?: string) => {
+  const cancelOrder = useCallback(async (id: string, reason?: string) => {
     const now = new Date().toISOString();
-    const cs = { status: "cancelled" as const, date: now, note: reason ?? "Cancelled by customer" };
+    const note = reason ?? "Cancelled by customer";
+    const cs = { status: "cancelled" as const, date: now, note };
+
+    // B3 FIX: Call backend API to cancel order (updates Prisma + Firestore)
+    try {
+      const { firebaseAuth } = await import("@/lib/firebase/client");
+      const idToken = firebaseAuth?.currentUser
+        ? await firebaseAuth.currentUser.getIdToken()
+        : null;
+
+      if (idToken) {
+        // Call the admin status update API to set status to "cancelled"
+        const res = await fetch(`/api/admin/orders/${id}/status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            status: "cancelled",
+            note,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          console.warn("[Orders] Cancel API failed:", data.error);
+          // Still update local state — the order may not be in Firestore yet
+        }
+      }
+    } catch (err) {
+      console.warn("[Orders] Cancel API call failed (non-blocking):", err);
+    }
+
+    // Update local state (optimistic — regardless of API result)
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === id && (o.orderStatus === "pending" || o.orderStatus === "confirmed")
+        o.id === id && (o.orderStatus === "placed" || o.orderStatus === "pending" || o.orderStatus === "confirmed")
           ? { ...o, orderStatus: "cancelled", statusHistory: [...o.statusHistory, cs] }
           : o
       )
     );
-    // Note: In production, this should also PATCH /api/orders/{id}/cancel
-    // and updateDoc Firestore. For now we just update local state.
   }, []);
 
   return (

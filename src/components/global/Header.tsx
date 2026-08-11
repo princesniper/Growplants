@@ -348,16 +348,16 @@ export function Header() {
         {/* ---------- TIER 3: Category navigation ---------- */}
         <div className="hidden lg:block h-11 border-t border-slate-100">
           <div className="max-w-[1400px] mx-auto px-4 lg:px-6 h-full flex justify-between items-center gap-4">
-            {/* Categories button */}
+            {/* Categories button — B12 FIX: Link to /shop instead of opening mobile drawer on desktop */}
             <div className="relative h-full flex items-center">
-              <button
-                onClick={() => setMobileMenuOpen(true)}
+              <Link
+                href="/shop"
                 className="h-full flex items-center gap-1.5 font-bold text-xs text-slate-800 hover:text-[#1A6B3C] transition-colors cursor-pointer whitespace-nowrap"
               >
                 <Menu className="h-4 w-4" />
                 <span className="hidden sm:inline">Categories</span>
                 <ChevronDown className="h-3 w-3 text-slate-400" />
-              </button>
+              </Link>
             </div>
 
             {/* Center nav links */}

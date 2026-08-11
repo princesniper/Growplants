@@ -35,10 +35,10 @@ const TRUST_POINTS = [
   },
 ];
 
-export function AuthCard() {
+export function AuthCard({ initialView = "login" }: { initialView?: View }) {
   const { t, language } = useBilingual();
   const isHi = language === "hi";
-  const [view, setView] = useState<View>("login");
+  const [view, setView] = useState<View>(initialView);
 
   const titles: Record<View, { title: string; subtitle: string }> = {
     login: {

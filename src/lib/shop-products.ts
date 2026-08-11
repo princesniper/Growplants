@@ -138,11 +138,14 @@ export function getBestSellers(limit = 8): ShopProduct[] {
     .slice(0, limit);
 }
 
-/** Get new arrivals */
+/** Get new arrivals — uses last-added items as proxy (no date field in JSON) */
 export function getNewArrivals(limit = 8): ShopProduct[] {
-  return getAllProducts()
-    .filter((p) => p.isNewArrival)
-    .slice(0, limit);
+  const all = getAllProducts();
+  // B8 FIX: No product has badge "New Arrival" — use last N items (most recently added)
+  // as a proxy for "new arrivals". Also include any with explicit "New Arrival" badge.
+  const explicit = all.filter((p) => p.isNewArrival);
+  if (explicit.length > 0) return explicit.slice(0, limit);
+  return all.slice(-limit).reverse(); // last N items, newest first
 }
 
 /** Get featured products (bestsellers + high-rated) */

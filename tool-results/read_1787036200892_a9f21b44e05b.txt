@@ -1,0 +1,627 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import { useState, useEffect, useRef } from "react";
+     4→     4→import { useRouter } from "next/navigation";
+     5→     5→import Image from "next/image";
+     6→     6→import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle, Map as MapIcon } from "lucide-react";
+     7→     7→import { cn } from "@/lib/utils";
+     8→     8→import { Container } from "@/components/common/Container";
+     9→     9→import { Button } from "@/components/ui/button";
+    10→    10→import { Input } from "@/components/ui/input";
+    11→    11→import { Label } from "@/components/ui/label";
+    12→    12→import { Textarea } from "@/components/ui/textarea";
+    13→    13→import { Separator } from "@/components/ui/separator";
+    14→    14→import { useCart } from "@/contexts/CartContext";
+    15→    15→import { useOrders, type OrderAddress, type PaymentMethod } from "@/contexts/OrdersContext";
+    16→    16→import { useAddresses } from "@/contexts/AddressContext";
+    17→    17→import { formatINR, isValidPincode } from "@/lib/utils";
+    18→    18→import { appToast } from "@/lib/toast";
+    19→    19→import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
+    20→    20→import Link from "next/link";
+    21→    21→import { useAuth } from "@/contexts/AuthContext";
+    22→    22→import { MapLocationPicker } from "@/components/common/MapLocationPicker";
+    23→    23→
+    24→    24→const STEPS = ["Address", "Review", "Payment"] as const;
+    25→    25→
+    26→    26→export default function CheckoutPage() {
+    27→    27→  const router = useRouter();
+    28→    28→  const { items, subtotal, itemCount, clearCart } = useCart();
+    29→    29→  const { createOrder } = useOrders();
+    30→    30→  const { isAuthenticated, isLoading: authLoading } = useAuth();
+    31→    31→  const { addresses, isLoading: addressesLoading } = useAddresses();
+    32→    32→
+    33→    33→  const [step, setStep] = useState(0);
+    34→    34→  const [isPlacing, setIsPlacing] = useState(false);
+    35→    35→  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+    36→    36→  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+    37→    37→
+    38→    38→  // Address form
+    39→    39→  const [address, setAddress] = useState<OrderAddress>({
+    40→    40→    fullName: "", phone: "", addressLine1: "", addressLine2: "", landmark: "",
+    41→    41→    city: "Sonipat", state: "Haryana", pincode: "",
+    42→    42→  });
+    43→    43→  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
+    44→    44→
+    45→    45→  // GPS verification for checkout new address
+    46→    46→  const [gpsState, setGpsState] = useState<"idle" | "detecting" | "fetching" | "verified" | "failed">("idle");
+    47→    47→  const [gpsError, setGpsError] = useState("");
+    48→    48→  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number } | null>(null);
+    49→    49→  const gpsVerified = gpsState === "verified";
+    50→    50→  const [mapPickerOpen, setMapPickerOpen] = useState(false);
+    51→    51→
+    52→    52→  // Payment
+    53→    53→  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay");
+    54→    54→  const [notes, setNotes] = useState("");
+    55→    55→  // D1: couponDiscount is 0 until coupon feature is implemented
+    56→    56→  const [couponDiscount] = useState(0);
+    57→    57→
+    58→    58→  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
+    59→    59→  // GST 18% on (subtotal - discount). Tax-exclusive model.
+    60→    60→  const taxableAmount = Math.max(0, subtotal - couponDiscount);
+    61→    61→  const tax = Math.round(taxableAmount * 0.18);
+    62→    62→  // Total MUST include tax — previously tax was dropped (18% revenue loss)
+    63→    63→  const total = taxableAmount + shipping + tax;
+    64→    64→
+    65→    65→  // Auto-select default address on mount
+    66→    66→  useEffect(() => {
+    67→    67→    if (addresses.length > 0 && !selectedAddressId) {
+    68→    68→      const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
+    69→    69→      setSelectedAddressId(defaultAddr.id);
+    70→    70→      // Populate the address form with the default address
+    71→    71→      setAddress({
+    72→    72→        fullName: defaultAddr.fullName,
+    73→    73→        phone: defaultAddr.phone,
+    74→    74→        addressLine1: defaultAddr.houseNo,
+    75→    75→        addressLine2: defaultAddr.locality,
+    76→    76→        landmark: "",
+    77→    77→        city: defaultAddr.city,
+    78→    78→        state: defaultAddr.state,
+    79→    79→        pincode: defaultAddr.pincode,
+    80→    80→      });
+    81→    81→    }
+    82→    82→  }, [addresses, selectedAddressId]);
+    83→    83→
+    84→    84→  // Handle selecting a saved address — BYPASS FIX: only allow GPS-verified addresses
+    85→    85→  const handleSelectAddress = (addrId: string) => {
+    86→    86→    const addr = addresses.find((a) => a.id === addrId);
+    87→    87→    if (!addr) return;
+    88→    88→    // BYPASS FIX: Block selection of non-GPS-verified addresses
+    89→    89→    if (!addr.gpsVerified) {
+    90→    90→      appToast.warning("Address not verified", "This address doesn't have GPS verification. Please verify it in Address Book or add a new address.");
+    91→    91→      return;
+    92→    92→    }
+    93→    93→    setSelectedAddressId(addrId);
+    94→    94→    setShowNewAddressForm(false);
+    95→    95→    setAddress({
+    96→    96→      fullName: addr.fullName,
+    97→    97→      phone: addr.phone,
+    98→    98→      addressLine1: addr.houseNo,
+    99→    99→      addressLine2: addr.locality,
+   100→   100→      landmark: "",
+   101→   101→      city: addr.city,
+   102→   102→      state: addr.state,
+   103→   103→      pincode: addr.pincode,
+   104→   104→    });
+   105→   105→    setAddressErrors({});
+   106→   106→  };
+   107→   107→
+   108→   108→  // Handle "Add new address" click
+   109→   109→  const handleAddNewAddress = () => {
+   110→   110→    setSelectedAddressId(null);
+   111→   111→    setShowNewAddressForm(true);
+   112→   112→    setAddress({
+   113→   113→      fullName: "", phone: "", addressLine1: "", addressLine2: "", landmark: "",
+   114→   114→      city: "Sonipat", state: "Haryana", pincode: "",
+   115→   115→    });
+   116→   116→    setAddressErrors({});
+   117→   117→    setGpsState("idle");
+   118→   118→    setGpsError("");
+   119→   119→  };
+   120→   120→
+   121→   121→  // GPS verification handler for checkout new address
+   122→   122→  const handleGPS = async () => {
+   123→   123→    setGpsState("detecting");
+   124→   124→    setGpsError("");
+   125→   125→    try {
+   126→   126→      if (!navigator.geolocation) {
+   127→   127→        setGpsState("failed");
+   128→   128→        setGpsError("GPS not supported on this device");
+   129→   129→        return;
+   130→   130→      }
+   131→   131→      navigator.geolocation.getCurrentPosition(
+   132→   132→        async (pos) => {
+   133→   133→          const { latitude, longitude, accuracy } = pos.coords;
+   134→   134→          if (accuracy > 100) {
+   135→   135→            setGpsState("failed");
+   136→   136→            setGpsError(`GPS accuracy too low (${Math.round(accuracy)}m). Need within 100m.`);
+   137→   137→            return;
+   138→   138→          }
+   139→   139→          setGpsState("fetching");
+   140→   140→          try {
+   141→   141→            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
+   142→   142→            const res = await fetch(url, {
+   143→   143→              headers: { "Accept-Language": "en", "User-Agent": "GrowPlants/1.0 (hello@growplants.in)" },
+   144→   144→            });
+   145→   145→            if (!res.ok) throw new Error("Reverse geocoding failed");
+   146→   146→            const data = await res.json();
+   147→   147→            const addr = data.address || {};
+   148→   148→            setAddress((prev) => ({
+   149→   149→              ...prev,
+   150→   150→              city: addr.city || addr.town || addr.village || addr.county || prev.city,
+   151→   151→              state: addr.state || prev.state,
+   152→   152→              pincode: addr.postcode || prev.pincode,
+   153→   153→            }));
+   154→   154→            setGpsState("verified");
+   155→   155→            appToast.success("Location verified!", `Accuracy: ${Math.round(accuracy)}m`);
+   156→   156→          } catch (geoErr) {
+   157→   157→            setGpsState("failed");
+   158→   158→            setGpsError("Could not fetch address from GPS. Please enter manually.");
+   159→   159→          }
+   160→   160→        },
+   161→   161→        (err) => {
+   162→   162→          setGpsState("failed");
+   163→   163→          if (err.code === 1) setGpsError("Location permission denied. Please allow location access.");
+   164→   164→          else if (err.code === 2) setGpsError("Location unavailable. Check your GPS settings.");
+   165→   165→          else if (err.code === 3) setGpsError("Location request timed out. Try again.");
+   166→   166→          else setGpsError("Failed to get location.");
+   167→   167→        },
+   168→   168→        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+   169→   169→      );
+   170→   170→    } catch (err) {
+   171→   171→      setGpsState("failed");
+   172→   172→      setGpsError(err instanceof Error ? err.message : "GPS verification failed");
+   173→   173→    }
+   174→   174→  };
+   175→   175→
+   176→   176→  // Reset GPS when switching to a saved address
+   177→   177→  useEffect(() => {
+   178→   178→    if (selectedAddressId) {
+   179→   179→      setGpsState("idle");
+   180→   180→      setGpsError("");
+   181→   181→      setGpsCoords(null);
+   182→   182→    }
+   183→   183→  }, [selectedAddressId]);
+   184→   184→
+   185→   185→  // Handle manual location selection from map
+   186→   186→  const handleMapLocationSelect = (location: { lat: number; lng: number; accuracy: number; city?: string; state?: string; pincode?: string }) => {
+   187→   187→    setGpsCoords({ lat: location.lat, lng: location.lng });
+   188→   188→    setAddress((prev) => ({
+   189→   189→      ...prev,
+   190→   190→      city: location.city || prev.city,
+   191→   191→      state: location.state || prev.state,
+   192→   192→      pincode: location.pincode || prev.pincode,
+   193→   193→      latitude: location.lat,
+   194→   194→      longitude: location.lng,
+   195→   195→    }));
+   196→   196→    setGpsState("verified");
+   197→   197→    setGpsError("");
+   198→   198→    appToast.success("Location set!", "Pin location confirmed on map");
+   199→   199→  };
+   200→   200→
+   201→   201→  // BYPASS FIX: Track GPS-verified values — if user edits city/state/pincode after GPS verify, reset
+   202→   202→  const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
+   203→   203→  useEffect(() => {
+   204→   204→    if (gpsState === "verified") {
+   205→   205→      gpsVerifiedRef.current = { city: address.city, state: address.state, pincode: address.pincode };
+   206→   206→    }
+   207→   207→  }, [gpsState]); // intentionally not depending on address to avoid re-trigger
+   208→   208→
+   209→   209→  useEffect(() => {
+   210→   210→    // If GPS was verified and user changes city/state/pincode, reset GPS
+   211→   211→    if (gpsState === "verified" && gpsVerifiedRef.current) {
+   212→   212→      if (
+   213→   213→        gpsVerifiedRef.current.city !== address.city ||
+   214→   214→        gpsVerifiedRef.current.state !== address.state ||
+   215→   215→        gpsVerifiedRef.current.pincode !== address.pincode
+   216→   216→      ) {
+   217→   217→        setGpsState("idle");
+   218→   218→        gpsVerifiedRef.current = null;
+   219→   219→      }
+   220→   220→    }
+   221→   221→  }, [address.city, address.state, address.pincode, gpsState]);
+   222→   222→
+   223→   223→  // C3 FIX: Auth guard — redirect to login if not authenticated
+   224→   224→  useEffect(() => {
+   225→   225→    if (!authLoading && !isAuthenticated) {
+   226→   226→      router.replace("/login?redirect=/checkout");
+   227→   227→    }
+   228→   228→  }, [authLoading, isAuthenticated, router]);
+   229→   229→
+   230→   230→  // C2 FIX: COD max amount enforcement
+   231→   231→  const codExceedsLimit = paymentMethod === "cod" && total > COD_MAX_AMOUNT;
+   232→   232→
+   233→   233→  // Empty cart guard
+   234→   234→  if (itemCount === 0 && !isPlacing) {
+   235→   235→    return (
+   236→   236→      <Container className="py-16">
+   237→   237→        <div className="text-center space-y-4">
+   238→   238→          <div className="size-16 rounded-full bg-[#F3F8F1] flex items-center justify-center mx-auto">
+   239→   239→            <ShoppingCart className="size-8 text-[#1A6B3C]" aria-hidden="true" />
+   240→   240→          </div>
+   241→   241→          <h1 className="text-xl font-bold text-gray-900">Your cart is empty</h1>
+   242→   242→          <p className="text-sm text-slate-500">Add some products before checking out.</p>
+   243→   243→          <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"><Link href="/shop">Browse Shop</Link></Button>
+   244→   244→        </div>
+   245→   245→      </Container>
+   246→   246→    );
+   247→   247→  }
+   248→   248→
+   249→   249→  const validateAddress = () => {
+   250→   250→    const errs: Record<string, string> = {};
+   251→   251→    if (!address.fullName.trim()) errs.fullName = "Name is required";
+   252→   252→    if (!address.phone.trim() || !/^[6-9]\d{9}$/.test(address.phone.replace(/\D/g, ""))) errs.phone = "Enter a valid 10-digit phone number";
+   253→   253→    if (!address.addressLine1.trim()) errs.addressLine1 = "Address is required";
+   254→   254→    if (!address.city.trim()) errs.city = "City is required";
+   255→   255→    if (!address.state.trim()) errs.state = "State is required";
+   256→   256→    if (!isValidPincode(address.pincode)) errs.pincode = "Enter a valid 6-digit pincode";
+   257→   257→    // BYPASS FIX: Require GPS verification for new addresses (not for saved addresses)
+   258→   258→    if (showNewAddressForm && !selectedAddressId && !gpsVerified) {
+   259→   259→      errs.gps = "GPS verification is required for new addresses";
+   260→   260→    }
+   261→   261→    setAddressErrors(errs);
+   262→   262→    return Object.keys(errs).length === 0;
+   263→   263→  };
+   264→   264→
+   265→   265→  const handleNext = () => {
+   266→   266→    if (step === 0 && !validateAddress()) return;
+   267→   267→    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+   268→   268→  };
+   269→   269→
+   270→   270→  const handlePlaceOrder = async () => {
+   271→   271→    // C2 FIX: Enforce COD max amount
+   272→   272→    if (paymentMethod === "cod" && total > COD_MAX_AMOUNT) {
+   273→   273→      appToast.error("COD limit exceeded", `Cash on Delivery is only available for orders up to ₹${COD_MAX_AMOUNT}. Please choose online payment.`);
+   274→   274→      return;
+   275→   275→    }
+   276→   276→    setIsPlacing(true);
+   277→   277→    try {
+   278→   278→      const order = await createOrder({
+   279→   279→        items: items.map((i) => ({ productId: i.productId, name: i.name, slug: i.slug, price: i.price, image: i.image, quantity: i.quantity, variantId: i.variantId })),
+   280→   280→        subtotal, shipping, discount: couponDiscount, tax, total,
+   281→   281→        address, paymentMethod, notes: notes.trim() || undefined,
+   282→   282→      });
+   283→   283→
+   284→   284→      // Only clear cart + redirect on genuine success (createOrder throws on failure)
+   285→   285→      clearCart();
+   286→   286→      appToast.success("Order placed!", `Order ${order.orderNumber} confirmed`);
+   287→   287→      router.push(`/order-confirmation/${order.id}`);
+   288→   288→      // D3: isPlacing is NOT reset — page navigates away, so it's fine
+   289→   289→      // (the next page mount will have a fresh state)
+   290→   290→    } catch (err) {
+   291→   291→      console.error("[checkout] createOrder failed:", err);
+   292→   292→      // A7 FIX: Show the actual error message from the API; cart is NOT cleared
+   293→   293→      const message = err instanceof Error ? err.message : "Could not place your order. Please try again.";
+   294→   294→      appToast.error("Order failed", message);
+   295→   295→      setIsPlacing(false);
+   296→   296→    }
+   297→   297→  };
+   298→   298→
+   299→   299→  return (
+   300→   300→    <Container className="py-6 md:py-10">
+   301→   301→      {/* Stepper */}
+   302→   302→      <div className="flex items-center justify-center gap-2 mb-8">
+   303→   303→        {STEPS.map((label, i) => (
+   304→   304→          <div key={label} className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: `${i * 80}ms` }}>
+   305→   305→            <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors", i === step ? "bg-[#1A6B3C] text-white" : i < step ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500")}>
+   306→   306→              {i < step ? <Check className="size-3.5" /> : <span className="size-5 rounded-full flex items-center justify-center text-xs">{i + 1}</span>}
+   307→   307→              {label}
+   308→   308→            </div>
+   309→   309→            {i < STEPS.length - 1 && <ChevronRight className="size-4 text-slate-300" />}
+   310→   310→          </div>
+   311→   311→        ))}
+   312→   312→      </div>
+   313→   313→
+   314→   314→      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+   315→   315→        {/* Left: Step content */}
+   316→   316→        <div className="lg:col-span-2 space-y-4">
+   317→   317→          {/* Step 1: Address */}
+   318→   318→          {step === 0 && (
+   319→   319→            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+   320→   320→              <h2 className="text-base font-bold text-[#1A6B3C] flex items-center gap-2"><MapPin className="size-5" />Delivery Address</h2>
+   321→   321→              <Separator />
+   322→   322→
+   323→   323→              {/* Saved Addresses Section */}
+   324→   324→              {!addressesLoading && addresses.length > 0 && (
+   325→   325→                <div className="space-y-3">
+   326→   326→                  <p className="text-sm font-semibold text-slate-700">Saved Addresses</p>
+   327→   327→                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   328→   328→                    {addresses.map((addr) => (
+   329→   329→                      <button
+   330→   330→                        key={addr.id}
+   331→   331→                        type="button"
+   332→   332→                        onClick={() => handleSelectAddress(addr.id)}
+   333→   333→                        className={cn(
+   334→   334→                          "text-left p-4 rounded-xl border-2 transition-all relative",
+   335→   335→                          selectedAddressId === addr.id
+   336→   336→                            ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
+   337→   337→                            : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white",
+   338→   338→                          !addr.gpsVerified && "opacity-60 cursor-not-allowed hover:border-slate-200"
+   339→   339→                        )}
+   340→   340→                      >
+   341→   341→                        {selectedAddressId === addr.id && (
+   342→   342→                          <div className="absolute top-3 right-3 size-5 rounded-full bg-[#1A6B3C] flex items-center justify-center">
+   343→   343→                            <Check className="size-3 text-white" strokeWidth={3} />
+   344→   344→                          </div>
+   345→   345→                        )}
+   346→   346→                        <div className="flex items-start gap-2 mb-2">
+   347→   347→                          <div className="size-8 rounded-lg bg-[#1A6B3C]/10 flex items-center justify-center shrink-0">
+   348→   348→                            <Home className="size-4 text-[#1A6B3C]" />
+   349→   349→                          </div>
+   350→   350→                          <div className="min-w-0 flex-1 pr-6">
+   351→   351→                            <p className="text-sm font-bold text-slate-800 truncate">
+   352→   352→                              {addr.fullName}
+   353→   353→                              {addr.isDefault && (
+   354→   354→                                <span className="ml-2 text-[10px] font-semibold text-[#1A6B3C] bg-[#1A6B3C]/10 px-1.5 py-0.5 rounded-full">
+   355→   355→                                  Default
+   356→   356→                                </span>
+   357→   357→                              )}
+   358→   358→                            </p>
+   359→   359→                            <p className="text-xs text-slate-500">{addr.label} · {addr.phone}</p>
+   360→   360→                          </div>
+   361→   361→                        </div>
+   362→   362→                        <p className="text-xs text-slate-600 leading-relaxed">
+   363→   363→                          {addr.houseNo}, {addr.locality}, {addr.city}, {addr.state} - {addr.pincode}
+   364→   364→                        </p>
+   365→   365→                        {addr.gpsVerified ? (
+   366→   366→                          <p className="text-[10px] text-green-600 mt-1.5 flex items-center gap-1">
+   367→   367→                            <ShieldCheck className="size-2.5" /> GPS Verified
+   368→   368→                          </p>
+   369→   369→                        ) : (
+   370→   370→                          <p className="text-[10px] text-red-500 mt-1.5 flex items-center gap-1">
+   371→   371→                            <AlertCircle className="size-2.5" /> Not GPS Verified — tap to fix
+   372→   372→                          </p>
+   373→   373→                        )}
+   374→   374→                      </button>
+   375→   375→                    ))}
+   376→   376→
+   377→   377→                    {/* Add New Address Card */}
+   378→   378→                    <button
+   379→   379→                      type="button"
+   380→   380→                      onClick={handleAddNewAddress}
+   381→   381→                      className={cn(
+   382→   382→                        "p-4 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2 min-h-[120px]",
+   383→   383→                        showNewAddressForm
+   384→   384→                          ? "border-[#1A6B3C] bg-[#F3F8F1]"
+   385→   385→                          : "border-slate-300 hover:border-[#1A6B3C]/50 text-slate-500 hover:text-[#1A6B3C]"
+   386→   386→                      )}
+   387→   387→                    >
+   388→   388→                      <Plus className="size-6" />
+   389→   389→                      <span className="text-sm font-medium">Add New Address</span>
+   390→   390→                    </button>
+   391→   391→                  </div>
+   392→   392→                </div>
+   393→   393→              )}
+   394→   394→
+   395→   395→              {/* Loading state */}
+   396→   396→              {addressesLoading && (
+   397→   397→                <div className="space-y-2">
+   398→   398→                  <div className="h-4 bg-slate-100 rounded animate-pulse w-32" />
+   399→   399→                  <div className="h-24 bg-slate-100 rounded animate-pulse" />
+   400→   400→                </div>
+   401→   401→              )}
+   402→   402→
+   403→   403→              {/* New Address Form (shown when "Add New" clicked OR no saved addresses) */}
+   404→   404→              {(showNewAddressForm || addresses.length === 0) && (
+   405→   405→                <div className="space-y-3 pt-2">
+   406→   406→                  {addresses.length > 0 && (
+   407→   407→                    <p className="text-sm font-semibold text-slate-700">Enter New Address</p>
+   408→   408→                  )}
+   409→   409→
+   410→   410→                  {/* GPS Verification Button */}
+   411→   411→                  <div className="p-3 bg-[#F3F8F1] rounded-lg border border-[#1A6B3C]/10">
+   412→   412→                    <div className="flex items-center justify-between gap-2">
+   413→   413→                      <div className="flex items-center gap-2">
+   414→   414→                        {gpsVerified ? (
+   415→   415→                          <ShieldCheck className="size-5 text-green-600" />
+   416→   416→                        ) : gpsState === "detecting" || gpsState === "fetching" ? (
+   417→   417→                          <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
+   418→   418→                        ) : gpsState === "failed" ? (
+   419→   419→                          <AlertCircle className="size-5 text-red-500" />
+   420→   420→                        ) : (
+   421→   421→                          <Navigation className="size-5 text-[#1A6B3C]" />
+   422→   422→                        )}
+   423→   423→                        <div>
+   424→   424→                          <p className="text-sm font-medium text-slate-700">
+   425→   425→                            {gpsVerified ? "Location Verified" : gpsState === "detecting" ? "Detecting location..." : gpsState === "fetching" ? "Fetching address..." : "GPS Verification"}
+   426→   426→                          </p>
+   427→   427→                          <p className="text-xs text-slate-500">
+   428→   428→                            {gpsVerified ? "City, state, pincode auto-filled from GPS" : "Verify your delivery location (within 100m accuracy)"}
+   429→   429→                          </p>
+   430→   430→                        </div>
+   431→   431→                      </div>
+   432→   432→                      {!gpsVerified && gpsState !== "detecting" && gpsState !== "fetching" && (
+   433→   433→                        <Button type="button" size="sm" variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5 animate-pulse-ring" onClick={handleGPS}>
+   434→   434→                          <Navigation className="size-3.5" /> Verify
+   435→   435→                        </Button>
+   436→   436→                      )}
+   437→   437→                    </div>
+   438→   438→                    {gpsError && <p className="text-xs text-red-500 mt-2">{gpsError}</p>}
+   439→   439→                    {addressErrors.gps && !gpsVerified && (
+   440→   440→                      <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
+   441→   441→                        <AlertCircle className="size-3.5 shrink-0" />{addressErrors.gps}
+   442→   442→                      </p>
+   443→   443→                    )}
+   444→   444→                    {/* Set Location Manually — drag pin on map */}
+   445→   445→                    {!gpsVerified && (
+   446→   446→                      <div className="mt-2 pt-2 border-t border-slate-100">
+   447→   447→                        <button
+   448→   448→                          type="button"
+   449→   449→                          onClick={() => setMapPickerOpen(true)}
+   450→   450→                          className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+   451→   451→                        >
+   452→   452→                          <MapIcon className="size-3.5" />
+   453→   453→                          Set Location Manually on Map
+   454→   454→                        </button>
+   455→   455→                      </div>
+   456→   456→                    )}
+   457→   457→                  </div>
+   458→   458→
+   459→   459→                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   460→   460→                    <div className="space-y-1.5"><Label htmlFor="fullName" className="text-sm">Full Name *</Label><Input id="fullName" value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })} className="h-11" />{addressErrors.fullName && <p className="text-xs text-red-500">{addressErrors.fullName}</p>}</div>
+   461→   461→                    {/* Phone field with +91 prefix built-in */}
+   462→   462→                    <div className="space-y-1.5">
+   463→   463→                      <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
+   464→   464→                      <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1A6B3C]/20 focus-within:border-[#1A6B3C]">
+   465→   465→                        <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">+91</span>
+   466→   466→                        <input
+   467→   467→                          id="phone"
+   468→   468→                          type="tel"
+   469→   469→                          inputMode="numeric"
+   470→   470→                          maxLength={10}
+   471→   471→                          placeholder="9876543210"
+   472→   472→                          value={address.phone}
+   473→   473→                          onChange={(e) => {
+   474→   474→                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+   475→   475→                            setAddress({ ...address, phone: digits });
+   476→   476→                          }}
+   477→   477→                          className="flex-1 px-3 text-sm bg-transparent outline-none"
+   478→   478→                        />
+   479→   479→                      </div>
+   480→   480→                      {addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}
+   481→   481→                    </div>
+   482→   482→                  </div>
+   483→   483→                  <div className="space-y-1.5"><Label htmlFor="addr1" className="text-sm">Address Line 1 *</Label><Input id="addr1" placeholder="House no, Building, Street" value={address.addressLine1} onChange={(e) => setAddress({ ...address, addressLine1: e.target.value })} className="h-11" />{addressErrors.addressLine1 && <p className="text-xs text-red-500">{addressErrors.addressLine1}</p>}</div>
+   484→   484→                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   485→   485→                    <div className="space-y-1.5"><Label htmlFor="addr2" className="text-sm">Address Line 2</Label><Input id="addr2" value={address.addressLine2} onChange={(e) => setAddress({ ...address, addressLine2: e.target.value })} className="h-11" /></div>
+   486→   486→                    <div className="space-y-1.5"><Label htmlFor="landmark" className="text-sm">Landmark</Label><Input id="landmark" placeholder="Near..." value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} className="h-11" /></div>
+   487→   487→                  </div>
+   488→   488→                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+   489→   489→                    <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => { setAddress({ ...address, city: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
+   490→   490→                    <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => { setAddress({ ...address, state: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
+   491→   491→                    <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => { setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") }); setGpsState("idle"); }} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
+   492→   492→                  </div>
+   493→   493→                </div>
+   494→   494→              )}
+   495→   495→
+   496→   496→              {/* Link to manage addresses */}
+   497→   497→              {addresses.length > 0 && (
+   498→   498→                <div className="pt-2">
+   499→   499→                  <Link href="/account/addresses" className="text-xs text-[#1A6B3C] hover:underline font-medium">
+   500→   500→                    Manage saved addresses →
+   501→   501→                  </Link>
+   502→   502→                </div>
+   503→   503→              )}
+   504→   504→            </div>
+   505→   505→          )}
+   506→   506→
+   507→   507→          {/* Step 2: Review */}
+   508→   508→          {step === 1 && (
+   509→   509→            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+   510→   510→              <h2 className="text-base font-bold text-[#1A6B3C]">Review Your Order</h2>
+   511→   511→              <Separator />
+   512→   512→              {/* Delivery address summary */}
+   513→   513→              <div className="p-3 bg-[#F3F8F1] rounded-lg">
+   514→   514→                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Delivering To</p>
+   515→   515→                <p className="text-sm font-medium text-slate-800">{address.fullName} · {address.phone}</p>
+   516→   516→                <p className="text-sm text-slate-600">{address.addressLine1}{address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city}, {address.state} - {address.pincode}</p>
+   517→   517→              </div>
+   518→   518→              {/* Items */}
+   519→   519→              <div className="space-y-3">
+   520→   520→                {items.map((item) => (
+   521→   521→                  <div key={item.id} className="flex gap-3 items-center">
+   522→   522→                    <div className="relative size-14 rounded-lg overflow-hidden bg-slate-50 shrink-0">
+   523→   523→                      {item.image && <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />}
+   524→   524→                    </div>
+   525→   525→                    <div className="flex-1 min-w-0">
+   526→   526→                      <p className="text-sm font-medium text-slate-800 line-clamp-1">{item.name}</p>
+   527→   527→                      <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatINR(item.price)}</p>
+   528→   528→                    </div>
+   529→   529→                    <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(item.price * item.quantity)}</p>
+   530→   530→                  </div>
+   531→   531→                ))}
+   532→   532→              </div>
+   533→   533→              <Separator />
+   534→   534→              {/* Notes */}
+   535→   535→              <div className="space-y-1.5">
+   536→   536→                <Label htmlFor="notes" className="text-sm">Special Instructions (optional)</Label>
+   537→   537→                <Textarea id="notes" rows={2} placeholder="Any delivery preferences..." value={notes} onChange={(e) => setNotes(e.target.value)} />
+   538→   538→              </div>
+   539→   539→            </div>
+   540→   540→          )}
+   541→   541→
+   542→   542→          {/* Step 3: Payment */}
+   543→   543→          {step === 2 && (
+   544→   544→            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+   545→   545→              <h2 className="text-base font-bold text-[#1A6B3C]">Payment Method</h2>
+   546→   546→              <Separator />
+   547→   547→              <div className="space-y-3">
+   548→   548→                {/* Razorpay */}
+   549→   549→                <button onClick={() => setPaymentMethod("razorpay")} className={cn("w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300")}>
+   550→   550→                  <CreditCard className="size-5 text-[#1A6B3C]" />
+   551→   551→                  <div className="flex-1"><p className="text-sm font-semibold text-slate-800">Pay Online</p><p className="text-xs text-slate-500">UPI, Cards, Net Banking, Wallets via Razorpay</p></div>
+   552→   552→                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "razorpay" && <Check className="size-3 text-white" />}</div>
+   553→   553→                </button>
+   554→   554→                {/* COD — C2 FIX: disabled when total exceeds COD_MAX_AMOUNT */}
+   555→   555→                <button
+   556→   556→                  onClick={() => !codExceedsLimit && setPaymentMethod("cod")}
+   557→   557→                  disabled={total > COD_MAX_AMOUNT}
+   558→   558→                  className={cn(
+   559→   559→                    "w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left",
+   560→   560→                    total > COD_MAX_AMOUNT ? "border-slate-200 opacity-50 cursor-not-allowed" :
+   561→   561→                    paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300"
+   562→   562→                  )}
+   563→   563→                >
+   564→   564→                  <Banknote className="size-5 text-[#1A6B3C]" />
+   565→   565→                  <div className="flex-1">
+   566→   566→                    <p className="text-sm font-semibold text-slate-800">Cash on Delivery</p>
+   567→   567→                    <p className="text-xs text-slate-500">
+   568→   568→                      {total > COD_MAX_AMOUNT
+   569→   569→                        ? `Not available for orders above ₹${COD_MAX_AMOUNT.toLocaleString()}`
+   570→   570→                        : "Pay in cash when your order arrives. Available for orders up to ₹5,000."}
+   571→   571→                    </p>
+   572→   572→                  </div>
+   573→   573→                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "cod" && <Check className="size-3 text-white" />}</div>
+   574→   574→                </button>
+   575→   575→              </div>
+   576→   576→              {paymentMethod === "razorpay" && (
+   577→   577→                <div className="p-3 bg-blue-50 rounded-lg flex items-center gap-2 text-xs text-blue-700">
+   578→   578→                  <Truck className="size-4 shrink-0" /> You will be redirected to Razorpay's secure payment gateway. Your card details are never stored on our servers.
+   579→   579→                </div>
+   580→   580→              )}
+   581→   581→              {paymentMethod === "cod" && (
+   582→   582→                <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-700">Please keep exact change ready. COD orders may take an extra day for delivery confirmation.</div>
+   583→   583→              )}
+   584→   584→            </div>
+   585→   585→          )}
+   586→   586→
+   587→   587→          {/* Navigation buttons */}
+   588→   588→          <div className="flex items-center gap-3">
+   589→   589→            {step > 0 && <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="border-[#1A6B3C] text-[#1A6B3C]">Back</Button>}
+   590→   590→            {step < STEPS.length - 1 ? (
+   591→   591→              <Button onClick={handleNext} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">Continue <ChevronRight className="size-4" /></Button>
+   592→   592→            ) : (
+   593→   593→              <Button onClick={handlePlaceOrder} disabled={isPlacing} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">
+   594→   594→                {isPlacing ? <><Loader2 className="size-4 animate-spin" />Placing Order...</> : <>Place Order · {formatINR(total)}</>}
+   595→   595→              </Button>
+   596→   596→            )}
+   597→   597→          </div>
+   598→   598→        </div>
+   599→   599→
+   600→   600→        {/* Right: Order summary (sticky) */}
+   601→   601→        <div className="lg:col-span-1">
+   602→   602→          <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+   603→   603→            <h3 className="text-base font-bold text-[#1A6B3C]">Order Summary</h3>
+   604→   604→            <Separator />
+   605→   605→            <div className="space-y-2 text-sm">
+   606→   606→              <div className="flex justify-between"><span className="text-slate-600">Subtotal ({itemCount} items)</span><span className="font-medium text-slate-800 tabular-nums">{formatINR(subtotal)}</span></div>
+   607→   607→              {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span className="font-medium tabular-nums">-{formatINR(couponDiscount)}</span></div>}
+   608→   608→              <div className="flex justify-between"><span className="text-slate-600">Delivery</span><span className="font-medium text-slate-800 tabular-nums">{shipping === 0 ? "FREE" : formatINR(shipping)}</span></div>
+   609→   609→              <div className="flex justify-between text-xs text-slate-400"><span>GST (18%)</span><span className="tabular-nums">{formatINR(tax)}</span></div>
+   610→   610→            </div>
+   611→   611→            <Separator />
+   612→   612→            <div className="flex justify-between items-baseline"><span className="text-base font-bold text-slate-800">Total</span><span className="text-xl font-bold text-[#1A6B3C] tabular-nums">{formatINR(total)}</span></div>
+   613→   613→            <div className="flex items-center gap-2 text-xs text-slate-500 pt-2"><Truck className="size-3.5 text-[#1A6B3C]" />{shipping === 0 ? "Free delivery applied!" : `Add ${formatINR(FREE_SHIPPING_THRESHOLD - subtotal)} more for free delivery`}</div>
+   614→   614→          </div>
+   615→   615→        </div>
+   616→   616→      </div>
+   617→   617→
+   618→   618→      {/* Map Location Picker Dialog */}
+   619→   619→      <MapLocationPicker
+   620→   620→        open={mapPickerOpen}
+   621→   621→        onClose={() => setMapPickerOpen(false)}
+   622→   622→        onLocationSelect={handleMapLocationSelect}
+   623→   623→      />
+   624→   624→    </Container>
+   625→   625→  );
+   626→   626→}
+   627→   627→

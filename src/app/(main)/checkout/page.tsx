@@ -20,6 +20,7 @@ import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { MapLocationPicker } from "@/components/common/MapLocationPicker";
+import { UnifiedAddressForm } from "@/components/common/UnifiedAddressForm";
 
 const STEPS = ["Address", "Review", "Payment"] as const;
 
@@ -27,8 +28,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, itemCount, clearCart } = useCart();
   const { createOrder } = useOrders();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { addresses, isLoading: addressesLoading } = useAddresses();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { addresses, isLoading: addressesLoading, addAddress } = useAddresses();
 
   const [step, setStep] = useState(0);
   const [isPlacing, setIsPlacing] = useState(false);
@@ -45,7 +46,7 @@ export default function CheckoutPage() {
   // GPS verification for checkout new address
   const [gpsState, setGpsState] = useState<"idle" | "detecting" | "fetching" | "verified" | "failed">("idle");
   const [gpsError, setGpsError] = useState("");
-  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
   const gpsVerified = gpsState === "verified";
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
 
@@ -101,7 +102,14 @@ export default function CheckoutPage() {
       city: addr.city,
       state: addr.state,
       pincode: addr.pincode,
+      latitude: addr.latitude,     // FIX Bug #3: copy GPS coordinates
+      longitude: addr.longitude,    // FIX Bug #3: copy GPS coordinates
     });
+    setGpsCoords(addr.latitude != null && addr.longitude != null
+      ? { lat: addr.latitude, lng: addr.longitude, accuracy: addr.accuracy ?? 0 }
+      : null);
+    setGpsState("verified");
+    setGpsError("");
     setAddressErrors({});
   };
 
@@ -184,7 +192,7 @@ export default function CheckoutPage() {
 
   // Handle manual location selection from map
   const handleMapLocationSelect = (location: { lat: number; lng: number; accuracy: number; city?: string; state?: string; pincode?: string }) => {
-    setGpsCoords({ lat: location.lat, lng: location.lng });
+    setGpsCoords({ lat: location.lat, lng: location.lng, accuracy: location.accuracy });
     setAddress((prev) => ({
       ...prev,
       city: location.city || prev.city,
@@ -400,97 +408,56 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* New Address Form (shown when "Add New" clicked OR no saved addresses) */}
+              {/* New Address Form — uses UnifiedAddressForm (same as Account → Addresses) */}
               {(showNewAddressForm || addresses.length === 0) && (
-                <div className="space-y-3 pt-2">
-                  {addresses.length > 0 && (
-                    <p className="text-sm font-semibold text-slate-700">Enter New Address</p>
-                  )}
-
-                  {/* GPS Verification Button */}
-                  <div className="p-3 bg-[#F3F8F1] rounded-lg border border-[#1A6B3C]/10">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        {gpsVerified ? (
-                          <ShieldCheck className="size-5 text-green-600" />
-                        ) : gpsState === "detecting" || gpsState === "fetching" ? (
-                          <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
-                        ) : gpsState === "failed" ? (
-                          <AlertCircle className="size-5 text-red-500" />
-                        ) : (
-                          <Navigation className="size-5 text-[#1A6B3C]" />
-                        )}
-                        <div>
-                          <p className="text-sm font-medium text-slate-700">
-                            {gpsVerified ? "Location Verified" : gpsState === "detecting" ? "Detecting location..." : gpsState === "fetching" ? "Fetching address..." : "GPS Verification"}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {gpsVerified ? "City, state, pincode auto-filled from GPS" : "Verify your delivery location (within 100m accuracy)"}
-                          </p>
-                        </div>
-                      </div>
-                      {!gpsVerified && gpsState !== "detecting" && gpsState !== "fetching" && (
-                        <Button type="button" size="sm" variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5 animate-pulse-ring" onClick={handleGPS}>
-                          <Navigation className="size-3.5" /> Verify
-                        </Button>
-                      )}
-                    </div>
-                    {gpsError && <p className="text-xs text-red-500 mt-2">{gpsError}</p>}
-                    {addressErrors.gps && !gpsVerified && (
-                      <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                        <AlertCircle className="size-3.5 shrink-0" />{addressErrors.gps}
-                      </p>
-                    )}
-                    {/* Set Location Manually — drag pin on map */}
-                    {!gpsVerified && (
-                      <div className="mt-2 pt-2 border-t border-slate-100">
-                        <button
-                          type="button"
-                          onClick={() => setMapPickerOpen(true)}
-                          className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
-                        >
-                          <MapIcon className="size-3.5" />
-                          Set Location Manually on Map
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label htmlFor="fullName" className="text-sm">Full Name *</Label><Input id="fullName" value={address.fullName} onChange={(e) => setAddress({ ...address, fullName: e.target.value })} className="h-11" />{addressErrors.fullName && <p className="text-xs text-red-500">{addressErrors.fullName}</p>}</div>
-                    {/* Phone field with +91 prefix built-in */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
-                      <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1A6B3C]/20 focus-within:border-[#1A6B3C]">
-                        <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">+91</span>
-                        <input
-                          id="phone"
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={10}
-                          placeholder="9876543210"
-                          value={address.phone}
-                          onChange={(e) => {
-                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
-                            setAddress({ ...address, phone: digits });
-                          }}
-                          className="flex-1 px-3 text-sm bg-transparent outline-none"
-                        />
-                      </div>
-                      {addressErrors.phone && <p className="text-xs text-red-500">{addressErrors.phone}</p>}
-                    </div>
-                  </div>
-                  <div className="space-y-1.5"><Label htmlFor="addr1" className="text-sm">Address Line 1 *</Label><Input id="addr1" placeholder="House no, Building, Street" value={address.addressLine1} onChange={(e) => setAddress({ ...address, addressLine1: e.target.value })} className="h-11" />{addressErrors.addressLine1 && <p className="text-xs text-red-500">{addressErrors.addressLine1}</p>}</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1.5"><Label htmlFor="addr2" className="text-sm">Address Line 2</Label><Input id="addr2" value={address.addressLine2} onChange={(e) => setAddress({ ...address, addressLine2: e.target.value })} className="h-11" /></div>
-                    <div className="space-y-1.5"><Label htmlFor="landmark" className="text-sm">Landmark</Label><Input id="landmark" placeholder="Near..." value={address.landmark} onChange={(e) => setAddress({ ...address, landmark: e.target.value })} className="h-11" /></div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1.5"><Label htmlFor="city" className="text-sm">City *</Label><Input id="city" value={address.city} onChange={(e) => { setAddress({ ...address, city: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.city && <p className="text-xs text-red-500">{addressErrors.city}</p>}</div>
-                    <div className="space-y-1.5"><Label htmlFor="state" className="text-sm">State *</Label><Input id="state" value={address.state} onChange={(e) => { setAddress({ ...address, state: e.target.value }); setGpsState("idle"); }} className="h-11" />{addressErrors.state && <p className="text-xs text-red-500">{addressErrors.state}</p>}</div>
-                    <div className="space-y-1.5"><Label htmlFor="pincode" className="text-sm">Pincode *</Label><Input id="pincode" inputMode="numeric" maxLength={6} placeholder="131001" value={address.pincode} onChange={(e) => { setAddress({ ...address, pincode: e.target.value.replace(/\D/g, "") }); setGpsState("idle"); }} className="h-11" />{addressErrors.pincode && <p className="text-xs text-red-500">{addressErrors.pincode}</p>}</div>
-                  </div>
-                </div>
+                <UnifiedAddressForm
+                  onSave={async (data) => {
+                    // Save to address book (persistent — same as Account page)
+                    if (user) {
+                      try {
+                        await addAddress({
+                          label: data.label,
+                          fullName: data.fullName,
+                          phone: data.phone,
+                          houseNo: data.houseNo,
+                          locality: data.locality,
+                          pincode: data.pincode,
+                          city: data.city,
+                          state: data.state,
+                          isDefault: data.isDefault,
+                          latitude: data.latitude,
+                          longitude: data.longitude,
+                          accuracy: data.accuracy,
+                          gpsVerified: data.gpsVerified,
+                        });
+                        // Wait for Firestore to sync (addresses update via onSnapshot)
+                        await new Promise((r) => setTimeout(r, 500));
+                      } catch (err) {
+                        console.warn("[checkout] Failed to save address to book:", err);
+                      }
+                    }
+                    // Set as selected address for this order
+                    setAddress({
+                      fullName: data.fullName,
+                      phone: data.phone,
+                      addressLine1: data.houseNo,
+                      addressLine2: data.locality,
+                      landmark: data.landmark,
+                      city: data.city,
+                      state: data.state,
+                      pincode: data.pincode,
+                      latitude: data.latitude,
+                      longitude: data.longitude,
+                    });
+                    setShowNewAddressForm(false);
+                    setGpsState("verified");
+                    setGpsError("");
+                    setGpsCoords({ lat: data.latitude ?? 0, lng: data.longitude ?? 0, accuracy: data.accuracy ?? 0 });
+                    appToast.success("Address saved", "Address added to your address book");
+                  }}
+                  onCancel={() => setShowNewAddressForm(false)}
+                  title="Add New Delivery Address"
+                />
               )}
 
               {/* Link to manage addresses */}

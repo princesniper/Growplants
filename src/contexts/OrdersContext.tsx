@@ -378,6 +378,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
               city: data.address.city,
               state: data.address.state,
               pincode: data.address.pincode,
+              // FIX Bug #1: MUST include GPS coordinates — API requires them
+              latitude: data.address.latitude ?? null,
+              longitude: data.address.longitude ?? null,
             },
             paymentMethod: data.paymentMethod,
             items: data.items.map((i) => ({

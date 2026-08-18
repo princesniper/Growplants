@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle } from "lucide-react";
+import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle, Map as MapIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { appToast } from "@/lib/toast";
 import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { MapLocationPicker } from "@/components/common/MapLocationPicker";
 
 const STEPS = ["Address", "Review", "Payment"] as const;
 
@@ -44,7 +45,9 @@ export default function CheckoutPage() {
   // GPS verification for checkout new address
   const [gpsState, setGpsState] = useState<"idle" | "detecting" | "fetching" | "verified" | "failed">("idle");
   const [gpsError, setGpsError] = useState("");
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lng: number } | null>(null);
   const gpsVerified = gpsState === "verified";
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay");
@@ -175,8 +178,25 @@ export default function CheckoutPage() {
     if (selectedAddressId) {
       setGpsState("idle");
       setGpsError("");
+      setGpsCoords(null);
     }
   }, [selectedAddressId]);
+
+  // Handle manual location selection from map
+  const handleMapLocationSelect = (location: { lat: number; lng: number; accuracy: number; city?: string; state?: string; pincode?: string }) => {
+    setGpsCoords({ lat: location.lat, lng: location.lng });
+    setAddress((prev) => ({
+      ...prev,
+      city: location.city || prev.city,
+      state: location.state || prev.state,
+      pincode: location.pincode || prev.pincode,
+      latitude: location.lat,
+      longitude: location.lng,
+    }));
+    setGpsState("verified");
+    setGpsError("");
+    appToast.success("Location set!", "Pin location confirmed on map");
+  };
 
   // BYPASS FIX: Track GPS-verified values — if user edits city/state/pincode after GPS verify, reset
   const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
@@ -421,6 +441,19 @@ export default function CheckoutPage() {
                         <AlertCircle className="size-3.5 shrink-0" />{addressErrors.gps}
                       </p>
                     )}
+                    {/* Set Location Manually — drag pin on map */}
+                    {!gpsVerified && (
+                      <div className="mt-2 pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => setMapPickerOpen(true)}
+                          className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+                        >
+                          <MapIcon className="size-3.5" />
+                          Set Location Manually on Map
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -581,6 +614,13 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Map Location Picker Dialog */}
+      <MapLocationPicker
+        open={mapPickerOpen}
+        onClose={() => setMapPickerOpen(false)}
+        onLocationSelect={handleMapLocationSelect}
+      />
     </Container>
   );
 }

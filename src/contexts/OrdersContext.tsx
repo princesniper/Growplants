@@ -297,7 +297,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         // Merge with any local-only orders (e.g. mock fallback) that aren't yet in Firestore
         const localOrders = loadFromStorage();
         const firestoreIds = new Set(mapped.map((o) => o.id));
-        const localOnly = localOrders.filter((o) => !firestoreIds.has(o.id) && !o._mock);
+        // FIX #1: Don't filter out _mock orders — they're the only persistence for dev fallback orders
+        const localOnly = localOrders.filter((o) => !firestoreIds.has(o.id));
         const merged = [...mapped, ...localOnly].sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );

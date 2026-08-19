@@ -284,12 +284,19 @@ export function MapLocationPicker({
         scheduleReverseGeocode(center[0], center[1]);
 
         // Fix size after render + invalidate on resize
+        // Two passes (100ms + 350ms) so we cover both the immediate layout
+        // flush AND any later reflow from the browser (e.g. mobile URL bar).
+        setTimeout(() => {
+          if (mapInstance.current && !cancelled) {
+            mapInstance.current.invalidateSize();
+          }
+        }, 100);
         setTimeout(() => {
           if (mapInstance.current && !cancelled) {
             mapInstance.current.invalidateSize();
             setIsMapReady(true);
           }
-        }, 250);
+        }, 350);
       })
       .catch((err) => {
         setError({
@@ -631,12 +638,15 @@ export function MapLocationPicker({
 
       {/* ─── Overlay backdrop ─── */}
       <div
-        className="fixed inset-0 z-[100] bg-black/50 flex items-end sm:items-center justify-center gp-fade-in p-0 sm:p-4"
+        className="fixed inset-0 z-[100] bg-black/50 flex items-stretch sm:items-center justify-center gp-fade-in p-0 sm:p-4"
         role="dialog"
         aria-modal="true"
         aria-label="Location picker"
       >
-        <div className="relative w-full h-[100dvh] sm:h-[min(80vh,640px)] sm:max-w-[min(92vw,560px)] sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
+        {/* ─── Modal shell ───
+            Mobile  : full screen, anchored to viewport edges (100dvh = dynamic viewport height)
+            Desktop : centered modal, max 560px wide × max 640px tall, with 16px outer padding */}
+        <div className="relative w-full h-[100dvh] sm:h-[640px] sm:max-h-[85vh] sm:max-w-[560px] sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
 
           {/* ─── Top bar: close + search + GPS locate ─── */}
           <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">
@@ -733,8 +743,8 @@ export function MapLocationPicker({
             )}
           </div>
 
-          {/* ─── Zoom controls (right side, vertically centered) ─── */}
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-2">
+          {/* ─── Zoom controls (right side, vertically centered relative to map) ─── */}
+          <div className="absolute right-3 top-[40%] -translate-y-1/2 z-[1000] flex flex-col gap-2">
             <button
               onClick={handleZoomIn}
               className="size-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xl text-slate-700 font-light"
@@ -751,17 +761,18 @@ export function MapLocationPicker({
             </button>
           </div>
 
-          {/* ─── Map container (fills space between top bar and bottom sheet) ─── */}
+          {/* ─── Map container (fills entire modal — bottom sheet overlays on top of it) ───
+              `absolute inset-0` works here because the modal shell now has a concrete height. */}
           <div
             ref={mapRef}
-            className="absolute inset-0"
+            className="absolute inset-0 z-[1]"
             style={{ background: "#e5e7eb" }}
             aria-label="Interactive map — drag the pin to your delivery location"
           />
 
           {/* ─── Loading overlay (map not ready yet) ─── */}
           {!isMapReady && (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
+            <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100">
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="size-8 animate-spin text-[#1A6B3C]" />
                 <p className="text-sm text-slate-500">Loading map…</p>
@@ -771,7 +782,7 @@ export function MapLocationPicker({
 
           {/* ─── Load-error overlay (Leaflet failed to load) ─── */}
           {error?.kind === "load" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 p-6">
+            <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100 p-6">
               <div className="flex flex-col items-center gap-3 max-w-sm text-center">
                 <AlertCircle className="size-10 text-red-500" />
                 <p className="text-sm font-medium text-slate-700">{error.message}</p>
@@ -790,7 +801,7 @@ export function MapLocationPicker({
             </div>
           )}
 
-          {/* ─── Bottom sheet ─── */}
+          {/* ─── Bottom sheet (confirm panel) ─── */}
           <div className="absolute bottom-0 inset-x-0 z-[1000] gp-sheet-enter">
             <div className="bg-white rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.1)] pb-[env(safe-area-inset-bottom)]">
 

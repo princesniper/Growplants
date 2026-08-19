@@ -583,3 +583,52 @@ Verification:
 - `bunx tsc --noEmit` → clean (0 errors)
 - Dev server `/account/addresses` returns 200
 - Modal is now properly sized on both mobile (full screen via 100dvh) and desktop (centered, 560×640 max)
+
+---
+Task ID: map-picker-black-area-fix
+Agent: main
+Task: Address Location Picker UI fix — map open hote hi page ka bottom pura black ho raha hai. Root cause identify karke fix karo.
+
+Root Cause (the actual bug):
+- Earlier "responsive fix" used Tailwind arbitrary values like `h-[min(80vh,640px)]` and `max-w-[min(92vw,560px)]`.
+- Tailwind v3's arbitrary value syntax does NOT support CSS `min()`/`max()` function calls inside the brackets — the brackets expect a single unit value.
+- Result: these classes silently fail to generate any CSS rule, so the modal shell had NO height.
+- Without a concrete height on the parent, `absolute inset-0` on the map container (and on the bottom sheet, loading overlay, etc.) collapses to 0×0.
+- The overlay backdrop (`bg-black/50`) renders full-screen correctly, but the modal's inner content is invisible → user sees a giant black area at the bottom.
+
+Fix — `src/components/common/MapLocationPicker.tsx`:
+
+1. **Modal shell sizing** (the actual root cause fix):
+   - Replaced `h-[min(80vh,640px)]` → `sm:h-[640px] sm:max-h-[85vh]` (Tailwind parses `max-h-[85vh]` correctly; concrete 640px tall on desktop, capped at 85% viewport on short screens).
+   - Replaced `max-w-[min(92vw,560px)]` → `sm:max-w-[560px]` (560px max on desktop; mobile uses full width).
+   - Mobile stays `h-[100dvh]` (dynamic viewport height — handles mobile URL bar).
+
+2. **Z-index hierarchy** (so overlays never fight each other):
+   - Map container: `z-[1]` (above modal background)
+   - Loading + load-error overlays: `z-[2]` (above map, below controls)
+   - Top bar, zoom controls, bottom sheet: `z-[1000]` (above everything inside modal)
+   - Hint banner: `z-[999]` (above map, below controls)
+
+3. **Outer overlay alignment**:
+   - Changed `items-end sm:items-center` → `items-stretch sm:items-center`
+   - `items-stretch` on mobile means the modal fills the entire overlay (no gap at top/bottom where the black backdrop would show through).
+
+4. **Zoom controls repositioned**:
+   - Was `top-1/2 -translate-y-1/2` — center of the modal vertically. But because the bottom sheet occupies the bottom ~250px, "center" overlapped with the sheet.
+   - Changed to `top-[40%] -translate-y-1/2` — centered relative to the visible MAP area (excluding the bottom sheet), so the controls don't get visually clipped by the sheet.
+
+5. **Double-pass `invalidateSize()`**:
+   - Was a single 250ms timeout — sometimes the browser hadn't finished laying out the modal yet, so Leaflet's invalidateSize used stale dimensions.
+   - Now two passes: 100ms (immediate layout flush) + 350ms (post-reflow, e.g. after mobile URL bar animation). This catches both timing windows reliably.
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/account/addresses` and `/checkout` both return 200
+- Modal now has a concrete 640px height on desktop, full 100dvh on mobile
+- Map renders properly within the modal — no more black canvas
+
+Stage Summary:
+- Root cause: Tailwind arbitrary value syntax doesn't support `min()`/`max()` function calls
+- Fixed by using separate, simple Tailwind classes (`h-[640px]`, `max-h-[85vh]`, `max-w-[560px]`) that the Tailwind compiler actually understands
+- Added proper z-index hierarchy so map + overlays + controls + sheet stack correctly
+- Double invalidateSize pass ensures Leaflet never uses stale dimensions

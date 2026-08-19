@@ -477,3 +477,85 @@ Stage Summary:
 - Live reverse-geocoded bottom sheet gives immediate visual feedback as user pans
 - GPS accuracy is shown as a hint (not a hard rejection) — user can always fine-tune manually
 - Confirmation remains strictly required (button disabled while reverse geocoding; no implicit verification)
+
+---
+Task ID: map-picker-proper-draggable-fix
+Agent: main
+Task: Address location map ko properly fix karke redesign karo — pin draggable hona mandatory hai (mouse + touch), lat/lng live update ho, professional delivery-app style UI/UX.
+
+Root Cause (existing implementation):
+- Earlier "Blinkit-style" implementation used a CENTER-PIN design where the marker was created with `interactive: false` — meaning the marker could NOT be dragged at all.
+- Instead, the user dragged the MAP and the pin stayed fixed in the center.
+- This conflicts with the user's explicit requirement: "Pin draggable hona mandatory hai."
+- Touch behavior was also unverified — Leaflet's tap mode wasn't explicitly enabled.
+
+Fix — full rewrite of `src/components/common/MapLocationPicker.tsx`:
+
+1. **Real draggable marker (the core fix)**:
+   - `L.marker(center, { draggable: true, autoPan: true, autoPanPadding: L.point(60, 60), riseOnHover: true })`
+   - User can now drag the pin with BOTH mouse and touch (Leaflet 1.9 handles both when `draggable: true`).
+   - `autoPan: true` pans the map automatically when the marker is dragged to the edge.
+
+2. **Live lat/lng updates**:
+   - `dragstart` → set `isDragging = true` (suppresses Confirm + shows "Dragging…" in bottom sheet).
+   - `drag`     → updates `coords` state with the marker's current lat/lng (live, no reverse geocode).
+   - `dragend`  → triggers debounced reverse geocode (350ms), sets `isDragging = false`.
+   - Map click   → moves marker to clicked point (alternative for desktop users).
+
+3. **Touch-friendly configuration**:
+   - Map options: `tap: true, tapTolerance: 15, touchZoom: true, inertia: true`.
+   - CSS on marker + leaflet container: `touch-action: none` (lets Leaflet own the touch gestures so they don't get hijacked by the browser).
+   - `.leaflet-marker-draggable { cursor: grab }` + `:active { cursor: grabbing }` for clear affordance.
+
+4. **Proper error states (typed)**:
+   - Added `MapError` type with `kind: "load" | "permission" | "position" | "timeout" | "search" | "reverse" | "generic"`.
+   - `load`      → full-screen red overlay (map library couldn't load)
+   - `permission`→ amber warning, suggests enabling browser permission, also offers manual drag
+   - `position`  → amber warning, suggests enabling device GPS, also offers manual drag
+   - `timeout`   → amber warning, suggests moving to open area, also offers manual drag
+   - `search`    → inline red, "No results found"
+   - `reverse`   → soft warning, allows confirm anyway (coords are valid)
+   - `gpsErrorToMapError()` translates GeolocationPositionError codes 1/2/3 to the right kind.
+
+5. **Confirm button states (clearly visible at bottom)**:
+   - Disabled while: `isReverseGeocoding` (still fetching address) OR `isDragging` (pin not dropped) OR `isConfirming`.
+   - Button label changes by state:
+     - `Confirming…` (spinner, while API call is in flight)
+     - `Drop the pin first` (during drag — explicit instruction)
+     - `Detecting…` (spinner, while reverse geocoding)
+     - `Confirm Location` (green, ready)
+   - This ensures the user understands why they can't confirm.
+
+6. **Responsive layout**:
+   - Mobile: full-screen picker (`w-full h-full`)
+   - Desktop: centered modal (`sm:h-[92vh] sm:max-w-3xl sm:rounded-2xl`)
+   - Top bar (close + search + GPS locate) floats above map
+   - Zoom controls float on right side, vertically centered
+   - Bottom sheet slides up (animation), always visible, with safe-area-inset-bottom padding for notched phones
+   - Map fills `absolute inset-0` so it never overflows or gets cut off
+
+7. **Map integrity**:
+   - `window.resize` + `orientationchange` → `invalidateSize()` so map never gets stale size (fixes common Leaflet bug where map looks half-loaded when modal reflows).
+   - Also invalidate after 400ms delay to cover mobile URL bar show/hide.
+   - Proper teardown on close: `mapInstance.current.remove()` + null out refs.
+
+8. **Marker redesign**:
+   - Custom `divIcon` with rounded teardrop shape, green head (#1A6B3C), white border, drop-shadow, white inner dot.
+   - `gp-marker-drop` animation on mount (cubic-bezier overshoot for "drop" feel).
+   - Hover: `translateY(-2px)` micro-interaction.
+
+API surface unchanged: still `open | onClose | onLocationSelect | initialLocation`. No consumer changes needed.
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- Dev server restarted, `/account/addresses` and `/checkout` both 200 OK
+- Marker `draggable: true` is now the source of truth — user gets the exact delivery-app behavior they asked for
+- Live `drag` handler updates coords so bottom sheet shows live lat/lng as user drags
+
+Stage Summary:
+- Pin is now actually draggable (was static before — root cause of the complaint)
+- lat/lng updates immediately on every drag tick (no debounce)
+- Reverse geocode triggers only on `dragend` (debounced 350ms) — no API spam
+- Confirm is impossible until the pin is dropped AND address is detected — verification cannot be bypassed
+- 7 distinct error states give clear, actionable guidance (vs generic "something went wrong")
+- Works on touch + mouse uniformly

@@ -1,0 +1,721 @@
+     1→"use client";
+     2→
+     3→/**
+     4→ * GrowPlants — MapLocationPicker (Blinkit-style)
+     5→ * ============================================================================
+     6→ * Full-screen interactive location picker with:
+     7→ *   - Center-pin (Blinkit-style, pin stays in middle of screen while map moves)
+     8→ *   - "Use Current Location" / recenter button (top-right floating)
+     9→ *   - Search bar (top, dismissable)
+    10→ *   - Bottom sheet showing live reverse-geocoded address
+    11→ *   - "Confirm Location" button at bottom (always visible)
+    12→ *
+    13→ * UX:
+    14→ *   1. Picker opens full-screen
+    15→ *   2. Pin is centered; user drags the MAP (not the pin) to position the pin
+    16→ *   3. As the map stops moving, we reverse-geocode the center coordinates
+    17→ *   4. Bottom sheet shows the resolved address (street, city, state, pincode)
+    18→ *   5. User clicks "Confirm Location"
+    19→ *   6. Parent's onLocationSelect fires with {lat, lng, accuracy, city, state, pincode}
+    20→ *
+    21→ * Notes:
+    22→ *   - Leaflet loaded from CDN (no npm install needed)
+    23→ *   - Uses Nominatim (OpenStreetMap) for both forward search and reverse geocode
+    24→ * ============================================================================
+    25→ */
+    26→import { useEffect, useRef, useState, useCallback } from "react";
+    27→import {
+    28→  MapPin, Check, X, Loader2, Search, Crosshair, AlertCircle,
+    29→  ChevronDown, Navigation, Locate,
+    30→} from "lucide-react";
+    31→import { cn } from "@/lib/utils";
+    32→import { Button } from "@/components/ui/button";
+    33→import { Input } from "@/components/ui/input";
+    34→import { getGPSLocation } from "@/lib/gps";
+    35→
+    36→// Default center: Sonipat, Haryana
+    37→const DEFAULT_CENTER: [number, number] = [28.9965, 77.0203];
+    38→const DEFAULT_ZOOM = 16;
+    39→const REVERSE_GEOCODE_DEBOUNCE_MS = 500;
+    40→
+    41→// ─── Leaflet loader (CDN, singleton) ───
+    42→let leafletLoaded = false;
+    43→let leafletLoadPromise: Promise<void> | null = null;
+    44→
+    45→function loadLeaflet(): Promise<void> {
+    46→  if (typeof window === "undefined") return Promise.reject(new Error("SSR"));
+    47→  if (leafletLoaded) return Promise.resolve();
+    48→  if (leafletLoadPromise) return leafletLoadPromise;
+    49→
+    50→  leafletLoadPromise = new Promise<void>((resolve, reject) => {
+    51→    const link = document.createElement("link");
+    52→    link.rel = "stylesheet";
+    53→    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    54→    document.head.appendChild(link);
+    55→
+    56→    const script = document.createElement("script");
+    57→    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    58→    script.async = true;
+    59→    script.onload = () => {
+    60→      leafletLoaded = true;
+    61→      resolve();
+    62→    };
+    63→    script.onerror = () => reject(new Error("Failed to load map library"));
+    64→    document.head.appendChild(script);
+    65→  });
+    66→
+    67→  return leafletLoadPromise;
+    68→}
+    69→
+    70→interface ReverseGeocodeResult {
+    71→  city: string;
+    72→  state: string;
+    73→  pincode: string;
+    74→  street?: string;
+    75→  area?: string;
+    76→  displayName?: string;
+    77→}
+    78→
+    79→interface MapLocationPickerProps {
+    80→  open: boolean;
+    81→  onClose: () => void;
+    82→  onLocationSelect: (location: {
+    83→    lat: number;
+    84→    lng: number;
+    85→    accuracy: number;
+    86→    city?: string;
+    87→    state?: string;
+    88→    pincode?: string;
+    89→  }) => void;
+    90→  initialLocation?: { lat: number; lng: number } | null;
+    91→}
+    92→
+    93→export function MapLocationPicker({
+    94→  open,
+    95→  onClose,
+    96→  onLocationSelect,
+    97→  initialLocation,
+    98→}: MapLocationPickerProps) {
+    99→  const mapRef = useRef<HTMLDivElement>(null);
+   100→  const mapInstance = useRef<any>(null);
+   101→  const centerMarkerRef = useRef<any>(null); // static center marker (visual only)
+   102→  const reverseAbortRef = useRef<AbortController | null>(null);
+   103→  const reverseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+   104→
+   105→  // ─── State ───
+   106→  const [coords, setCoords] = useState<{ lat: number; lng: number }>(
+   107→    initialLocation ?? { lat: DEFAULT_CENTER[0], lng: DEFAULT_CENTER[1] }
+   108→  );
+   109→  const [address, setAddress] = useState<ReverseGeocodeResult | null>(null);
+   110→  const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
+   111→  const [isConfirming, setIsConfirming] = useState(false);
+   112→
+   113→  // Search state
+   114→  const [searchOpen, setSearchOpen] = useState(false);
+   115→  const [searchQuery, setSearchQuery] = useState("");
+   116→  const [isSearching, setIsSearching] = useState(false);
+   117→  const [searchResults, setSearchResults] = useState<
+   118→    Array<{ lat: number; lng: number; displayName: string }>
+   119→  >([]);
+   120→
+   121→  // GPS locate state
+   122→  const [isLocating, setIsLocating] = useState(false);
+   123→  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+   124→
+   125→  const [error, setError] = useState("");
+   126→  const [isMapReady, setIsMapReady] = useState(false);
+   127→
+   128→  // ─── Initialize map on open ───
+   129→  useEffect(() => {
+   130→    if (!open || !mapRef.current) return;
+   131→
+   132→    let cancelled = false;
+   133→    setIsMapReady(false);
+   134→
+   135→    loadLeaflet()
+   136→      .then(() => {
+   137→        if (cancelled || !mapRef.current) return;
+   138→        const L = (window as any).L;
+   139→
+   140→        const center: [number, number] = initialLocation
+   141→          ? [initialLocation.lat, initialLocation.lng]
+   142→          : DEFAULT_CENTER;
+   143→
+   144→        mapInstance.current = L.map(mapRef.current, {
+   145→          center,
+   146→          zoom: DEFAULT_ZOOM,
+   147→          zoomControl: false,
+   148→          scrollWheelZoom: true,
+   149→          dragging: true,
+   150→          doubleClickZoom: false,
+   151→          attributionControl: false,
+   152→        });
+   153→
+   154→        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+   155→          maxZoom: 19,
+   156→        }).addTo(mapInstance.current);
+   157→
+   158→        // Center pin: visual element only — does NOT move when user drags the map.
+   159→        // It stays anchored to the center of the viewport, so as the map moves
+   160→        // underneath, the "selected" coords are always the map's current center.
+   161→        const CenterPinIcon = L.divIcon({
+   162→          className: "",
+   163→          html: `
+   164→            <div class="gp-center-pin">
+   165→              <div class="gp-center-pin-shadow"></div>
+   166→              <div class="gp-center-pin-stem"></div>
+   167→              <div class="gp-center-pin-head"></div>
+   168→            </div>
+   169→          `,
+   170→          iconSize: [40, 50],
+   171→          iconAnchor: [20, 46],
+   172→        });
+   173→        centerMarkerRef.current = L.marker(center, {
+   174→          icon: CenterPinIcon,
+   175→          interactive: false,    // can't drag the pin itself — drag the map instead
+   176→          keyboard: false,
+   177→          zIndexOffset: 1000,
+   178→        }).addTo(mapInstance.current);
+   179→
+   180→        // ─── On map move: update coords + debounced reverse geocode ───
+   181→        const handleMove = () => {
+   182→          const c = mapInstance.current.getCenter();
+   183→          setCoords({ lat: c.lat, lng: c.lng });
+   184→          setGpsAccuracy(null); // no longer purely GPS once user drags
+   185→          scheduleReverseGeocode(c.lat, c.lng);
+   186→        };
+   187→        mapInstance.current.on("move", handleMove);
+   188→        mapInstance.current.on("moveend", handleMove);
+   189→
+   190→        // Initial reverse geocode
+   191→        scheduleReverseGeocode(center[0], center[1]);
+   192→
+   193→        // Fix size after render
+   194→        setTimeout(() => {
+   195→          if (mapInstance.current && !cancelled) {
+   196→            mapInstance.current.invalidateSize();
+   197→            setIsMapReady(true);
+   198→          }
+   199→        }, 250);
+   200→      })
+   201→      .catch((err) => {
+   202→        setError("Failed to load map. Please check your internet connection.");
+   203→        console.error("[MapPicker] Leaflet load error:", err);
+   204→      });
+   205→
+   206→    return () => {
+   207→      cancelled = true;
+   208→      if (reverseTimerRef.current) clearTimeout(reverseTimerRef.current);
+   209→      if (reverseAbortRef.current) reverseAbortRef.current.abort();
+   210→      if (mapInstance.current) {
+   211→        mapInstance.current.remove();
+   212→        mapInstance.current = null;
+   213→        centerMarkerRef.current = null;
+   214→      }
+   215→    };
+   216→    // eslint-disable-next-line react-hooks/exhaustive-deps
+   217→  }, [open]);
+   218→
+   219→  // ─── Debounced reverse geocode ───
+   220→  const scheduleReverseGeocode = useCallback((lat: number, lng: number) => {
+   221→    if (reverseTimerRef.current) clearTimeout(reverseTimerRef.current);
+   222→    if (reverseAbortRef.current) reverseAbortRef.current.abort();
+   223→
+   224→    reverseTimerRef.current = setTimeout(async () => {
+   225→      const controller = new AbortController();
+   226→      reverseAbortRef.current = controller;
+   227→      setIsReverseGeocoding(true);
+   228→      setError("");
+   229→      try {
+   230→        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+   231→        const res = await fetch(url, {
+   232→          signal: controller.signal,
+   233→          headers: {
+   234→            "Accept-Language": "en",
+   235→            "User-Agent": "GrowPlants/1.0 (hello@growplants.in)",
+   236→          },
+   237→        });
+   238→        if (!res.ok) throw new Error("Reverse geocoding failed");
+   239→        const data = await res.json();
+   240→        const addr = data.address || {};
+   241→        const streetParts = [
+   242→          addr.house_number,
+   243→          addr.road,
+   244→          addr.neighbourhood,
+   245→          addr.suburb,
+   246→        ].filter(Boolean);
+   247→        const areaParts = [
+   248→          addr.city || addr.town || addr.village || addr.county,
+   249→          addr.state,
+   250→        ].filter(Boolean);
+   251→
+   252→        setAddress({
+   253→          city: addr.city || addr.town || addr.village || addr.county || "",
+   254→          state: addr.state || "",
+   255→          pincode: addr.postcode || "",
+   256→          street: streetParts.join(", "),
+   257→          area: areaParts.join(", "),
+   258→          displayName: data.display_name,
+   259→        });
+   260→      } catch (err: any) {
+   261→        if (err?.name === "AbortError") return;
+   262→        // Soft fail — we still have coords, just no address text
+   263→        setAddress(null);
+   264→      } finally {
+   265→        setIsReverseGeocoding(false);
+   266→      }
+   267→    }, REVERSE_GEOCODE_DEBOUNCE_MS);
+   268→  }, []);
+   269→
+   270→  // ─── GPS Locate (recenter on user's current GPS) ───
+   271→  const handleLocate = useCallback(async () => {
+   272→    setIsLocating(true);
+   273→    setError("");
+   274→    try {
+   275→      const loc = await getGPSLocation();
+   276→      setGpsAccuracy(loc.accuracy);
+   277→      const L = (window as any).L;
+   278→      if (mapInstance.current) {
+   279→        mapInstance.current.setView([loc.lat, loc.lng], 17, { animate: true });
+   280→      }
+   281→      setCoords({ lat: loc.lat, lng: loc.lng });
+   282→      scheduleReverseGeocode(loc.lat, loc.lng);
+   283→    } catch (err) {
+   284→      setError(
+   285→        err instanceof Error
+   286→          ? err.message
+   287→          : "Could not detect your GPS location. Please try manually."
+   288→      );
+   289→    } finally {
+   290→      setIsLocating(false);
+   291→    }
+   292→  }, [scheduleReverseGeocode]);
+   293→
+   294→  // ─── Search (Nominatim forward search) ───
+   295→  const handleSearch = useCallback(async () => {
+   296→    if (!searchQuery.trim()) return;
+   297→    setIsSearching(true);
+   298→    setError("");
+   299→    try {
+   300→      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5&countrycodes=in&addressdetails=1`;
+   301→      const res = await fetch(url, {
+   302→        headers: {
+   303→          "Accept-Language": "en",
+   304→          "User-Agent": "GrowPlants/1.0 (hello@growplants.in)",
+   305→        },
+   306→      });
+   307→      if (!res.ok) throw new Error("Search failed");
+   308→      const data = await res.json();
+   309→      if (data && data.length > 0) {
+   310→        setSearchResults(
+   311→          data.map((d: any) => ({
+   312→            lat: parseFloat(d.lat),
+   313→            lng: parseFloat(d.lon),
+   314→            displayName: d.display_name,
+   315→          }))
+   316→        );
+   317→      } else {
+   318→        setSearchResults([]);
+   319→        setError("No results. Try a different search term.");
+   320→      }
+   321→    } catch (err) {
+   322→      setError("Search failed. Please try again.");
+   323→    } finally {
+   324→      setIsSearching(false);
+   325→    }
+   326→  }, [searchQuery]);
+   327→
+   328→  const handleSelectSearchResult = (r: { lat: number; lng: number }) => {
+   329→    if (mapInstance.current) {
+   330→      mapInstance.current.setView([r.lat, r.lng], 17, { animate: true });
+   331→    }
+   332→    setCoords({ lat: r.lat, lng: r.lng });
+   333→    scheduleReverseGeocode(r.lat, r.lng);
+   334→    setSearchOpen(false);
+   335→    setSearchQuery("");
+   336→    setSearchResults([]);
+   337→    setError("");
+   338→  };
+   339→
+   340→  // ─── Confirm ───
+   341→  const handleConfirm = async () => {
+   342→    setIsConfirming(true);
+   343→    setError("");
+   344→    try {
+   345→      // If we already have a reverse-geocoded address, use it. Otherwise, do one final fetch.
+   346→      let finalAddr: ReverseGeocodeResult | null = address;
+   347→      if (!finalAddr) {
+   348→        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&addressdetails=1`;
+   349→        const res = await fetch(url, {
+   350→          headers: {
+   351→            "Accept-Language": "en",
+   352→            "User-Agent": "GrowPlants/1.0 (hello@growplants.in)",
+   353→          },
+   354→        });
+   355→        if (res.ok) {
+   356→          const data = await res.json();
+   357→          const a = data.address || {};
+   358→          finalAddr = {
+   359→            city: a.city || a.town || a.village || a.county || "",
+   360→            state: a.state || "",
+   361→            pincode: a.postcode || "",
+   362→            street: [a.house_number, a.road, a.neighbourhood].filter(Boolean).join(", "),
+   363→            area: [a.city || a.town || a.village, a.state].filter(Boolean).join(", "),
+   364→            displayName: data.display_name,
+   365→          };
+   366→        }
+   367→      }
+   368→
+   369→      onLocationSelect({
+   370→        lat: coords.lat,
+   371→        lng: coords.lng,
+   372→        accuracy: gpsAccuracy ?? 0,
+   373→        city: finalAddr?.city,
+   374→        state: finalAddr?.state,
+   375→        pincode: finalAddr?.pincode,
+   376→      });
+   377→      onClose();
+   378→    } catch (err) {
+   379→      setError("Could not confirm location. Please try again.");
+   380→    } finally {
+   381→      setIsConfirming(false);
+   382→    }
+   383→  };
+   384→
+   385→  // ─── Prevent body scroll when open ───
+   386→  useEffect(() => {
+   387→    if (!open) return;
+   388→    const prev = document.body.style.overflow;
+   389→    document.body.style.overflow = "hidden";
+   390→    return () => {
+   391→      document.body.style.overflow = prev;
+   392→    };
+   393→  }, [open]);
+   394→
+   395→  if (!open) return null;
+   396→
+   397→  return (
+   398→    <>
+   399→      {/* ─── Inline styles for the center pin (Blinkit-style) ─── */}
+   400→      <style>{`
+   401→        .gp-center-pin {
+   402→          position: relative;
+   403→          width: 40px;
+   404→          height: 50px;
+   405→          animation: gp-pin-drop 0.35s ease-out;
+   406→        }
+   407→        @keyframes gp-pin-drop {
+   408→          0% { transform: translateY(-30px); opacity: 0; }
+   409→          60% { transform: translateY(4px); opacity: 1; }
+   410→          100% { transform: translateY(0); opacity: 1; }
+   411→        }
+   412→        .gp-center-pin-head {
+   413→          position: absolute;
+   414→          top: 0;
+   415→          left: 50%;
+   416→          transform: translateX(-50%);
+   417→          width: 28px;
+   418→          height: 28px;
+   419→          border-radius: 50% 50% 50% 0;
+   420→          background: #1A6B3C;
+   421→          transform-origin: bottom center;
+   422→          rotate: -45deg;
+   423→          box-shadow: 0 4px 10px rgba(26, 107, 60, 0.4), 0 0 0 4px rgba(255,255,255,0.95) inset;
+   424→          border: 3px solid white;
+   425→        }
+   426→        .gp-center-pin-head::after {
+   427→          content: "";
+   428→          position: absolute;
+   429→          top: 6px;
+   430→          left: 6px;
+   431→          width: 13px;
+   432→          height: 13px;
+   433→          border-radius: 50%;
+   434→          background: white;
+   435→          rotate: 45deg;
+   436→        }
+   437→        .gp-center-pin-stem {
+   438→          position: absolute;
+   439→          top: 28px;
+   440→          left: 50%;
+   441→          transform: translateX(-50%);
+   442→          width: 4px;
+   443→          height: 14px;
+   444→          background: #1A6B3C;
+   445→        }
+   446→        .gp-center-pin-shadow {
+   447→          position: absolute;
+   448→          top: 40px;
+   449→          left: 50%;
+   450→          transform: translateX(-50%);
+   451→          width: 18px;
+   452→          height: 6px;
+   453→          background: rgba(0,0,0,0.2);
+   454→          border-radius: 50%;
+   455→          filter: blur(2px);
+   456→        }
+   457→        .gp-map-fade-in { animation: gp-fade-in 0.25s ease-out; }
+   458→        @keyframes gp-fade-in {
+   459→          from { opacity: 0; transform: translateY(8px); }
+   460→          to { opacity: 1; transform: translateY(0); }
+   461→        }
+   462→        .gp-sheet-enter { animation: gp-sheet-in 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+   463→        @keyframes gp-sheet-in {
+   464→          from { transform: translateY(100%); }
+   465→          to { transform: translateY(0); }
+   466→        }
+   467→        .leaflet-container { background: #e5e7eb; font-family: inherit; }
+   468→        .leaflet-bar a { border-radius: 8px !important; }
+   469→      `}</style>
+   470→
+   471→      {/* ─── Full-screen overlay ─── */}
+   472→      <div className="fixed inset-0 z-[100] bg-black/40 flex items-end sm:items-center justify-center">
+   473→        <div className="relative w-full h-full sm:h-[90vh] sm:max-w-3xl sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter">
+   474→
+   475→          {/* ─── Top bar: close + search toggle + GPS locate ─── */}
+   476→          <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">
+   477→            <div className="flex items-start gap-2 pointer-events-auto">
+   478→              <button
+   479→                onClick={onClose}
+   480→                className="size-11 shrink-0 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+   481→                aria-label="Close map"
+   482→              >
+   483→                <X className="size-5 text-slate-700" />
+   484→              </button>
+   485→
+   486→              {/* Search bar — toggleable */}
+   487→              <div className="flex-1 min-w-0">
+   488→                {!searchOpen ? (
+   489→                  <button
+   490→                    onClick={() => setSearchOpen(true)}
+   491→                    className="w-full h-11 rounded-full bg-white shadow-lg px-4 flex items-center gap-2 hover:bg-slate-50 active:scale-[0.98] transition-all"
+   492→                  >
+   493→                    <Search className="size-4 text-slate-400" />
+   494→                    <span className="text-sm text-slate-500 truncate">
+   495→                      Search for your area, street, or landmark…
+   496→                    </span>
+   497→                  </button>
+   498→                ) : (
+   499→                  <div className="bg-white shadow-lg rounded-full flex items-center gap-1 pl-4 pr-1 h-11">
+   500→                    <Search className="size-4 text-slate-400 shrink-0" />
+   501→                    <input
+   502→                      autoFocus
+   503→                      type="text"
+   504→                      placeholder="Search location…"
+   505→                      value={searchQuery}
+   506→                      onChange={(e) => setSearchQuery(e.target.value)}
+   507→                      onKeyDown={(e) => {
+   508→                        if (e.key === "Enter") handleSearch();
+   509→                        if (e.key === "Escape") {
+   510→                          setSearchOpen(false);
+   511→                          setSearchQuery("");
+   512→                          setSearchResults([]);
+   513→                        }
+   514→                      }}
+   515→                      className="flex-1 bg-transparent outline-none text-sm text-slate-700 min-w-0"
+   516→                    />
+   517→                    <button
+   518→                      onClick={() => {
+   519→                        setSearchOpen(false);
+   520→                        setSearchQuery("");
+   521→                        setSearchResults([]);
+   522→                      }}
+   523→                      className="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center shrink-0"
+   524→                      aria-label="Close search"
+   525→                    >
+   526→                      <X className="size-4 text-slate-500" />
+   527→                    </button>
+   528→                  </div>
+   529→                )}
+   530→              </div>
+   531→
+   532→              {/* GPS locate */}
+   533→              <button
+   534→                onClick={handleLocate}
+   535→                disabled={isLocating}
+   536→                className="size-11 shrink-0 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50"
+   537→                aria-label="Use current location"
+   538→                title="Use my current GPS location"
+   539→              >
+   540→                {isLocating ? (
+   541→                  <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
+   542→                ) : (
+   543→                  <Locate className="size-5 text-[#1A6B3C]" />
+   544→                )}
+   545→              </button>
+   546→            </div>
+   547→
+   548→            {/* ─── Search results dropdown ─── */}
+   549→            {searchOpen && searchResults.length > 0 && (
+   550→              <div className="pointer-events-auto mt-2 bg-white rounded-xl shadow-xl max-h-[40vh] overflow-y-auto">
+   551→                {searchResults.map((r, i) => (
+   552→                  <button
+   553→                    key={i}
+   554→                    onClick={() => handleSelectSearchResult(r)}
+   555→                    className="w-full text-left px-4 py-3 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-0 flex items-start gap-2"
+   556→                  >
+   557→                    <MapPin className="size-4 text-slate-400 mt-0.5 shrink-0" />
+   558→                    <span className="text-sm text-slate-700 line-clamp-2">
+   559→                      {r.displayName}
+   560→                    </span>
+   561→                  </button>
+   562→                ))}
+   563→              </div>
+   564→            )}
+   565→          </div>
+   566→
+   567→          {/* ─── Zoom controls (right side) ─── */}
+   568→          <div className="absolute right-3 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-2">
+   569→            <button
+   570→              onClick={() => mapInstance.current?.zoomIn()}
+   571→              className="size-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xl text-slate-700 font-light"
+   572→              aria-label="Zoom in"
+   573→            >
+   574→              +
+   575→            </button>
+   576→            <button
+   577→              onClick={() => mapInstance.current?.zoomOut()}
+   578→              className="size-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xl text-slate-700 font-light"
+   579→              aria-label="Zoom out"
+   580→            >
+   581→              −
+   582→            </button>
+   583→          </div>
+   584→
+   585→          {/* ─── Map container ─── */}
+   586→          <div
+   587→            ref={mapRef}
+   588→            className="absolute inset-0"
+   589→            style={{ background: "#e5e7eb" }}
+   590→          />
+   591→
+   592→          {/* ─── Loading overlay (map not ready yet) ─── */}
+   593→          {!isMapReady && (
+   594→            <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
+   595→              <div className="flex flex-col items-center gap-3">
+   596→                <Loader2 className="size-8 animate-spin text-[#1A6B3C]" />
+   597→                <p className="text-sm text-slate-500">Loading map…</p>
+   598→              </div>
+   599→            </div>
+   600→          )}
+   601→
+   602→          {/* ─── "Drag the map to adjust" hint (top center, fade out after first move) ─── */}
+   603→          {isMapReady && !address && !isReverseGeocoding && (
+   604→            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
+   605→              <div className="bg-slate-900/80 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
+   606→                <Navigation className="size-3" />
+   607→                Drag the map to set your location
+   608→              </div>
+   609→            </div>
+   610→          )}
+   611→
+   612→          {/* ─── Bottom sheet (Blinkit-style) ─── */}
+   613→          <div className="absolute bottom-0 inset-x-0 z-[1000] gp-sheet-enter">
+   614→            <div className="bg-white rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]">
+   615→              {/* Drag handle */}
+   616→              <div className="flex justify-center pt-2 pb-1">
+   617→                <div className="w-10 h-1 rounded-full bg-slate-300" />
+   618→              </div>
+   619→
+   620→              <div className="px-4 pb-4 pt-2">
+   621→                {/* Header row */}
+   622→                <div className="flex items-start gap-3 mb-3">
+   623→                  <div className="size-10 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0">
+   624→                    <MapPin className="size-5 text-[#1A6B3C]" />
+   625→                  </div>
+   626→                  <div className="flex-1 min-w-0">
+   627→                    <div className="flex items-center gap-2 mb-0.5">
+   628→                      <p className="text-sm font-semibold text-slate-800">
+   629→                        {isReverseGeocoding ? "Detecting address…" :
+   630→                         address ? "Confirm your location" :
+   631→                         "Move the map to set location"}
+   632→                      </p>
+   633→                      {gpsAccuracy != null && !isReverseGeocoding && (
+   634→                        <span className="text-[10px] font-medium text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full">
+   635→                          GPS · {Math.round(gpsAccuracy)}m
+   636→                        </span>
+   637→                      )}
+   638→                    </div>
+   639→                    {isReverseGeocoding ? (
+   640→                      <div className="space-y-1">
+   641→                        <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse" />
+   642→                        <div className="h-3 w-1/2 bg-slate-100 rounded animate-pulse" />
+   643→                      </div>
+   644→                    ) : address ? (
+   645→                      <>
+   646→                        <p className="text-sm text-slate-700 line-clamp-1 font-medium">
+   647→                          {address.street || address.area || "Selected location"}
+   648→                        </p>
+   649→                        <p className="text-xs text-slate-500 line-clamp-1">
+   650→                          {[address.area, address.pincode].filter(Boolean).join(" · ") || address.displayName || "Address details unavailable"}
+   651→                        </p>
+   652→                      </>
+   653→                    ) : (
+   654→                      <p className="text-xs text-slate-500">
+   655→                        Drag the map or use GPS to pin your exact delivery spot.
+   656→                      </p>
+   657→                    )}
+   658→                  </div>
+   659→                </div>
+   660→
+   661→                {/* Error */}
+   662→                {error && (
+   663→                  <div className="mb-2 flex items-start gap-1.5 text-xs text-red-600 bg-red-50 px-2.5 py-1.5 rounded-md">
+   664→                    <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
+   665→                    <span>{error}</span>
+   666→                  </div>
+   667→                )}
+   668→
+   669→                {/* GPS inaccurate hint */}
+   670→                {gpsAccuracy != null && gpsAccuracy > 100 && (
+   671→                  <div className="mb-2 flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 px-2.5 py-1.5 rounded-md">
+   672→                    <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
+   673→                    <span>
+   674→                      GPS accuracy is low ({Math.round(gpsAccuracy)}m). Drag the map to fine-tune your exact delivery location.
+   675→                    </span>
+   676→                  </div>
+   677→                )}
+   678→
+   679→                {/* Coordinates (small, monospace) */}
+   680→                <div className="mb-3 text-[10px] text-slate-400 tabular-nums font-mono">
+   681→                  {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+   682→                </div>
+   683→
+   684→                {/* Action buttons */}
+   685→                <div className="flex gap-2">
+   686→                  <Button
+   687→                    variant="outline"
+   688→                    className="flex-1 border-slate-300 text-slate-600 h-12"
+   689→                    onClick={onClose}
+   690→                  >
+   691→                    Cancel
+   692→                  </Button>
+   693→                  <Button
+   694→                    className={cn(
+   695→                      "flex-[2] h-12 gap-2 text-base",
+   696→                      "bg-[#1A6B3C] hover:bg-[#16A34A]"
+   697→                    )}
+   698→                    onClick={handleConfirm}
+   699→                    disabled={isConfirming || isReverseGeocoding}
+   700→                  >
+   701→                    {isConfirming ? (
+   702→                      <><Loader2 className="size-5 animate-spin" /> Confirming…</>
+   703→                    ) : (
+   704→                      <><Check className="size-5" /> Confirm Location</>
+   705→                    )}
+   706→                  </Button>
+   707→                </div>
+   708→
+   709→                {/* Helper text */}
+   710→                <p className="mt-2 text-[10px] text-slate-400 text-center">
+   711→                  Location must be confirmed to save the address.
+   712→                </p>
+   713→              </div>
+   714→            </div>
+   715→          </div>
+   716→        </div>
+   717→      </div>
+   718→    </>
+   719→  );
+   720→}
+   721→

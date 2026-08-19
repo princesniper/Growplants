@@ -1,40 +1,42 @@
 "use client";
 
 /**
- * GrowPlants — MapLocationPicker (delivery-app style)
+ * GrowPlants — MapLocationPicker (Production Architecture)
  * ============================================================================
- * Professional interactive location picker with a proper DRAGGABLE marker.
+ * Modern delivery-app style location picker with a FIXED CENTER PIN.
  *
- * Key behaviors:
- *   - Marker is a real Leaflet draggable marker (not a static center pin).
- *     User can drag the marker with mouse OR touch — Leaflet handles both.
- *   - On marker drag (and during drag), lat/lng update immediately.
- *   - User can also drag the map; marker stays put at its lat/lng.
- *   - "Use Current Location" button recenters map (and marker) on GPS.
- *   - Search box flies to a chosen result.
- *   - Bottom sheet shows the live reverse-geocoded address.
- *   - "Confirm Location" button is disabled while reverse geocoding is
- *     pending OR while the user is mid-drag — verification requires a settled,
- *     reverse-geocoded location.
+ * Architecture (Blinkit/Swiggy-style):
+ *   - The pin is anchored to the CENTER of the viewport (CSS-only, not a map marker).
+ *   - The user pans the MAP (drags the underlying leaflet map), not the pin.
+ *   - As the map moves, the lat/lng under the center pin updates live.
+ *   - Reverse geocode fires on `moveend` (debounced) → resolves address.
+ *   - "Confirm Location" returns the center lat/lng + address to the parent.
  *
- * Architecture:
- *   - Leaflet is loaded from CDN (singleton, with `crossorigin`).
- *   - Map instance is held in a ref and properly torn down on close.
- *   - All async work uses AbortController so stale requests are cancelled.
- *   - Touch dragging is enabled by default in Leaflet 1.9+ — we additionally
- *     call `marker.options.dragging.enable()` and bump `tap` tolerance.
+ * Why fixed center pin (vs draggable marker)?
+ *   - More natural for users familiar with Swiggy/Zomato/Blinkit.
+ *   - Pin never gets "stuck" behind bottom sheet or out-of-view.
+ *   - Single source of truth: map.getCenter() always = selected coords.
+ *   - Works identically on mouse and touch (no separate drag handlers).
+ *
+ * Technical guarantees:
+ *   - Modal layout uses flexbox (header / map / bottom sheet) — no `absolute`
+ *     overlays fighting each other, no clipped content, no black canvas.
+ *   - ResizeObserver + requestAnimationFrame invalidateSize so map never stale.
+ *   - Body scroll locked while open (form behind can't scroll).
+ *   - Z-index hierarchy: backdrop < map < overlays < controls < bottom sheet.
+ *   - All async work uses AbortController (no stale reverse-geocode race).
  * ============================================================================
  */
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
   MapPin, Check, X, Loader2, Search, AlertCircle,
-  Navigation, Locate, Plus, Minus,
+  Navigation, Locate, Plus, Minus, Crosshair,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getGPSLocation } from "@/lib/gps";
 
-// Default center: Sonipat, Haryana
+// Default center: Sonipat, Haryana (GrowPlants HQ)
 const DEFAULT_CENTER: [number, number] = [28.9965, 77.0203];
 const DEFAULT_ZOOM = 15;
 const REVERSE_GEOCODE_DEBOUNCE_MS = 350;
@@ -49,7 +51,7 @@ function loadLeaflet(): Promise<void> {
   if (leafletLoadPromise) return leafletLoadPromise;
 
   leafletLoadPromise = new Promise<void>((resolve, reject) => {
-    // CSS first so the map renders correctly on first paint
+    // CSS first so map renders correctly on first paint
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
@@ -95,12 +97,12 @@ interface MapLocationPickerProps {
 }
 
 type MapErrorKind =
-  | "load"          // Failed to load Leaflet library / tiles
-  | "permission"    // GPS permission denied
-  | "position"      // GPS position unavailable
-  | "timeout"       // GPS timeout
-  | "search"        // Search request failed
-  | "reverse"       // Reverse geocode failed
+  | "load"        // Failed to load Leaflet library / tiles
+  | "permission"  // GPS permission denied
+  | "position"    // GPS position unavailable
+  | "timeout"     // GPS timeout
+  | "search"      // Search request failed
+  | "reverse"     // Reverse geocode failed
   | "generic";
 
 interface MapError {
@@ -114,12 +116,13 @@ export function MapLocationPicker({
   onLocationSelect,
   initialLocation,
 }: MapLocationPickerProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
+  // ─── Refs ───
+  const mapContainerRef = useRef<HTMLDivElement>(null); // outer wrapper (for ResizeObserver)
+  const mapRef = useRef<HTMLDivElement>(null);             // leaflet mounts here
   const mapInstance = useRef<any>(null);
-  const markerRef = useRef<any>(null);
   const reverseAbortRef = useRef<AbortController | null>(null);
   const reverseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDraggingRef = useRef(false);
+  const isMapMovingRef = useRef(false);                    // suppress move spam during programmatic setView
 
   // ─── State ───
   const [coords, setCoords] = useState<{ lat: number; lng: number }>(
@@ -127,19 +130,18 @@ export function MapLocationPicker({
   );
   const [address, setAddress] = useState<ReverseGeocodeResult | null>(null);
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isMapPanning, setIsMapPanning] = useState(false); // user is dragging the map right now
   const [isConfirming, setIsConfirming] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  // Search state
-  const [searchOpen, setSearchOpen] = useState(false);
+  // Search
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<
     Array<{ lat: number; lng: number; displayName: string }>
   >([]);
 
-  // GPS state
+  // GPS
   const [isLocating, setIsLocating] = useState(false);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
 
@@ -147,184 +149,34 @@ export function MapLocationPicker({
 
   // ─── Helper: pretty error from a GeolocationPositionError ───
   const gpsErrorToMapError = useCallback((err: any): MapError => {
-    // GeolocationPositionError codes: 1=PERMISSION_DENIED, 2=POSITION_UNAVAILABLE, 3=TIMEOUT
     if (err?.code === 1) {
       return {
         kind: "permission",
         message:
-          "Location permission denied. Enable location access in your browser settings, then tap the locate button again. You can also drag the pin manually.",
+          "Location permission denied. Enable location access in your browser settings, then tap the GPS button again. You can also drag the map manually.",
       };
     }
     if (err?.code === 2) {
       return {
         kind: "position",
         message:
-          "Your device couldn't provide a GPS position. Check that location services are on, or drag the pin manually.",
+          "Your device couldn't provide a GPS position. Check that location services are on, or drag the map manually.",
       };
     }
     if (err?.code === 3) {
       return {
         kind: "timeout",
         message:
-          "GPS detection timed out. Try moving to an open area, or drag the pin manually.",
+          "GPS detection timed out. Try moving to an open area, or drag the map manually.",
       };
     }
     return {
       kind: "generic",
       message:
         err?.message ||
-        "Could not detect your GPS location. You can drag the pin manually instead.",
+        "Could not detect your GPS location. You can drag the map manually instead.",
     };
   }, []);
-
-  // ─── Initialize map on open ───
-  useEffect(() => {
-    if (!open || !mapRef.current) return;
-
-    let cancelled = false;
-    setIsMapReady(false);
-    setError(null);
-
-    loadLeaflet()
-      .then(() => {
-        if (cancelled || !mapRef.current) return;
-        const L = (window as any).L;
-
-        const center: [number, number] = initialLocation
-          ? [initialLocation.lat, initialLocation.lng]
-          : DEFAULT_CENTER;
-
-        mapInstance.current = L.map(mapRef.current, {
-          center,
-          zoom: DEFAULT_ZOOM,
-          zoomControl: false,
-          scrollWheelZoom: true,
-          dragging: true,
-          doubleClickZoom: true,
-          touchZoom: true,
-          tap: true,                       // enable touch tap (mobile)
-          tapTolerance: 15,                // forgiving touch handling
-          attributionControl: false,
-          inertia: true,                   // momentum panning
-          worldCopyJump: true,
-        });
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          crossOrigin: true,
-        }).addTo(mapInstance.current);
-
-        // ─── Draggable marker (delivery-app style) ───
-        // Custom div-icon so the pin looks modern (rounded head + shadow).
-        // `draggable: true` enables both mouse and touch dragging in Leaflet 1.9+.
-        const MarkerIcon = L.divIcon({
-          className: "gp-marker",
-          html: `
-            <div class="gp-marker-wrap">
-              <div class="gp-marker-shadow"></div>
-              <div class="gp-marker-stem"></div>
-              <div class="gp-marker-head">
-                <div class="gp-marker-dot"></div>
-              </div>
-            </div>
-          `,
-          iconSize: [36, 48],
-          iconAnchor: [18, 44],
-        });
-
-        markerRef.current = L.marker(center, {
-          icon: MarkerIcon,
-          draggable: true,                 // ← the key flag — pin is draggable
-          autoPan: true,                   // pan map when pin is dragged to edge
-          autoPanPadding: L.point(60, 60),
-          riseOnHover: true,
-          keyboard: false,
-          title: "Drag me to your delivery location",
-          alt: "Delivery location marker — drag to reposition",
-        }).addTo(mapInstance.current);
-
-        // ─── Marker drag events ───
-        // `dragstart` → mark dragging (suppress confirm + reverse-geocode spam)
-        // `drag`      → live update of coords (so the bottom sheet shows live lat/lng)
-        // `dragend`   → settle, trigger debounced reverse geocode
-        markerRef.current.on("dragstart", () => {
-          isDraggingRef.current = true;
-          setIsDragging(true);
-          setError(null);
-        });
-
-        markerRef.current.on("drag", () => {
-          const pos = markerRef.current.getLatLng();
-          // Live update — no reverse geocode yet (too spammy)
-          setCoords({ lat: pos.lat, lng: pos.lng });
-          // Clear stale address so bottom sheet shows "updating…" state
-          setAddress(null);
-          setGpsAccuracy(null);
-        });
-
-        markerRef.current.on("dragend", () => {
-          const pos = markerRef.current.getLatLng();
-          setCoords({ lat: pos.lat, lng: pos.lng });
-          scheduleReverseGeocode(pos.lat, pos.lng);
-          isDraggingRef.current = false;
-          setIsDragging(false);
-        });
-
-        // Map click → move marker (alternative to dragging for desktop users)
-        mapInstance.current.on("click", (e: any) => {
-          if (markerRef.current) {
-            markerRef.current.setLatLng(e.latlng);
-            setCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
-            setAddress(null);
-            scheduleReverseGeocode(e.latlng.lat, e.latlng.lng);
-          }
-        });
-
-        // Initial reverse geocode
-        scheduleReverseGeocode(center[0], center[1]);
-
-        // ─── invalidateSize: critical for modal-mounted maps ───
-        // Leaflet computes its tile layout based on the container size at init.
-        // When mounted inside a modal that animates in (gp-pop-in), the container
-        // size is unstable for the first ~400ms. We poll across multiple frames
-        // so the map always ends up correctly sized regardless of when the
-        // browser finishes layout. Three passes:
-        //   - 1 frame (~16ms): immediate post-mount layout
-        //   - 200ms: post-animation layout (gp-pop-in is 280ms)
-        //   - 500ms: post-reflow (covers mobile URL bar show/hide)
-        const invalidate = () => {
-          if (mapInstance.current && !cancelled) {
-            mapInstance.current.invalidateSize();
-          }
-        };
-        requestAnimationFrame(invalidate);
-        setTimeout(invalidate, 200);
-        setTimeout(() => {
-          invalidate();
-          setIsMapReady(true);
-        }, 500);
-      })
-      .catch((err) => {
-        setError({
-          kind: "load",
-          message:
-            "Failed to load the map. Please check your internet connection and try again.",
-        });
-        console.error("[MapPicker] Leaflet load error:", err);
-      });
-
-    return () => {
-      cancelled = true;
-      if (reverseTimerRef.current) clearTimeout(reverseTimerRef.current);
-      if (reverseAbortRef.current) reverseAbortRef.current.abort();
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-        markerRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
 
   // ─── Debounced reverse geocode ───
   const scheduleReverseGeocode = useCallback((lat: number, lng: number) => {
@@ -366,16 +218,15 @@ export function MapLocationPicker({
           area: areaParts.join(", "),
           displayName: data.display_name,
         });
-        // Clear any prior reverse-geocode error on success
+        // Clear prior reverse-geocode error on success
         setError((prev) => (prev?.kind === "reverse" ? null : prev));
       } catch (err: any) {
         if (err?.name === "AbortError") return;
-        // Soft fail — keep coords, but show a soft warning in the sheet
         setAddress(null);
         setError({
           kind: "reverse",
           message:
-            "Couldn't fetch address details for this spot. You can still drag the pin to a clearer location, or confirm anyway.",
+            "Couldn't fetch address details for this spot. Drag the map to a clearer location, or confirm anyway.",
         });
       } finally {
         setIsReverseGeocoding(false);
@@ -383,31 +234,159 @@ export function MapLocationPicker({
     }, REVERSE_GEOCODE_DEBOUNCE_MS);
   }, []);
 
-  // ─── GPS Locate (recenter map + marker on user's GPS) ───
+  // ─── Initialize map on open ───
+  useEffect(() => {
+    if (!open || !mapRef.current) return;
+
+    let cancelled = false;
+    setIsMapReady(false);
+    setError(null);
+    setAddress(null);
+    setIsReverseGeocoding(false);
+
+    loadLeaflet()
+      .then(() => {
+        if (cancelled || !mapRef.current) return;
+        const L = (window as any).L;
+
+        const startCenter: [number, number] = initialLocation
+          ? [initialLocation.lat, initialLocation.lng]
+          : DEFAULT_CENTER;
+
+        mapInstance.current = L.map(mapRef.current, {
+          center: startCenter,
+          zoom: DEFAULT_ZOOM,
+          zoomControl: false,        // we render custom zoom buttons
+          scrollWheelZoom: true,
+          dragging: true,
+          doubleClickZoom: false,    // avoid accidental zoom on tap-tap
+          touchZoom: true,
+          tap: true,
+          tapTolerance: 15,
+          attributionControl: false,
+          inertia: true,
+          worldCopyJump: true,
+        });
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          crossOrigin: true,
+        }).addTo(mapInstance.current);
+
+        // ─── Map move handlers (this is the heart of the center-pin pattern) ───
+        // As the user drags the map, the lat/lng at the screen-center changes.
+        // We capture it live on `move` (for instant UI feedback) and trigger
+        // reverse geocode on `moveend` (when the user lets go).
+
+        mapInstance.current.on("movestart", () => {
+          if (isMapMovingRef.current) return; // we triggered this programmatically
+          setIsMapPanning(true);
+          setError(null);
+        });
+
+        mapInstance.current.on("move", () => {
+          if (isMapMovingRef.current) return;
+          if (mapInstance.current) {
+            const c = mapInstance.current.getCenter();
+            setCoords({ lat: c.lat, lng: c.lng });
+            // Clear stale address so bottom sheet shows "Detecting…" skeleton
+            setAddress(null);
+            setGpsAccuracy(null); // user moved map — no longer pure GPS
+          }
+        });
+
+        mapInstance.current.on("moveend", () => {
+          if (isMapMovingRef.current) return;
+          if (mapInstance.current) {
+            const c = mapInstance.current.getCenter();
+            setCoords({ lat: c.lat, lng: c.lng });
+            scheduleReverseGeocode(c.lat, c.lng);
+          }
+          setIsMapPanning(false);
+        });
+
+        // Initial reverse geocode for the starting center
+        scheduleReverseGeocode(startCenter[0], startCenter[1]);
+
+        // ─── invalidateSize: critical for modal-mounted maps ───
+        // Modal mounts → CSS animation runs → layout settles.
+        // Use requestAnimationFrame for the FIRST invalidate (catches post-mount layout),
+        // then a ResizeObserver for ongoing size changes.
+        const invalidate = () => {
+          if (mapInstance.current && !cancelled) {
+            mapInstance.current.invalidateSize();
+          }
+        };
+        requestAnimationFrame(() => {
+          invalidate();
+          setIsMapReady(true);
+        });
+
+        // ResizeObserver: invalidate on ANY size change to the wrapper.
+        // This catches modal animations, mobile URL bar show/hide, orientation
+        // changes, and font-load reflows — all in one place.
+        let resizeObserver: ResizeObserver | null = null;
+        if (mapContainerRef.current && typeof ResizeObserver !== "undefined") {
+          resizeObserver = new ResizeObserver(() => invalidate());
+          resizeObserver.observe(mapContainerRef.current);
+        }
+        // Safety-net invalidate for slow browsers
+        const safetyTimer = setTimeout(invalidate, 400);
+
+        return () => {
+          if (resizeObserver) resizeObserver.disconnect();
+          clearTimeout(safetyTimer);
+        };
+      })
+      .catch((err) => {
+        setError({
+          kind: "load",
+          message:
+            "Failed to load the map. Please check your internet connection and try again.",
+        });
+        console.error("[MapPicker] Leaflet load error:", err);
+      });
+
+    return () => {
+      cancelled = true;
+      if (reverseTimerRef.current) clearTimeout(reverseTimerRef.current);
+      if (reverseAbortRef.current) reverseAbortRef.current.abort();
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // ─── GPS Locate (recenter map on user's GPS) ───
   const handleLocate = useCallback(async () => {
     setIsLocating(true);
     setError(null);
     try {
       const loc = await getGPSLocation();
       setGpsAccuracy(loc.accuracy);
-      if (mapInstance.current && markerRef.current) {
+      if (mapInstance.current) {
+        // Programmatic move — set guard flag so `movestart/move/moveend` handlers
+        // don't treat this as a user-initiated pan (and don't reset `isMapPanning`).
+        isMapMovingRef.current = true;
         mapInstance.current.setView([loc.lat, loc.lng], 17, { animate: true });
-        markerRef.current.setLatLng([loc.lat, loc.lng]);
+        // Reset guard after animation
+        setTimeout(() => {
+          isMapMovingRef.current = false;
+          if (mapInstance.current) {
+            const c = mapInstance.current.getCenter();
+            setCoords({ lat: c.lat, lng: c.lng });
+            setAddress(null);
+            scheduleReverseGeocode(c.lat, c.lng);
+          }
+        }, 600);
       }
       setCoords({ lat: loc.lat, lng: loc.lng });
       setAddress(null);
       scheduleReverseGeocode(loc.lat, loc.lng);
     } catch (err: any) {
-      // `getGPSLocation` already translates codes to messages; check both
-      const message = err?.message || "Could not detect your GPS location.";
-      const kind: MapErrorKind =
-        message.toLowerCase().includes("permission")
-          ? "permission"
-          : message.toLowerCase().includes("timed out") || message.toLowerCase().includes("timeout")
-          ? "timeout"
-          : "position";
-      setError(gpsErrorToMapError({ ...err, code: err?.code, message }));
-      void kind;
+      setError(gpsErrorToMapError(err));
     } finally {
       setIsLocating(false);
     }
@@ -453,19 +432,28 @@ export function MapLocationPicker({
     }
   }, [searchQuery]);
 
-  const handleSelectSearchResult = (r: { lat: number; lng: number }) => {
-    if (mapInstance.current && markerRef.current) {
+  const handleSelectSearchResult = useCallback((r: { lat: number; lng: number }) => {
+    if (mapInstance.current) {
+      // Programmatic move — guard flag prevents `movestart` from flicking panning state
+      isMapMovingRef.current = true;
       mapInstance.current.setView([r.lat, r.lng], 17, { animate: true });
-      markerRef.current.setLatLng([r.lat, r.lng]);
+      setTimeout(() => {
+        isMapMovingRef.current = false;
+        if (mapInstance.current) {
+          const c = mapInstance.current.getCenter();
+          setCoords({ lat: c.lat, lng: c.lng });
+          setAddress(null);
+          scheduleReverseGeocode(c.lat, c.lng);
+        }
+      }, 600);
     }
     setCoords({ lat: r.lat, lng: r.lng });
     setAddress(null);
     scheduleReverseGeocode(r.lat, r.lng);
-    setSearchOpen(false);
     setSearchQuery("");
     setSearchResults([]);
     setError(null);
-  };
+  }, [scheduleReverseGeocode]);
 
   // ─── Zoom controls ───
   const handleZoomIn = useCallback(() => {
@@ -477,9 +465,10 @@ export function MapLocationPicker({
 
   // ─── Confirm ───
   // Disabled while:
-  //   - reverse geocoding is pending (no address yet)
-  //   - user is mid-drag (coords not settled)
-  const canConfirm = !isReverseGeocoding && !isDragging && !isConfirming;
+  //   - reverse geocoding is pending (no address resolved yet)
+  //   - user is mid-pan (coords not settled)
+  //   - confirm is in-flight
+  const canConfirm = !isReverseGeocoding && !isMapPanning && !isConfirming;
 
   const handleConfirm = async () => {
     if (!canConfirm) return;
@@ -539,51 +528,44 @@ export function MapLocationPicker({
     };
   }, [open]);
 
-  // ─── Window resize → invalidateSize (so map never has stale size) ───
+  // ─── ESC key to close ───
   useEffect(() => {
     if (!open) return;
-    const handleResize = () => {
-      if (mapInstance.current) {
-        mapInstance.current.invalidateSize();
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
       }
     };
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    // Also invalidate after a short delay (covers mobile URL bar show/hide)
-    const t = setTimeout(handleResize, 400);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-      clearTimeout(t);
-    };
-  }, [open]);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [open, onClose]);
 
   if (!open) return null;
 
   return (
     <>
-      {/* ─── Inline styles for marker, animations, modal polish ─── */}
+      {/* ─── Inline styles (scoped via gp-* classes) ─── */}
       <style>{`
-        /* ─── Professional draggable marker (Blinkit-style) ─── */
-        .gp-marker { background: transparent; border: none; }
-        .gp-marker-wrap {
-          position: relative;
+        /* ─── Fixed center pin (Blinkit-style: pin stays in middle of viewport,
+              user pans the MAP underneath — no Leaflet marker needed) ─── */
+        .gp-center-pin {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -100%);
+          z-index: 50;
+          pointer-events: none;
           width: 38px;
           height: 50px;
-          cursor: grab;
-          touch-action: none;
-          animation: gp-marker-drop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-          transition: transform 0.18s ease;
+          animation: gp-pin-drop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
           transform-origin: bottom center;
         }
-        .gp-marker-wrap:hover { transform: scale(1.08); }
-        .gp-marker-wrap:active { cursor: grabbing; transform: scale(1.12); }
-        @keyframes gp-marker-drop {
-          0%   { transform: translateY(-30px) scale(0.8); opacity: 0; }
-          55%  { transform: translateY(6px) scale(1.05); opacity: 1; }
-          100% { transform: translateY(0) scale(1);     opacity: 1; }
+        @keyframes gp-pin-drop {
+          0%   { transform: translate(-50%, calc(-100% - 30px)) scale(0.8); opacity: 0; }
+          55%  { transform: translate(-50%, calc(-100% + 6px)) scale(1.05); opacity: 1; }
+          100% { transform: translate(-50%, -100%) scale(1);     opacity: 1; }
         }
-        .gp-marker-head {
+        .gp-pin-head {
           position: absolute;
           top: 0; left: 50%;
           transform: translateX(-50%) rotate(-45deg);
@@ -594,7 +576,7 @@ export function MapLocationPicker({
           border-radius: 50% 50% 50% 0;
           box-shadow: 0 6px 14px rgba(26, 107, 60, 0.45), 0 1px 3px rgba(0,0,0,0.18);
         }
-        .gp-marker-dot {
+        .gp-pin-dot {
           position: absolute;
           top: 6px; left: 6px;
           width: 12px; height: 12px;
@@ -602,7 +584,7 @@ export function MapLocationPicker({
           border-radius: 50%;
           box-shadow: inset 0 0 0 2px rgba(26, 107, 60, 0.2);
         }
-        .gp-marker-stem {
+        .gp-pin-stem {
           position: absolute;
           top: 28px; left: 50%;
           transform: translateX(-50%);
@@ -611,7 +593,7 @@ export function MapLocationPicker({
           background: linear-gradient(180deg, #1A6B3C 0%, #0d4a26 100%);
           border-radius: 0 0 2px 2px;
         }
-        .gp-marker-shadow {
+        .gp-pin-shadow {
           position: absolute;
           top: 42px; left: 50%;
           transform: translateX(-50%);
@@ -621,6 +603,14 @@ export function MapLocationPicker({
           border-radius: 50%;
           filter: blur(2.5px);
         }
+        /* Center pin "pulse" while panning — visual feedback */
+        .gp-center-pin.gp-panning .gp-pin-head {
+          animation: gp-pin-pulse 0.9s ease-in-out infinite;
+        }
+        @keyframes gp-pin-pulse {
+          0%, 100% { transform: translateX(-50%) rotate(-45deg) scale(1); }
+          50%      { transform: translateX(-50%) rotate(-45deg) scale(1.08); }
+        }
 
         /* ─── Leaflet container polish ─── */
         .leaflet-container {
@@ -628,17 +618,9 @@ export function MapLocationPicker({
           font-family: inherit;
           touch-action: none;
         }
-        .leaflet-marker-icon, .leaflet-marker-shadow { user-select: none; }
-        .leaflet-marker-draggable { cursor: grab; }
-        .leaflet-marker-draggable:active { cursor: grabbing; }
         .leaflet-tile { filter: contrast(1.02) saturate(1.05); }
 
         /* ─── Animations ─── */
-        @keyframes gp-sheet-in {
-          from { transform: translateY(100%); opacity: 0.4; }
-          to   { transform: translateY(0);     opacity: 1; }
-        }
-        .gp-sheet-enter { animation: gp-sheet-in 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
         @keyframes gp-fade-in {
           from { opacity: 0; }
           to   { opacity: 1; }
@@ -649,17 +631,11 @@ export function MapLocationPicker({
           100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         .gp-pop-in { animation: gp-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
-        @keyframes gp-pulse-ring {
-          0%   { transform: scale(0.9); opacity: 0.7; }
-          70%  { transform: scale(1.4); opacity: 0; }
-          100% { transform: scale(1.4); opacity: 0; }
+        @keyframes gp-sheet-in {
+          from { transform: translateY(100%); opacity: 0.4; }
+          to   { transform: translateY(0);     opacity: 1; }
         }
-        .gp-pulse-ring::after {
-          content: ""; position: absolute; inset: 0;
-          border-radius: inherit;
-          background: inherit;
-          animation: gp-pulse-ring 1.8s ease-out infinite;
-        }
+        .gp-sheet-enter { animation: gp-sheet-in 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
       `}</style>
 
       {/* ─── Backdrop ─── */}
@@ -670,15 +646,20 @@ export function MapLocationPicker({
         aria-label="Location picker"
       >
         {/* ─── Modal shell ───
-            Mobile  : 92% width × 88vh height (max 600px wide)
-            Desktop : 600px × 520px (max 90vw × 85vh on smaller screens)
-            Centered. Rounded corners on all breakpoints for the modern feel. */}
-        <div className="relative gp-pop-in
-                        w-[94vw] max-w-[600px]
-                        h-[88vh] sm:h-[520px] sm:max-h-[85vh]
-                        rounded-2xl overflow-hidden bg-white shadow-2xl
-                        flex flex-col">
-
+            Mobile  : 96vw × 92vh (almost full-screen)
+            Desktop : 600px × 580px (centered, max 90vw × 88vh on smaller laptops)
+            Flex column: header (auto) → map (1fr) → bottom sheet (auto).
+            This is the KEY architectural choice: no `absolute inset-0` overlays
+            fighting each other. The map's flex sibling sizes the map container
+            deterministically, so Leaflet always has a stable size to render into. */}
+        <div
+          ref={mapContainerRef}
+          className="relative gp-pop-in
+                     w-[96vw] max-w-[600px]
+                     h-[92vh] sm:h-[580px] sm:max-h-[88vh]
+                     rounded-2xl overflow-hidden bg-white shadow-2xl
+                     flex flex-col"
+        >
           {/* ─── Header ─── */}
           <div className="relative z-[1000] shrink-0 bg-white border-b border-slate-100">
             <div className="flex items-center gap-3 px-4 py-3">
@@ -694,10 +675,10 @@ export function MapLocationPicker({
                   Select Location
                 </h2>
                 <p className="text-[11px] text-slate-500 leading-tight">
-                  Drag the pin to your exact delivery spot
+                  Drag the map to position the pin
                 </p>
               </div>
-              {/* GPS locate — always visible in header */}
+              {/* GPS locate button */}
               <button
                 onClick={handleLocate}
                 disabled={isLocating}
@@ -721,7 +702,7 @@ export function MapLocationPicker({
             </div>
 
             {/* ─── Search bar ─── */}
-            <div className="px-4 pb-3">
+            <div className="px-4 pb-3 relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
                 <input
@@ -736,7 +717,7 @@ export function MapLocationPicker({
                       setSearchResults([]);
                     }
                   }}
-                  className="w-full h-10 pl-10 pr-4 rounded-full bg-slate-100 focus:bg-white border border-transparent focus:border-[#1A6B3C] focus:ring-2 focus:ring-[#1A6B3C]/20 outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
+                  className="w-full h-10 pl-10 pr-10 rounded-full bg-slate-100 focus:bg-white border border-transparent focus:border-[#1A6B3C] focus:ring-2 focus:ring-[#1A6B3C]/20 outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -749,6 +730,9 @@ export function MapLocationPicker({
                   >
                     <X className="size-3.5 text-slate-500" />
                   </button>
+                )}
+                {isSearching && (
+                  <Loader2 className="absolute right-9 top-1/2 -translate-y-1/2 size-4 animate-spin text-slate-400" />
                 )}
               </div>
 
@@ -772,14 +756,14 @@ export function MapLocationPicker({
             </div>
           </div>
 
-          {/* ─── Map area (relative container for map + zoom controls + hint) ─── */}
+          {/* ─── Map area (flex-1, min-h-0 → fills available space deterministically) ─── */}
           <div className="relative flex-1 min-h-0 bg-slate-200">
-            {/* Map container — fills the available space */}
+            {/* Leaflet mount point */}
             <div
               ref={mapRef}
               className="absolute inset-0 z-[1]"
               style={{ background: "#e5e7eb" }}
-              aria-label="Interactive map — drag the pin to your delivery location"
+              aria-label="Interactive map — drag to position the center pin"
             />
 
             {/* Loading overlay */}
@@ -803,8 +787,37 @@ export function MapLocationPicker({
               </div>
             )}
 
-            {/* Zoom controls — bottom-right, vertical */}
-            <div className="absolute right-3 bottom-3 z-[1000] flex flex-col gap-1.5">
+            {/* ─── FIXED CENTER PIN (the source of truth for selected coords) ─── */}
+            {isMapReady && (
+              <div
+                className={cn("gp-center-pin", isMapPanning && "gp-panning")}
+                aria-hidden="true"
+              >
+                <div className="gp-pin-shadow" />
+                <div className="gp-pin-stem" />
+                <div className="gp-pin-head">
+                  <div className="gp-pin-dot" />
+                </div>
+              </div>
+            )}
+
+            {/* ─── Floating "Use Current Location" button (bottom-right, above zoom) ─── */}
+            <button
+              onClick={handleLocate}
+              disabled={isLocating}
+              className="absolute right-3 bottom-3 z-[1000] size-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50 sm:hidden"
+              aria-label="Use my current GPS location"
+              title="Use my current GPS location"
+            >
+              {isLocating ? (
+                <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
+              ) : (
+                <Crosshair className="size-5 text-[#1A6B3C]" />
+              )}
+            </button>
+
+            {/* ─── Zoom controls (right side, vertically centered) ─── */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-2">
               <button
                 onClick={handleZoomIn}
                 className="size-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
@@ -821,23 +834,25 @@ export function MapLocationPicker({
               </button>
             </div>
 
-            {/* "Drag the pin" hint — top center of map area */}
-            {isMapReady && !address && !isReverseGeocoding && !isDragging && (
+            {/* ─── Top hint banner ─── */}
+            {isMapReady && (
               <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
-                <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
-                  <Navigation className="size-3" />
-                  Drag the pin to set your exact location
-                </div>
-              </div>
-            )}
-
-            {/* Dragging indicator */}
-            {isDragging && (
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
-                <div className="bg-[#1A6B3C] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
-                  <Loader2 className="size-3 animate-spin" />
-                  Pin moving… {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
-                </div>
+                {isMapPanning ? (
+                  <div className="bg-[#1A6B3C] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                    <Navigation className="size-3" />
+                    Drag the map to position the pin
+                  </div>
+                ) : isReverseGeocoding ? (
+                  <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+                    <Loader2 className="size-3 animate-spin" />
+                    Detecting address…
+                  </div>
+                ) : (
+                  <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+                    <MapPin className="size-3" />
+                    Drag the map to set your exact location
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -871,15 +886,15 @@ export function MapLocationPicker({
                   ) : (
                     <>
                       <p className="text-sm font-semibold text-slate-700 leading-snug">
-                        No location picked yet
+                        {isMapPanning ? "Map moving…" : "No address yet"}
                       </p>
                       <p className="text-xs text-slate-500 leading-tight mt-0.5">
-                        Drag the pin or use GPS to set your delivery spot.
+                        Drag the map to set your delivery spot.
                       </p>
                     </>
                   )}
                 </div>
-                {/* Status badge */}
+                {/* GPS accuracy badge */}
                 {gpsAccuracy != null && !isReverseGeocoding && (
                   <span className={cn(
                     "shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full self-start mt-0.5",
@@ -887,8 +902,8 @@ export function MapLocationPicker({
                       ? "text-amber-700 bg-amber-100"
                       : "text-green-700 bg-green-100"
                   )}>
-                  GPS · {Math.round(gpsAccuracy)}m
-                </span>
+                    GPS · {Math.round(gpsAccuracy)}m
+                  </span>
                 )}
               </div>
 
@@ -909,10 +924,15 @@ export function MapLocationPicker({
                 <div className="mb-2 flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1.5 rounded-md">
                   <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
                   <span>
-                    GPS accuracy is low ({Math.round(gpsAccuracy)}m). Drag the pin to fine-tune your exact delivery location.
+                    GPS accuracy is low ({Math.round(gpsAccuracy)}m). Drag the map to fine-tune your exact delivery location.
                   </span>
                 </div>
               )}
+
+              {/* Coordinates (monospace, subtle) */}
+              <div className="mb-3 text-[10px] text-slate-400 tabular-nums font-mono">
+                {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
+              </div>
 
               {/* Action buttons */}
               <div className="flex gap-2">
@@ -935,8 +955,8 @@ export function MapLocationPicker({
                 >
                   {isConfirming ? (
                     <><Loader2 className="size-4 animate-spin" /> Confirming…</>
-                  ) : isDragging ? (
-                    <><MapPin className="size-4" /> Drop the pin first</>
+                  ) : isMapPanning ? (
+                    <><Navigation className="size-4" /> Drop the map first</>
                   ) : isReverseGeocoding ? (
                     <><Loader2 className="size-4 animate-spin" /> Detecting…</>
                   ) : (

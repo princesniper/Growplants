@@ -246,9 +246,18 @@ export function UnifiedAddressForm({
 
   // ─── "Adjust Location" handler ───
   // Opens the picker at the currently-saved coordinates (or default center).
+  // IMPORTANT: When the user re-opens the picker, we IMMEDIATELY reset
+  // `locationVerified` to false. The user MUST click "Confirm Location"
+  // inside the picker again before saving the address. This implements the
+  // "if user changes the map after confirmation, reset locationVerified"
+  // requirement at the parent-form level.
   const handleAdjustLocation = useCallback(() => {
+    if (gpsState === "verified") {
+      setGpsState("idle");
+      setLocationSource(null);
+    }
     setMapPickerOpen(true);
-  }, []);
+  }, [gpsState]);
 
   // ─── Manual map location handler ───
   // Called when user clicks "Confirm Location" inside MapLocationPicker.

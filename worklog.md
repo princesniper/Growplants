@@ -399,3 +399,34 @@ Stage Summary:
 - Root cause: missing null-coercion when crossing TS optional-types → Firestore strict-undefined boundary
 - Fixed both the specific `notes` field AND added a general-purpose `sanitizeForFirestore` helper to prevent future occurrences
 - Backward-compatible: all existing code paths continue to work (Firestore `null` reads back as `null`, callers map to `undefined` for the UI Order type)
+
+---
+Task ID: checkout-gps-coords-fix
+Agent: main
+Task: Fix console error "GPS verification is required for delivery address" thrown from /api/orders during checkout.
+
+Root Cause:
+- On the checkout page (`src/app/(main)/checkout/page.tsx`), the "Auto-select default address on mount" effect (lines 67-83) populated the `address` form state from the default saved address but DID NOT copy `latitude`/`longitude`.
+- So when the user landed on /checkout and clicked "Place Order" without manually re-selecting their saved address, the request body sent `latitude: null, longitude: null` to `/api/orders`.
+- The API (line 174-179) enforces that lat/lng must be present and rejects with HTTP 400 + "GPS verification is required for delivery address".
+- The order then failed at `OrdersContext.createOrder` (line 407) and surfaced in the console.
+
+Secondary issue:
+- The legacy `gpsVerified` boolean was the only check used by `handleSelectAddress` to gate address selection. After my earlier address-system refactor, new addresses use the canonical `locationVerified` flag. Old Firestore addresses were normalized on read (so `gpsVerified` alias is preserved), but if an address was somehow missing both fields, the user couldn't select it even if it had valid coords.
+
+Fix:
+1. `src/app/(main)/checkout/page.tsx`:
+   - **Auto-select effect (line 67-104)**: now copies `latitude`, `longitude` from the default saved address into the `address` state, sets `gpsCoords` + `gpsState: "verified"` so the rest of the checkout flow sees the address as verified.
+   - **Guard**: skips auto-select if the saved address is missing `locationVerified` AND `gpsVerified`, OR is missing lat/lng. Lets the user manually pick instead of silently picking an unverifiable address.
+   - **`handleSelectAddress` (line 106-143)**: now accepts EITHER `locationVerified === true` OR legacy `gpsVerified === true`. Also strictly checks `addr.latitude != null && addr.longitude != null` before allowing selection.
+   - **`validateAddress` (line 286-311)**: added a defensive check that the `address` state has `latitude`/`longitude` before letting the user proceed to step 2. This converts a cryptic 400 at order-time into a clear inline error visible at the address step itself.
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- Dev server still running, `/account/addresses` and `/api/pincode/131001` both return 200
+- After fix: the user lands on /checkout → default address auto-loads WITH coords → "Place Order" sends `latitude: <number>, longitude: <number>` → API returns 200.
+
+Stage Summary:
+- Root cause was a state-sync gap in the checkout auto-select effect (address form was populated but GPS coords were dropped)
+- Fixed at three layers: (a) auto-select copies coords, (b) manual select accepts both verification flags, (c) defensive validation prevents reaching the API without coords
+- No backend change needed — the API's behavior is correct (it should require GPS coords)

@@ -67,8 +67,18 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddressId) {
       const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
+      // FIX: Only auto-select if the address has GPS coordinates AND verification
+      // (either the new `locationVerified` or the legacy `gpsVerified` flag).
+      const isVerified =
+        Boolean(defaultAddr.locationVerified) || Boolean(defaultAddr.gpsVerified);
+      const hasCoords =
+        defaultAddr.latitude != null && defaultAddr.longitude != null;
+      if (!isVerified || !hasCoords) {
+        // Don't auto-pick an unverified address — let the user pick manually
+        return;
+      }
       setSelectedAddressId(defaultAddr.id);
-      // Populate the address form with the default address
+      // Populate the address form with the default address (including GPS coords)
       setAddress({
         fullName: defaultAddr.fullName,
         phone: defaultAddr.phone,
@@ -78,17 +88,34 @@ export default function CheckoutPage() {
         city: defaultAddr.city,
         state: defaultAddr.state,
         pincode: defaultAddr.pincode,
+        latitude: defaultAddr.latitude,
+        longitude: defaultAddr.longitude,
       });
+      // Mark GPS as verified so the checkout flow doesn't re-prompt
+      setGpsCoords({
+        lat: defaultAddr.latitude!,
+        lng: defaultAddr.longitude!,
+        accuracy: defaultAddr.accuracy ?? defaultAddr.locationAccuracy ?? 0,
+      });
+      setGpsState("verified");
+      setGpsError("");
     }
-  }, [addresses, selectedAddressId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addresses.length]);
 
   // Handle selecting a saved address — BYPASS FIX: only allow GPS-verified addresses
   const handleSelectAddress = (addrId: string) => {
     const addr = addresses.find((a) => a.id === addrId);
     if (!addr) return;
-    // BYPASS FIX: Block selection of non-GPS-verified addresses
-    if (!addr.gpsVerified) {
-      appToast.warning("Address not verified", "This address doesn't have GPS verification. Please verify it in Address Book or add a new address.");
+    // FIX: Accept either the new `locationVerified` or legacy `gpsVerified` flag
+    const isVerified =
+      Boolean(addr.locationVerified) || Boolean(addr.gpsVerified);
+    const hasCoords = addr.latitude != null && addr.longitude != null;
+    if (!isVerified || !hasCoords) {
+      appToast.warning(
+        "Address not verified",
+        "This address doesn't have location verification. Please verify it in Address Book or add a new address."
+      );
       return;
     }
     setSelectedAddressId(addrId);
@@ -103,11 +130,13 @@ export default function CheckoutPage() {
       state: addr.state,
       pincode: addr.pincode,
       latitude: addr.latitude,     // FIX Bug #3: copy GPS coordinates
-      longitude: addr.longitude,    // FIX Bug #3: copy GPS coordinates
+      longitude: addr.longitude,   // FIX Bug #3: copy GPS coordinates
     });
-    setGpsCoords(addr.latitude != null && addr.longitude != null
-      ? { lat: addr.latitude, lng: addr.longitude, accuracy: addr.accuracy ?? 0 }
-      : null);
+    setGpsCoords({
+      lat: addr.latitude!,
+      lng: addr.longitude!,
+      accuracy: addr.accuracy ?? addr.locationAccuracy ?? 0,
+    });
     setGpsState("verified");
     setGpsError("");
     setAddressErrors({});
@@ -265,6 +294,17 @@ export default function CheckoutPage() {
     // BYPASS FIX: Require GPS verification for new addresses (not for saved addresses)
     if (showNewAddressForm && !selectedAddressId && !gpsVerified) {
       errs.gps = "GPS verification is required for new addresses";
+    }
+    // FIX: Defensive check — even for saved addresses, lat/lng must be present
+    // because the API enforces them at /api/orders. Without this, the user
+    // could proceed past the address step and get a cryptic 400 at order time.
+    if (
+      address.latitude === null || address.latitude === undefined ||
+      address.longitude === null || address.longitude === undefined
+    ) {
+      if (!errs.gps) {
+        errs.gps = "Location verification missing. Please re-select or re-verify your address.";
+      }
     }
     setAddressErrors(errs);
     return Object.keys(errs).length === 0;

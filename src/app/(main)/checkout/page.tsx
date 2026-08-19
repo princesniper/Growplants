@@ -304,10 +304,29 @@ export default function CheckoutPage() {
       appToast.error("COD limit exceeded", `Cash on Delivery is only available for orders up to ₹${COD_MAX_AMOUNT}. Please choose online payment.`);
       return;
     }
+
+    // ─── Defensive: filter out cart items with missing productId ───
+    // Stale carts (from old app versions or Firestore docs) might have items
+    // where `productId` is undefined. Send only valid items to the API.
+    const validItems = items.filter((i) => typeof i.productId === "string" && i.productId.trim() !== "");
+    if (validItems.length === 0) {
+      appToast.error(
+        "Cart has invalid items",
+        "Some items in your cart are missing product info. Please clear your cart and add items again."
+      );
+      return;
+    }
+    if (validItems.length !== items.length) {
+      // Soft-warn but proceed with valid items only
+      console.warn(
+        `[checkout] Filtered out ${items.length - validItems.length} invalid cart item(s) before sending to API.`
+      );
+    }
+
     setIsPlacing(true);
     try {
       const order = await createOrder({
-        items: items.map((i) => ({ productId: i.productId, name: i.name, slug: i.slug, price: i.price, image: i.image, quantity: i.quantity, variantId: i.variantId })),
+        items: validItems.map((i) => ({ productId: i.productId, name: i.name, slug: i.slug, price: i.price, image: i.image, quantity: i.quantity, variantId: i.variantId })),
         subtotal, shipping, discount: couponDiscount, tax, total,
         address, paymentMethod, notes: notes.trim() || undefined,
       });

@@ -973,3 +973,70 @@ Task: Completely redesign the GROWPLANTS Address Location Picker — Blinkit-sty
 - `/account/addresses` returns 200
 - `/checkout` returns 200
 - Dev server compiles cleanly
+
+---
+Task ID: picker-not-closing-and-product-undefined-fix
+Agent: main
+Task: Two bugs: (1) Map picker doesn't close after Save → user keeps clicking Save and creates duplicate addresses. (2) "Product not found: undefined" error when placing an order.
+
+## Bug #1: Picker doesn't close after Save
+
+**Root cause** (`src/components/common/MapLocationPicker.tsx`):
+- `handleSave` called `await onSave(payload)` but never called `onClose()` afterwards.
+- After successful save, the picker stayed open. The Save button briefly showed "Saving…" but returned to "Save Address" — user could click it again and create another duplicate address.
+
+**Fix**: Added `onClose()` call right after `await onSave(...)` succeeds. Added `onClose` to the `useCallback` dependency array. If `onSave` throws, the picker stays open and shows the error toast (correct behavior — user can retry or cancel).
+
+Also: Save button already has `disabled={isSaving || !locationVerified}`, so rapid double-clicks during the await are already prevented by the disabled state. The new `onClose()` is the permanent fix.
+
+## Bug #2: "Product not found: undefined" error
+
+**Root cause analysis**:
+- The error originates in `src/lib/product-pricing.ts:101`: `validateLineItem(undefined, qty)` → `getAuthoritativeProduct(undefined)` returns `null` → error message becomes `"Product not found: undefined"`.
+- The cart items in the user's localStorage/Firestore had items where `productId` was `undefined`. This happens when:
+  - Cart was populated by an older app version with a different CartItem shape
+  - Cart was hand-edited
+  - A previous add-to-cart bug left an item with `id` set but `productId` missing
+- When checkout sent these items to `/api/orders`, the API ran `validateLineItem(item.productId, ...)` and got the confusing error.
+
+**Fix — three layers of defense**:
+
+1. **`src/contexts/CartContext.tsx` → `loadFromStorage()`**:
+   - Now filters out cart items missing required fields at load time (`productId`, `id`, `name`, `price`, `quantity` must all be valid).
+   - Stale localStorage carts are cleaned automatically on next page load.
+
+2. **`src/contexts/CartContext.tsx` → Firestore cart merge**:
+   - Same defensive filter applied to Firestore-loaded cart items.
+   - Stale Firestore carts are cleaned before being merged into the in-memory cart.
+
+3. **`src/app/api/orders/route.ts` → `/api/orders` POST handler**:
+   - Added explicit checks BEFORE calling `validateLineItem`:
+     - `item.productId` must be a non-empty string
+     - `item.quantity` must be a positive number
+   - Returns clear 400 error like `"Invalid cart item: missing productId for "<name>". Please refresh the page and try again."` instead of the cryptic `"Product not found: undefined"`.
+
+4. **`src/app/(main)/checkout/page.tsx` → `handlePlaceOrder`**:
+   - Filters cart items to send only valid ones to the API.
+   - If ALL items are invalid → shows error toast `"Cart has invalid items..."` and aborts.
+   - If only some items are invalid → soft-warns in console, proceeds with the valid subset (graceful degradation).
+
+## Verification
+
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/account/addresses` returns 200
+- `/checkout` returns 200
+- Dev server compiles cleanly
+
+## Test matrix
+
+| Test | Before | After |
+|---|---|---|
+| Open picker → save address | Picker stays open, user clicks Save again → duplicate | Picker closes after successful save, no duplicates |
+| Order with stale cart (missing productId) | Cryptic "Product not found: undefined" error | Clear "Invalid cart item: missing productId..." error + cart items filtered at load time |
+| Order with all-valid cart | Works | Works (no behavior change) |
+| Order with mixed cart (some valid, some invalid) | Fails entire order | Proceeds with valid items only (soft-warns in console) |
+
+Stage Summary:
+- Bug #1 fixed by adding `onClose()` after successful `onSave()`.
+- Bug #2 fixed at three layers: cart load (filter stale items), API route (explicit error before validateLineItem), and checkout (filter before sending).
+- Old localStorage/Firestore carts with stale items are auto-cleaned on next page load.

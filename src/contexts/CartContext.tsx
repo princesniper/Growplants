@@ -52,7 +52,28 @@ const STORAGE_KEY = "growplants-cart";
 
 function loadFromStorage(): CartItem[] {
   if (typeof window === "undefined") return [];
-  try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; } catch (_e) { return []; }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // ─── Defensive: filter out stale items missing required fields ───
+    // Older app versions (or hand-edited carts) may have items where
+    // `productId` is undefined. Such items would cause "Product not found:
+    // undefined" errors at order time. Filter them out at load.
+    return parsed.filter(
+      (item: any) =>
+        item &&
+        typeof item === "object" &&
+        typeof item.productId === "string" && item.productId.trim() !== "" &&
+        typeof item.id === "string" && item.id.trim() !== "" &&
+        typeof item.name === "string" &&
+        typeof item.price === "number" &&
+        typeof item.quantity === "number" && item.quantity > 0
+    ) as CartItem[];
+  } catch (_e) {
+    return [];
+  }
 }
 function saveToStorage(items: CartItem[]) {
   if (typeof window !== "undefined") try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch (_e) {}
@@ -87,7 +108,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const snap = await getDoc(userDocRef);
         if (snap.exists()) {
           const data = snap.data() as { cart?: CartItem[] };
-          const firestoreCart = data.cart ?? [];
+          // ─── Defensive: filter stale Firestore cart items (missing productId, etc.) ───
+          const firestoreCart = (data.cart ?? []).filter(
+            (item: any) =>
+              item &&
+              typeof item === "object" &&
+              typeof item.productId === "string" && item.productId.trim() !== "" &&
+              typeof item.id === "string" && item.id.trim() !== "" &&
+              typeof item.name === "string" &&
+              typeof item.price === "number" &&
+              typeof item.quantity === "number" && item.quantity > 0
+          ) as CartItem[];
 
           if (firestoreCart.length > 0) {
             // Merge: local cart + Firestore cart

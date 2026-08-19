@@ -653,6 +653,10 @@ export function MapLocationPicker({
         locationAccuracy: gpsAccuracy ?? 0,
         gpsVerified: true,
       });
+      // ─── Close picker after successful save ───
+      // Without this, the picker stays open and the user can click Save again,
+      // creating duplicate addresses.
+      onClose();
     } catch (err) {
       appToast.error(
         "Save failed",
@@ -661,7 +665,7 @@ export function MapLocationPicker({
     } finally {
       setIsSaving(false);
     }
-  }, [validate, form, address, coords, gpsAccuracy, onSave]);
+  }, [validate, form, address, coords, gpsAccuracy, onSave, onClose]);
 
   // ─── Body scroll lock + ESC ───
   useEffect(() => {

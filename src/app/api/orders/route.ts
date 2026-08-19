@@ -201,6 +201,27 @@ export async function POST(req: NextRequest) {
   }> = [];
 
   for (const item of body.items!) {
+    // ─── Defensive: reject items with missing/invalid productId BEFORE lookup ───
+    // Without this, `validateLineItem(undefined, ...)` returns "Product not found: undefined"
+    // which is a confusing error for the user.
+    if (!item || typeof item.productId !== "string" || item.productId.trim() === "") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid cart item: missing productId for "${item?.name ?? "(unknown)"}". Please refresh the page and try again.`,
+        },
+        { status: 400 }
+      );
+    }
+    if (typeof item.quantity !== "number" || item.quantity < 1) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid quantity for "${item.name}": ${item.quantity}`,
+        },
+        { status: 400 }
+      );
+    }
     const validation = validateLineItem(item.productId, item.quantity);
     if (!validation.valid) {
       return NextResponse.json(

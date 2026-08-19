@@ -650,3 +650,58 @@ Changes — `src/components/common/MapLocationPicker.tsx`:
 Net effect: modal takes less screen real estate on desktop while staying fully usable — Confirm Location button still always visible, draggable pin still works, map fills the visible area properly.
 
 Verified: TypeScript clean, /account/addresses returns 200.
+
+---
+Task ID: map-picker-fullscreen-rewrite
+Agent: main
+Task: "map beech screen mehora hai and map open hone ke baad webside page scroll nhi ho raha hai. isi wajah se location confarm nhi ho raha hai. thinking upgrade kro and professionally and clear pin map bana kr do."
+
+Root Cause (analysis):
+- Earlier "small modal" attempts (`sm:max-w-[440px] sm:h-[560px]`) created a small centered box that:
+  1. Was too small to use effectively on desktop
+  2. Could cut off the bottom Confirm button on shorter screens (e.g. laptops with browser chrome)
+  3. Felt like an "in-the-way popup" rather than a proper location picker
+- Body scroll lock (`document.body.style.overflow = "hidden"`) is INTENTIONAL and correct — it prevents the form behind from scrolling while the picker is open. This is standard modal behavior (Swiggy/Zomato/Blinkit all do this). The user's complaint about "page scroll not happening" was a side effect of the small modal looking like it should be dismissable, when in fact the user needed to CONFIRM first.
+- The real fix: make the picker TRUE FULL-SCREEN on all breakpoints, like Swiggy/Zomato. Then there's no "page behind" the user wants to scroll to — the picker IS the screen.
+
+Fix — comprehensive rewrite of return JSX in `src/components/common/MapLocationPicker.tsx`:
+
+1. **TRUE FULL-SCREEN on ALL breakpoints** (mobile + desktop):
+   - Removed all `sm:` size constraints (`sm:max-w-[440px]`, `sm:h-[560px]`, `sm:max-h-[80vh]`)
+   - Removed the centered-modal wrapper (`flex items-center justify-center p-4`)
+   - Modal now fills `100vw × 100vh` (`fixed inset-0`) on every device
+   - Backdrop is `bg-slate-200` (not black overlay) so the picker feels native, not modal
+
+2. **Layered architecture** (z-index hierarchy, all using `absolute inset-0`):
+   - `z-[1]` — Map container (first child, fills viewport)
+   - `z-[2]` — Loading + load-error overlays (above map)
+   - `z-[999]` — "Drag the pin" hint banner
+   - `z-[1000]` — Top bar, zoom controls, bottom sheet (always on top)
+
+3. **Top bar improvements**:
+   - Added a gradient backdrop (`bg-gradient-to-b from-black/15 to-transparent h-24`) so the close/search/GPS buttons stay readable over bright map tiles
+   - Wrapper still uses `pointer-events-none` so map receives touch/clicks in empty areas
+   - Interactive elements opt back in with `pointer-events-auto`
+
+4. **Bottom sheet — always reachable**:
+   - Pinned to `absolute bottom-0 inset-x-0 z-[1000]`
+   - Added `max-h-[60vh] overflow-y-auto` so content can scroll if it overflows (small screens with multiple error messages)
+   - Drag handle is `sticky top-0 bg-white rounded-t-2xl` so it stays visible during sheet scroll
+   - Confirm button restored to `h-12 text-base` (larger, more prominent)
+
+5. **Body scroll lock — kept** (correct behavior):
+   - When picker is open: `document.body.style.overflow = "hidden"` (form behind can't scroll)
+   - When picker closes: restored to previous value
+   - This is correct modal UX — user must CONFIRM or CANCEL to return to form
+
+Why this is the right fix (not a hack):
+- Swiggy/Zomato/Blinkit all use true full-screen location pickers — users intuitively understand they must confirm/cancel before returning
+- Pin is now centered in a large visible area → no "small map" feeling
+- Bottom sheet is ALWAYS visible at the bottom of the screen → Confirm can NEVER be cut off
+- Page-behind-not-scrolling is no longer a complaint because there's no "page behind" the user wants to see
+- Gradient on top bar ensures controls are visible over any map state (light tiles, dark tiles, satellite)
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/account/addresses` and `/checkout` both return 200
+- Dev server compiles cleanly with no warnings

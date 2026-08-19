@@ -428,7 +428,12 @@ export default function CheckoutPage() {
                           latitude: data.latitude,
                           longitude: data.longitude,
                           accuracy: data.accuracy,
+                          // Backward-compat alias
                           gpsVerified: data.gpsVerified,
+                          // New canonical location fields
+                          locationVerified: data.locationVerified,
+                          locationSource: data.locationSource,
+                          locationAccuracy: data.locationAccuracy,
                         });
                         // Wait for Firestore to sync (addresses update via onSnapshot)
                         await new Promise((r) => setTimeout(r, 500));

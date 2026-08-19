@@ -39,6 +39,13 @@ export const addressSchema = z.object({
     .refine(isValidPincode, "Enter a valid 6-digit Indian pincode"),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  locationSource: z
+    .enum(["gps", "manual"])
+    .optional()
+    .or(z.literal("")),
+  locationVerified: z
+    .boolean()
+    .refine((v) => v === true, "Location verification is required"),
   isDefault: z.boolean().default(false),
 });
 export type AddressInput = z.infer<typeof addressSchema>;

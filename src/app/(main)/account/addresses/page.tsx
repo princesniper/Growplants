@@ -38,7 +38,12 @@ export default function AddressesPage() {
       latitude: data.latitude,
       longitude: data.longitude,
       accuracy: data.accuracy,
+      // Backward-compat alias
       gpsVerified: data.gpsVerified,
+      // New canonical location fields
+      locationVerified: data.locationVerified,
+      locationSource: data.locationSource,
+      locationAccuracy: data.locationAccuracy,
     };
     if (editing) { await updateAddress(editing.id, addrData); }
     else { await addAddress(addrData); }
@@ -75,7 +80,11 @@ export default function AddressesPage() {
               latitude: editing.latitude,
               longitude: editing.longitude,
               accuracy: editing.accuracy,
-              gpsVerified: editing.gpsVerified,
+              // Backward-compat: read either gpsVerified or locationVerified
+              gpsVerified: editing.locationVerified || editing.gpsVerified === true,
+              locationVerified: editing.locationVerified,
+              locationSource: editing.locationSource,
+              locationAccuracy: editing.locationAccuracy,
               isDefault: editing.isDefault,
             } : null}
             onSave={handleSave}
@@ -102,8 +111,16 @@ export default function AddressesPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold text-[#1A6B3C] bg-[#F0FAF4] px-2 py-0.5 rounded-full">{a.label}</span>
                   {a.isDefault && <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Default</span>}
-                  {a.gpsVerified ? (
-                    <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full flex items-center gap-0.5"><ShieldCheck className="size-3" />GPS Verified</span>
+                  {a.locationVerified || a.gpsVerified ? (
+                    <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                      <ShieldCheck className="size-3" />
+                      Verified
+                      {a.locationSource && (
+                        <span className="ml-0.5 text-[10px] opacity-75">
+                          · {a.locationSource === "gps" ? "GPS" : "MAP"}
+                        </span>
+                      )}
+                    </span>
                   ) : (
                     <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertCircle className="size-3" />Not Verified</span>
                   )}

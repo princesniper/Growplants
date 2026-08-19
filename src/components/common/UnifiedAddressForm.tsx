@@ -21,7 +21,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Navigation, ShieldCheck, AlertCircle, Loader2, Check, X,
-  MapPin, Map as MapIcon, Plus, Home as HomeIcon,
+  MapPin, Map as MapIcon, Plus, Home as HomeIcon, Search,
 } from "lucide-react";
 import { cn, isValidPincode } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -49,9 +49,14 @@ export interface UnifiedAddress {
   accuracy: number | null;
   gpsVerified: boolean;
   isDefault: boolean;
+  // ─── New canonical location fields ───
+  locationVerified: boolean;
+  locationSource: "gps" | "manual" | null;
+  locationAccuracy: number | null;
 }
 
 type GpsState = "idle" | "detecting" | "fetching" | "verified" | "failed";
+type PincodeStatus = "idle" | "fetching" | "ok" | "not-found" | "error";
 
 interface UnifiedAddressFormProps {
   /** Initial values for editing (null = new address) */
@@ -102,9 +107,92 @@ export function UnifiedAddressForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const gpsVerified = gpsState === "verified";
+  // ─── Pincode auto-fill state ───
+  const [pincodeStatus, setPincodeStatus] = useState<PincodeStatus>("idle");
+  const [pincodeMessage, setPincodeMessage] = useState(""); // success or error text
+  const pincodeAbortRef = useRef<AbortController | null>(null);
 
-  // ─── GPS-verified snapshot for field-change detection ───
+  // ─── Location source (gps | manual | null) ───
+  const [locationSource, setLocationSource] = useState<"gps" | "manual" | null>(
+    initial?.gpsVerified || initial?.locationVerified
+      ? (initial?.locationSource ?? (initial?.gpsVerified ? "gps" : null))
+      : null
+  );
+
+  const gpsVerified = gpsState === "verified";
+  // locationVerified is the canonical name — true whenever GPS or manual map has been confirmed.
+  const locationVerified = gpsVerified;
+  // When user types a valid 6-digit pincode, fetch city/district + state from /api/pincode/[pincode]
+  useEffect(() => {
+    const pincode = form.pincode.trim();
+
+    // Reset state if input is empty or invalid
+    if (!pincode) {
+      setPincodeStatus("idle");
+      setPincodeMessage("");
+      return;
+    }
+    if (!isValidPincode(pincode)) {
+      // Only show error when user has typed all 6 digits but pattern still fails
+      // (pattern: must start with 1-9 and be exactly 6 digits)
+      if (pincode.length === 6) {
+        setPincodeStatus("not-found");
+        setPincodeMessage("Invalid pincode. Must start with 1-9.");
+      } else {
+        setPincodeStatus("idle");
+        setPincodeMessage("");
+      }
+      return;
+    }
+
+    // Valid format — debounce fetch
+    setPincodeStatus("fetching");
+    setPincodeMessage("");
+
+    // Cancel previous in-flight request
+    if (pincodeAbortRef.current) pincodeAbortRef.current.abort();
+    const controller = new AbortController();
+    pincodeAbortRef.current = controller;
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/pincode/${pincode}`, {
+          signal: controller.signal,
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          setPincodeStatus("not-found");
+          setPincodeMessage(json.error || "Pincode not found. Please check and re-enter.");
+          return;
+        }
+        const info = json.data;
+        setPincodeStatus("ok");
+        setPincodeMessage(
+          `${info.city || info.district}${info.state ? ", " + info.state : ""}`
+        );
+        // Auto-fill city + state (only if user hasn't typed something different already)
+        setForm((f) => ({
+          ...f,
+          city: info.city || info.district || f.city,
+          state: info.state || f.state,
+        }));
+      } catch (err: any) {
+        if (err?.name === "AbortError") return; // superseded by a newer request
+        setPincodeStatus("error");
+        setPincodeMessage("Could not verify pincode. Check your connection.");
+      }
+    }, 450);
+
+    return () => {
+      clearTimeout(timer);
+      // Don't abort on cleanup — let the request complete unless replaced.
+    };
+  }, [form.pincode]);
+
+  // ─── Reset verification when city/state/pincode manually change ───
+  // Pin move/drag reset is handled inside MapLocationPicker (user must click
+  // "Confirm Location" again after dragging). Here we only reset when the user
+  // edits text fields that were originally auto-filled from the GPS/map.
   const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
 
   useEffect(() => {
@@ -147,14 +235,18 @@ export function UnifiedAddressForm({
         pincode: geo.pincode || f.pincode,
       }));
       setGpsState("verified");
-      appToast.success("Location verified!", `Accuracy: ${Math.round(loc.accuracy)}m`);
+      setLocationSource("gps"); // ← GPS detected
+      appToast.success("Location verified via GPS!", `Accuracy: ${Math.round(loc.accuracy)}m`);
     } catch (err) {
       setGpsState("failed");
+      setLocationSource(null);
       setGpsError(err instanceof Error ? err.message : "GPS verification failed");
     }
   }, []);
 
   // ─── Manual map location handler ───
+  // Called when user clicks "Confirm Location" inside MapLocationPicker.
+  // At this point the user has explicitly confirmed, so verification is granted.
   const handleMapLocationSelect = useCallback((location: {
     lat: number; lng: number; accuracy: number;
     city?: string; state?: string; pincode?: string;
@@ -167,9 +259,17 @@ export function UnifiedAddressForm({
       pincode: location.pincode || f.pincode,
     }));
     setGpsState("verified");
+    setLocationSource("manual"); // ← Manual pin (dragged + confirmed)
     setGpsError("");
     appToast.success("Location set!", "Pin location confirmed on map");
   }, []);
+
+  // ─── Reset location source when verification resets ───
+  useEffect(() => {
+    if (gpsState !== "verified") {
+      setLocationSource(null);
+    }
+  }, [gpsState]);
 
   // ─── Validation ───
   const validate = useCallback((): boolean => {
@@ -180,13 +280,16 @@ export function UnifiedAddressForm({
     if (!form.houseNo.trim()) e.houseNo = "House / Flat number is required";
     if (!form.locality.trim()) e.locality = "Area / Street / Locality is required";
     if (!isValidPincode(form.pincode)) e.pincode = "Enter a valid 6-digit pincode";
+    else if (pincodeStatus === "not-found") e.pincode = pincodeMessage || "Pincode not found";
+    else if (pincodeStatus === "fetching") e.pincode = "Verifying pincode...";
+    else if (pincodeStatus === "error") e.pincode = pincodeMessage;
     if (!form.city.trim()) e.city = "City is required";
     if (!form.state.trim()) e.state = "State is required";
-    // GPS verification is ALWAYS required
-    if (!gpsVerified) e.gps = "Please verify your location using GPS before saving this address.";
+    // Location verification is ALWAYS required (GPS or manual map pin)
+    if (!locationVerified) e.gps = "Please confirm your location using GPS or map pin before saving this address.";
     setErrors(e);
     return Object.keys(e).length === 0;
-  }, [form, gpsVerified]);
+  }, [form, locationVerified, pincodeStatus, pincodeMessage]);
 
   // ─── Save handler ───
   const handleSave = async () => {
@@ -200,9 +303,13 @@ export function UnifiedAddressForm({
       return;
     }
 
-    // Double-check GPS verification at save logic level
-    if (!gpsVerified || !gpsCoords) {
-      setErrors((prev) => ({ ...prev, gps: "GPS verification is required to save this address." }));
+    // Double-check location verification at save logic level
+    if (!locationVerified || !gpsCoords) {
+      setErrors((prev) => ({ ...prev, gps: "Location verification is required to save this address." }));
+      return;
+    }
+    if (!locationSource) {
+      setErrors((prev) => ({ ...prev, gps: "Could not determine location source." }));
       return;
     }
 
@@ -223,6 +330,10 @@ export function UnifiedAddressForm({
         accuracy: gpsCoords.accuracy,
         gpsVerified: true,
         isDefault: form.isDefault,
+        // ─── New canonical fields ───
+        locationVerified: true,
+        locationSource,
+        locationAccuracy: gpsCoords.accuracy,
       });
     } catch (err) {
       appToast.error("Save failed", err instanceof Error ? err.message : "Could not save address");
@@ -279,7 +390,7 @@ export function UnifiedAddressForm({
                  "GPS Location Verification"}
               </p>
               <p className="text-xs text-slate-500 mt-0.5">
-                {gpsVerified ? "City, state, pincode auto-filled from GPS. You can adjust manually." :
+                {gpsVerified ? `Confirmed via ${locationSource === "gps" ? "GPS" : "map pin"}. City, state, pincode auto-filled. You can adjust manually.` :
                  "Verify your exact delivery location. Required to save address."}
               </p>
             </div>
@@ -311,25 +422,28 @@ export function UnifiedAddressForm({
           </p>
         )}
 
-        {/* Manual map link */}
-        {!gpsVerified && (
-          <div className="mt-2 pt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => setMapPickerOpen(true)}
-              className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
-            >
-              <MapIcon className="size-3.5" />
-              Set Location Manually on Map
-            </button>
-          </div>
-        )}
+        {/* Manual map link — always visible (lets user re-position even after GPS verified) */}
+        <div className="mt-2 pt-2 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={() => setMapPickerOpen(true)}
+            className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+          >
+            <MapIcon className="size-3.5" />
+            {gpsVerified ? "Adjust location on map" : "Set Location Manually on Map"}
+          </button>
+        </div>
 
         {/* Coordinates display */}
         {gpsVerified && gpsCoords && (
-          <div className="mt-2 pt-2 border-t border-green-200 flex items-center gap-2 text-xs text-green-700">
-            <MapPin className="size-3" />
-            <span className="tabular-nums">{gpsCoords.lat.toFixed(6)}, {gpsCoords.lng.toFixed(6)}</span>
+          <div className="mt-2 pt-2 border-t border-green-200 flex items-center justify-between gap-2 text-xs text-green-700">
+            <div className="flex items-center gap-2">
+              <MapPin className="size-3" />
+              <span className="tabular-nums">{gpsCoords.lat.toFixed(6)}, {gpsCoords.lng.toFixed(6)}</span>
+            </div>
+            <span className="text-[10px] font-semibold uppercase tracking-wide bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+              via {locationSource === "gps" ? "GPS" : "MAP PIN"}
+            </span>
           </div>
         )}
       </div>
@@ -395,9 +509,48 @@ export function UnifiedAddressForm({
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-1.5">
-          <Label className="text-sm">Pincode *</Label>
-          <Input inputMode="numeric" maxLength={6} value={form.pincode} onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, "") })} className="h-11" placeholder="131001" />
-          {errors.pincode && <p className="text-xs text-red-500">{errors.pincode}</p>}
+          <Label className="text-sm flex items-center gap-1.5">
+            Pincode *
+            {pincodeStatus === "fetching" && (
+              <Loader2 className="size-3 animate-spin text-slate-400" />
+            )}
+            {pincodeStatus === "ok" && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                <Check className="size-2.5" /> Verified
+              </span>
+            )}
+          </Label>
+          <Input
+            inputMode="numeric"
+            maxLength={6}
+            value={form.pincode}
+            onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, "") })}
+            className={cn(
+              "h-11",
+              pincodeStatus === "ok" && "border-green-300 focus-visible:ring-green-200",
+              pincodeStatus === "not-found" && "border-red-300 focus-visible:ring-red-200",
+              pincodeStatus === "error" && "border-amber-300 focus-visible:ring-amber-200"
+            )}
+            placeholder="131001"
+          />
+          {pincodeStatus === "ok" && pincodeMessage && (
+            <p className="text-xs text-green-600 flex items-center gap-1 animate-fade-in">
+              <Check className="size-3 shrink-0" /> {pincodeMessage}
+            </p>
+          )}
+          {pincodeStatus === "not-found" && pincodeMessage && (
+            <p className="text-xs text-red-500 flex items-center gap-1">
+              <AlertCircle className="size-3 shrink-0" /> {pincodeMessage}
+            </p>
+          )}
+          {pincodeStatus === "error" && pincodeMessage && (
+            <p className="text-xs text-amber-600 flex items-center gap-1">
+              <AlertCircle className="size-3 shrink-0" /> {pincodeMessage}
+            </p>
+          )}
+          {errors.pincode && !pincodeMessage && (
+            <p className="text-xs text-red-500">{errors.pincode}</p>
+          )}
         </div>
         <div className="space-y-1.5">
           <Label className="text-sm">City *</Label>

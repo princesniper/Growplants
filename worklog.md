@@ -313,3 +313,53 @@ Stage Summary:
   * /home/z/my-project/download/phase5-auth-login.png (desktop login)
   * /home/z/my-project/download/phase5-auth-mobile.png (mobile login)
 - Awaiting user approval before starting Phase 6 (CMS / Static Pages — About, Contact, FAQ, Terms, Privacy, Refund Policy, 404 Error).
+
+---
+Task ID: address-system-update
+Agent: main
+Task: Update address system with (1) pincode auto-fill, (2) GPS + manual map pin with drag-reset verification, (3) mandatory locationVerified gate, (4) save locationSource/locationVerified/locationAccuracy in addition to lat/lng/pincode/city/state.
+
+Work Log:
+- Reviewed existing system: Prisma Address model, AddressContext (Firestore-backed), UnifiedAddressForm, MapLocationPicker, lib/gps.ts, lib/validations/address.ts, lib/utils.ts pincode validator
+- Added `locationVerified Boolean`, `locationSource String?`, `locationAccuracy Float?` to Prisma Address model + ran `prisma db push`
+- Created `src/lib/pincode.ts` (lookupPincode helper using India Post API)
+- Created `src/app/api/pincode/[pincode]/route.ts` — GET endpoint with 200/400/404 responses, 24h cache
+- Updated `UnifiedAddressForm.tsx`:
+  * Added debounced pincode auto-fill (450ms) → fetches `/api/pincode/[pincode]`, auto-fills city/state, shows spinner/Verified badge/success message/inline error
+  * Added `locationSource: "gps" | "manual" | null` state — set to "gps" on GPS success, "manual" on map confirm
+  * Added `locationVerified` canonical boolean (alias of `gpsVerified`)
+  * Reset verification when user edits city/state/pincode (existing behavior preserved)
+  * Save handler now passes `locationVerified`, `locationSource`, `locationAccuracy` to onSave
+  * Coordinates display now shows "via GPS" or "via MAP PIN" badge
+  * Manual map link is now always visible (lets user re-position even after GPS verified)
+- Updated `MapLocationPicker.tsx`:
+  * Added `pinMoved` state — set true on drag/click/search-result
+  * Pin moved → amber "Re-Confirm Location" button with pulse animation
+  * User must click "Confirm Location" again after moving pin
+  * `pinMoved` resets to false only when user clicks Confirm
+- Updated `src/contexts/AddressContext.tsx`:
+  * Added `locationVerified`, `locationSource`, `locationAccuracy` to FirestoreAddress interface (kept `gpsVerified` as deprecated alias)
+  * onSnapshot reads now normalize old docs: if `locationVerified` missing but `gpsVerified === true`, treat as verified and stamp `locationSource = "gps"`
+  * addAddress: enforces `locationVerified === true`, requires `locationSource`, requires lat/lng
+  * updateAddress: enforces `locationVerified !== false`, re-stamps `gpsVerified = true` for backward compat
+- Updated `src/lib/validations/address.ts`: added `locationVerified` (must be true) + `locationSource` ("gps"|"manual") to schema
+- Updated `src/app/(main)/account/addresses/page.tsx`:
+  * Passes all new fields to `addAddress` / `updateAddress`
+  * Edit mode passes `locationVerified`, `locationSource`, `locationAccuracy` from existing address (with `gpsVerified` fallback for old docs)
+  * Address card badge now shows "Verified · GPS" or "Verified · MAP"
+- Updated `src/app/(main)/checkout/page.tsx`: passes all new fields to addAddress
+- Ran `bunx tsc --noEmit` → clean, no errors
+- Started dev server → all endpoints return 200:
+  * `GET /api/pincode/110001` → 200 with city=Central Delhi, state=Delhi
+  * `GET /api/pincode/999999` → 404 (not found)
+  * `GET /api/pincode/123` → 400 (invalid format)
+  * `GET /account/addresses` → 200
+  * `GET /checkout` → 200
+
+Stage Summary:
+- All 4 requirements delivered without breaking existing address system
+- Backward-compatible: old Firestore addresses (with only `gpsVerified`) still work — auto-migrated on read
+- Pincode auto-fill uses India Post official API (free, no API key, 24h cache)
+- Map picker now requires explicit "Confirm Location" after every pin move (drag-reset requirement met)
+- Save gated by `locationVerified === true` at both UI and data-context layer
+- `locationSource` tracked as "gps" or "manual" and persisted in Firestore + Prisma schema

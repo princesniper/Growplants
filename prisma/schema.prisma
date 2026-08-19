@@ -114,22 +114,28 @@ model Address {
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  fullName      String
-  phone         String
-  addressLine1  String
-  addressLine2  String?
-  landmark      String?
-  city          String
-  state         String
-  pincode       String
-  latitude      Float?
-  longitude     Float?
-  isDefault     Boolean  @default(false)
+  fullName        String
+  phone           String
+  addressLine1    String
+  addressLine2    String?
+  landmark        String?
+  city            String
+  state           String
+  pincode         String
+  latitude        Float?
+  longitude       Float?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  // Location verification — mandatory for all new addresses
+  locationVerified Boolean  @default(false)    // true only after user confirms location (GPS or map)
+  locationSource    String?                     // "gps" | "manual"
+  locationAccuracy  Float?                      // GPS accuracy in meters (null if manual)
 
-  orders        Order[]
+  isDefault       Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  orders          Order[]
 
   @@index([userId])
 }

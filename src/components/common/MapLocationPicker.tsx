@@ -17,7 +17,7 @@
  * ============================================================================
  */
 import { useEffect, useRef, useState } from "react";
-import { MapPin, Check, X, Loader2, Search } from "lucide-react";
+import { MapPin, Check, X, Loader2, Search, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,6 +81,11 @@ export function MapLocationPicker({
   const [coords, setCoords] = useState<{ lat: number; lng: number }>(
     initialLocation ?? { lat: DEFAULT_CENTER[0], lng: DEFAULT_CENTER[1] }
   );
+  // ─── Pin-move reset: when user drags the pin, "Confirm Location" is REQUIRED
+  // again before the parent's verification state can be granted.
+  // `pinMoved` flips to true on any drag/click; flips back to false only when
+  // the user clicks "Confirm Location" (which calls onLocationSelect).
+  const [pinMoved, setPinMoved] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -121,17 +126,19 @@ export function MapLocationPicker({
           title: "Drag me to your location",
         }).addTo(mapInstance.current);
 
-        // Update coords on marker drag
+        // Update coords on marker drag — mark as "needs re-confirm"
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
           setCoords({ lat: pos.lat, lng: pos.lng });
+          setPinMoved(true);
           setError("");
         });
 
-        // Also update marker position on map click
+        // Also update marker position on map click — mark as "needs re-confirm"
         mapInstance.current.on("click", (e: any) => {
           markerRef.current.setLatLng(e.latlng);
           setCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
+          setPinMoved(true);
           setError("");
         });
 
@@ -177,6 +184,7 @@ export function MapLocationPicker({
           mapInstance.current.setView([lat, lng], 16);
           markerRef.current.setLatLng([lat, lng]);
           setCoords({ lat, lng });
+          setPinMoved(true); // search result also needs confirmation
         }
       } else {
         setError("Location not found. Try a different search term.");
@@ -210,6 +218,7 @@ export function MapLocationPicker({
         state: data.address?.state || "",
         pincode: data.address?.postcode || "",
       });
+      setPinMoved(false); // confirmed — reset the moved flag
       onClose();
     } catch (err) {
       setError("Could not verify location. Please try again.");
@@ -284,6 +293,14 @@ export function MapLocationPicker({
             </div>
           </div>
 
+          {/* Pin moved — needs re-confirm hint */}
+          {pinMoved && (
+            <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md animate-fade-in">
+              <AlertCircle className="size-3" />
+              <span>Pin moved — click "Confirm Location" again to verify.</span>
+            </div>
+          )}
+
           {/* Error */}
           {error && (
             <p className="text-xs text-red-500 flex items-center gap-1">
@@ -301,12 +318,19 @@ export function MapLocationPicker({
               Cancel
             </Button>
             <Button
-              className="flex-1 bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+              className={cn(
+                "flex-1 gap-2",
+                pinMoved
+                  ? "bg-amber-600 hover:bg-amber-700 animate-pulse-ring"
+                  : "bg-[#1A6B3C] hover:bg-[#16A34A]"
+              )}
               onClick={handleConfirm}
               disabled={isConfirming}
             >
               {isConfirming ? (
                 <><Loader2 className="size-4 animate-spin" /> Verifying...</>
+              ) : pinMoved ? (
+                <><Check className="size-4" /> Re-Confirm Location</>
               ) : (
                 <><Check className="size-4" /> Confirm Location</>
               )}

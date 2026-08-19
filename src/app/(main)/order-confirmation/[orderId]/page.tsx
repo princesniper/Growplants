@@ -303,7 +303,7 @@ function mapFirestoreOrderInline(fo: FirestoreOrder): Order {
     paymentMethod: (fo.paymentMethod === "razorpay" ? "razorpay" : "cod") as Order["paymentMethod"],
     paymentStatus: (fo.paymentStatus as Order["paymentStatus"]) ?? "pending",
     orderStatus: normalizedStatus,
-    notes: fo.notes,
+    notes: fo.notes ?? undefined,
     createdAt: createdAtIso,
     statusHistory,
   };

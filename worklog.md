@@ -363,3 +363,39 @@ Stage Summary:
 - Map picker now requires explicit "Confirm Location" after every pin move (drag-reset requirement met)
 - Save gated by `locationVerified === true` at both UI and data-context layer
 - `locationSource` tracked as "gps" or "manual" and persisted in Firestore + Prisma schema
+
+---
+Task ID: firestore-undefined-notes-fix
+Agent: main
+Task: Fix FirebaseError "Function WriteBatch.set() called with invalid data. Unsupported field value: undefined (found in field notes in document orders/cmszmqtqh0003p02pmmyzb1ks)"
+
+Root Cause:
+- `buildOrderObject()` in `src/lib/firebase/firestore.ts` line 312 stored `notes: input.notes` directly.
+- The TypeScript type for `notes` was `notes?: string` (optional), so when callers (checkout page line 480, OrdersContext line 480) passed `notes: data.notes` with `data.notes === undefined`, the resulting object had a literal `undefined` value.
+- Firestore's `writeBatch.set()` rejects `undefined` field values (FirebaseError) — it requires either `null` or a concrete value.
+- The error fired when `addOrderToUserDocument()` ran the dual-write batch to `orders/{orderId}` and `users/{uid}.orders[]`.
+
+Fix:
+1. `src/lib/firebase/firestore.ts`:
+   - Coerced `notes: input.notes ?? null` (Firestore's canonical "no value") at object construction.
+   - Added `sanitizeForFirestore<T>(value)` helper — recursively rewrites any `undefined` to `null` for plain objects and arrays. Skips class instances (Date, Firestore Timestamp, GeoPoint) so Firestore can use its own serializers.
+   - `addOrderToUserDocument()` now wraps the order object through `sanitizeForFirestore()` before both `batch.set()` and `arrayUnion()` — defends against future optional fields too.
+2. `src/types/firebase.ts`:
+   - Changed `FirestoreOrder.notes` from `notes?: string` to `notes?: string | null` so the type system accepts the coercion.
+3. Consumers (4 places) that map `FirestoreOrder.notes` → `Order.notes`:
+   - `src/contexts/OrdersContext.tsx`
+   - `src/components/orders/OrderTrackingClient.tsx`
+   - `src/components/orders/OrderTrackingClientWrapper.tsx`
+   - `src/app/(main)/order-confirmation/[orderId]/page.tsx`
+   - All updated to `notes: fo.notes ?? undefined` (the UI Order type still uses `notes?: string`, and `undefined` is the correct semantic for "no notes" on the client).
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- Dev server recompiled successfully after edits
+- Most recent order `cmszmqtqh0003p02pmmyzb1ks` (the one that originally errored) was re-created successfully via `POST /api/orders 200` and `/order-confirmation/[id]` loaded fine
+- Dev log shows no Firestore errors after the fix
+
+Stage Summary:
+- Root cause: missing null-coercion when crossing TS optional-types → Firestore strict-undefined boundary
+- Fixed both the specific `notes` field AND added a general-purpose `sanitizeForFirestore` helper to prevent future occurrences
+- Backward-compatible: all existing code paths continue to work (Firestore `null` reads back as `null`, callers map to `undefined` for the UI Order type)

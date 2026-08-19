@@ -135,6 +135,6 @@ export interface FirestoreOrder {
   statusHistory?: FirestoreOrderStatusEvent[];
   /** Optional tax (GST) — not in original spec but kept for compatibility */
   tax?: number;
-  /** Optional customer notes */
-  notes?: string;
+  /** Optional customer notes (null when not provided — Firestore rejects undefined) */
+  notes?: string | null;
 }

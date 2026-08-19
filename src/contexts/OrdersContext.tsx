@@ -231,7 +231,7 @@ function mapFirestoreOrderToOrder(fo: FirestoreOrder): Order {
     paymentMethod: (fo.paymentMethod === "razorpay" ? "razorpay" : "cod") as PaymentMethod,
     paymentStatus: (fo.paymentStatus as PaymentStatus) ?? "pending",
     orderStatus: normalizeAdminStatus(rawStatus as string) as OrderStatus,
-    notes: fo.notes,
+    notes: fo.notes ?? undefined,
     createdAt: createdAtIso,
     statusHistory,
   };

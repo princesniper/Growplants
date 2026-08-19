@@ -46,6 +46,50 @@ import type {
 const USERS_COLLECTION = "users";
 const ORDERS_COLLECTION = "orders";
 
+/* ============================================================================
+ * SANITIZE — strip `undefined` values before writing to Firestore
+ * ============================================================================
+ * Firestore rejects `undefined` field values with:
+ *   FirebaseError: Function WriteBatch.set() called with invalid data.
+ *   Unsupported field value: undefined (found in field <name>)
+ *
+ * This helper recursively walks any plain JS object and rewrites `undefined`
+ * to `null` (Firestore's canonical "no value" representation). Arrays are
+ * walked element-by-element; functions / class instances are passed through
+ * untouched so Firestore can convert them with its own serializers.
+ *
+ * Use this anywhere we cross the Prisma → Firestore boundary, since TS types
+ * often mark fields as optional (`field?: T`) and the runtime value is then
+ * `undefined` rather than `null`.
+ * ============================================================================
+ */
+export function sanitizeForFirestore<T>(value: T): T {
+  // Primitives: null, undefined, numbers, strings, booleans, etc.
+  if (value === undefined) return null as unknown as T;
+  if (value === null) return value;
+  if (typeof value !== "object") return value;
+
+  // Arrays — sanitize each element
+  if (Array.isArray(value)) {
+    return value.map((el) => sanitizeForFirestore(el)) as unknown as T;
+  }
+
+  // Skip custom class instances (Date, Timestamp, GeoPoint, etc.) — Firestore
+  // has its own serializers for these. Cheap heuristic: if the object's
+  // constructor is not `Object`, leave it alone.
+  if (value.constructor && value.constructor !== Object) {
+    return value;
+  }
+
+  // Plain object — walk every key
+  const out: Record<string, unknown> = {};
+  for (const key of Object.keys(value as Record<string, unknown>)) {
+    const v = (value as Record<string, unknown>)[key];
+    out[key] = sanitizeForFirestore(v);
+  }
+  return out as T;
+}
+
 /* ---------- User Document ---------- */
 
 export async function getFirestoreUser(
@@ -309,7 +353,9 @@ export function buildOrderObject(input: BuildOrderObjectInput): FirestoreOrder {
     adminNotes: input.adminNotes ?? "",
     statusHistory,
     tax: input.tax ?? 0,
-    notes: input.notes,
+    // Firestore rejects `undefined` field values — coerce to null instead.
+    // `null` is Firestore's canonical representation for "no value".
+    notes: input.notes ?? null,
   };
 }
 
@@ -345,9 +391,12 @@ export async function addOrderToUserDocument(
   try {
     const batch = writeBatch(firebaseDb);
     // 1. Top-level orders/{orderId} doc
-    batch.set(orderRef, order);
+    //    Note: Firestore rejects `undefined` field values — `sanitizeForFirestore`
+    //    recursively rewrites any `undefined` to `null` so we never trigger
+    //    "Unsupported field value: undefined" errors at write time.
+    batch.set(orderRef, sanitizeForFirestore(order) as FirestoreOrder);
     // 2. Append order to users/{uid}.orders[] (arrayUnion — dedupes by reference equality)
-    batch.update(userRef, { orders: arrayUnion(order) });
+    batch.update(userRef, { orders: arrayUnion(sanitizeForFirestore(order) as FirestoreOrder) });
     await batch.commit();
   } catch (err) {
     // Fail-soft: log only. PostgreSQL/Prisma already saved the order — Firestore

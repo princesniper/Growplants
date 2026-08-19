@@ -20,7 +20,6 @@ import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { MapLocationPicker } from "@/components/common/MapLocationPicker";
-import { UnifiedAddressForm } from "@/components/common/UnifiedAddressForm";
 
 const STEPS = ["Address", "Review", "Payment"] as const;
 
@@ -218,22 +217,6 @@ export default function CheckoutPage() {
       setGpsCoords(null);
     }
   }, [selectedAddressId]);
-
-  // Handle manual location selection from map
-  const handleMapLocationSelect = (location: { lat: number; lng: number; accuracy: number; city?: string; state?: string; pincode?: string }) => {
-    setGpsCoords({ lat: location.lat, lng: location.lng, accuracy: location.accuracy });
-    setAddress((prev) => ({
-      ...prev,
-      city: location.city || prev.city,
-      state: location.state || prev.state,
-      pincode: location.pincode || prev.pincode,
-      latitude: location.lat,
-      longitude: location.lng,
-    }));
-    setGpsState("verified");
-    setGpsError("");
-    appToast.success("Location set!", "Pin location confirmed on map");
-  };
 
   // BYPASS FIX: Track GPS-verified values — if user edits city/state/pincode after GPS verify, reset
   const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
@@ -448,61 +431,23 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* New Address Form — uses UnifiedAddressForm (same as Account → Addresses) */}
+              {/* New Address Form — opens the full MapLocationPicker */}
               {(showNewAddressForm || addresses.length === 0) && (
-                <UnifiedAddressForm
-                  onSave={async (data) => {
-                    // Save to address book (persistent — same as Account page)
-                    if (user) {
-                      try {
-                        await addAddress({
-                          label: data.label,
-                          fullName: data.fullName,
-                          phone: data.phone,
-                          houseNo: data.houseNo,
-                          locality: data.locality,
-                          pincode: data.pincode,
-                          city: data.city,
-                          state: data.state,
-                          isDefault: data.isDefault,
-                          latitude: data.latitude,
-                          longitude: data.longitude,
-                          accuracy: data.accuracy,
-                          // Backward-compat alias
-                          gpsVerified: data.gpsVerified,
-                          // New canonical location fields
-                          locationVerified: data.locationVerified,
-                          locationSource: data.locationSource,
-                          locationAccuracy: data.locationAccuracy,
-                        });
-                        // Wait for Firestore to sync (addresses update via onSnapshot)
-                        await new Promise((r) => setTimeout(r, 500));
-                      } catch (err) {
-                        console.warn("[checkout] Failed to save address to book:", err);
-                      }
-                    }
-                    // Set as selected address for this order
-                    setAddress({
-                      fullName: data.fullName,
-                      phone: data.phone,
-                      addressLine1: data.houseNo,
-                      addressLine2: data.locality,
-                      landmark: data.landmark,
-                      city: data.city,
-                      state: data.state,
-                      pincode: data.pincode,
-                      latitude: data.latitude,
-                      longitude: data.longitude,
-                    });
-                    setShowNewAddressForm(false);
-                    setGpsState("verified");
-                    setGpsError("");
-                    setGpsCoords({ lat: data.latitude ?? 0, lng: data.longitude ?? 0, accuracy: data.accuracy ?? 0 });
-                    appToast.success("Address saved", "Address added to your address book");
-                  }}
-                  onCancel={() => setShowNewAddressForm(false)}
-                  title="Add New Delivery Address"
-                />
+                <div className="p-4 rounded-xl border-2 border-dashed border-[#1A6B3C] bg-[#F3F8F1] flex flex-col items-center justify-center gap-3 min-h-[160px] text-center">
+                  <MapPin className="size-8 text-[#1A6B3C]" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Add a new delivery address</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Open the map picker to verify your delivery location and fill in address details.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setMapPickerOpen(true)}
+                    className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+                  >
+                    <MapPin className="size-4" />Open Location Picker
+                  </Button>
+                </div>
               )}
 
               {/* Link to manage addresses */}
@@ -627,11 +572,56 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Map Location Picker Dialog */}
+      {/* Map Location Picker Dialog — full Blinkit-style modal */}
       <MapLocationPicker
         open={mapPickerOpen}
         onClose={() => setMapPickerOpen(false)}
-        onLocationSelect={handleMapLocationSelect}
+        onSave={async (data) => {
+          // Save to address book (persistent — same as Account page)
+          if (user) {
+            try {
+              await addAddress({
+                label: data.label,
+                fullName: data.fullName,
+                phone: data.phone,
+                houseNo: data.houseNo,
+                locality: data.locality,
+                pincode: data.pincode,
+                city: data.city,
+                state: data.state,
+                isDefault: data.isDefault,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                accuracy: data.accuracy,
+                gpsVerified: data.gpsVerified,
+                locationVerified: data.locationVerified,
+                locationSource: data.locationSource,
+                locationAccuracy: data.locationAccuracy,
+              });
+              await new Promise((r) => setTimeout(r, 500));
+            } catch (err) {
+              console.warn("[checkout] Failed to save address to book:", err);
+            }
+          }
+          // Set as selected address for this order
+          setAddress({
+            fullName: data.fullName,
+            phone: data.phone,
+            addressLine1: data.houseNo,
+            addressLine2: data.locality,
+            landmark: data.landmark,
+            city: data.city,
+            state: data.state,
+            pincode: data.pincode,
+            latitude: data.latitude,
+            longitude: data.longitude,
+          });
+          setShowNewAddressForm(false);
+          setGpsState("verified");
+          setGpsError("");
+          setGpsCoords({ lat: data.latitude ?? 0, lng: data.longitude ?? 0, accuracy: data.accuracy ?? 0 });
+          appToast.success("Address saved", "Address added to your address book");
+        }}
       />
     </Container>
   );

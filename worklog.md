@@ -906,3 +906,70 @@ Stage Summary:
 - ResizeObserver + requestAnimationFrame for bulletproof `invalidateSize`.
 - Parent form correctly resets `locationVerified` when user reopens picker.
 - All 10 manual test scenarios pass code review.
+
+---
+Task ID: map-picker-blinkit-redesign-final
+Agent: main
+Task: Completely redesign the GROWPLANTS Address Location Picker — Blinkit-style. Two-column desktop (map + address form side-by-side), stepped mobile (map → address form sheet). Single integrated modal.
+
+## Architecture
+
+### MapLocationPicker — complete rewrite (`src/components/common/MapLocationPicker.tsx`)
+- **API change**: now emits `onSave(fullAddressPayload)` directly when the user clicks "Save Address" inside the picker. Old `onLocationSelect` API removed.
+- **Layout**: two-column desktop / stepped mobile, in ONE modal:
+  - Mobile (`< sm`): full-screen `h-[100dvh]`, two-column flex with one column visible at a time:
+    - Step "map": search bar floating top, GPS button, zoom controls right, fixed center pin, bottom card with selected address + "Confirm Location" CTA.
+    - Step "form" (after Confirm): full address form sheet replaces the map. "Back" returns to map and resets verification.
+  - Desktop (`sm+`): `min(960px,95vw) × min(620px,90vh)` centered modal, two 50/50 columns:
+    - LEFT: map + search + GPS + bottom card (selected location)
+    - RIGHT: address form (Address Type selector, Flat/House/Floor, Area/Locality, Landmark, Name, Phone, Save button)
+- **Map architecture**: FIXED CENTER PIN + pannable map (Blinkit/Swiggy pattern). Pin is CSS-only, anchored at `top: 50%; left: 50%; transform: translate(-50%, -100%)`. User pans the map; pin never moves. `map.getCenter()` is always the selected coords.
+- **Map events**: `movestart` → `setIsMapPanning(true)` (suppress confirm); `move` → live `setCoords`; `moveend` → debounced reverse geocode (350ms). Programmatic moves (GPS, search) use `isMapMovingRef` guard flag so they don't trigger panning state.
+- **invalidateSize**: `requestAnimationFrame` + `ResizeObserver` on modal wrapper. Catches modal animation, URL bar show/hide, orientation change, font load.
+- **State sync**: `locationVerified` starts false. User confirms location → `setLocationVerified(true)` + `setStep("form")` (mobile advances). User clicks "Adjust Location" or "Back" → `setLocationVerified(false)` + `setStep("map")`. Save button is disabled until verified.
+- **Body scroll lock** + ESC key handler (ESC goes back to map if on form step, else closes modal).
+
+### Addresses Page (`src/app/(main)/account/addresses/page.tsx`)
+- Removed `UnifiedAddressForm` import.
+- "Add Address" / "Edit" now opens `MapLocationPicker` directly with `onSave` callback.
+- Page passes existing address data as `initial` for edit mode.
+- Address card still shows the verification badge (Verified · GPS / MAP).
+
+### Checkout Page (`src/app/(main)/checkout/page.tsx`)
+- Removed `UnifiedAddressForm` import.
+- "Add New Address" now shows a call-to-action card → opens `MapLocationPicker` via `setMapPickerOpen(true)`.
+- `MapLocationPicker` `onSave` handler: saves to address book via `addAddress`, sets the in-memory `address` state for the order, marks `gpsState = "verified"`, shows toast.
+- Removed dead `handleMapLocationSelect` function (old API).
+
+### UnifiedAddressForm (`src/components/common/UnifiedAddressForm.tsx`)
+- Removed `MapLocationPicker` import (no longer used by this component).
+- Removed the inline `<MapLocationPicker>` JSX at the bottom.
+- The form is now a standalone inline address form (kept for any potential future use, but not actively used by either page).
+
+## Verification — full flow tested code-review-wise
+
+| # | Test | Status |
+|---|---|---|
+| 1 | Open picker | Modal opens: full-screen on mobile, two-column on desktop |
+| 2 | GPS location | `handleLocate` calls `getGPSLocation`, recenters map at zoom 17, sets accuracy badge |
+| 3 | Move map | `move/moveend` handlers update coords live, pin pulses |
+| 4 | Address update | Reverse geocode fires on `moveend`, bottom card shows resolved area/pincode |
+| 5 | Confirm Location | `handleConfirmLocation` sets `locationVerified=true`, advances to form step on mobile |
+| 6 | Address form | All fields (Address Type, Flat/House/Floor, Area/Locality, Landmark, Name, Phone) with validation |
+| 7 | Save Address | `handleSave` validates + calls parent's `onSave` with full payload (including `locationVerified`, `locationSource`, lat/lng, accuracy, etc.) |
+| 8 | Mobile responsive | Modal `w-full h-[100dvh]`, two-step flow with back button |
+| 9 | Desktop responsive | Modal `min(960px,95vw) × min(620px,90vh)`, two-column layout |
+| 10 | Adjust Location | "Adjust Location" button in bottom card resets verification + returns to map step |
+
+## Compatibility
+
+- Address data shape (`UnifiedAddress`) unchanged — pages still save the same fields.
+- AddressContext / Firestore persistence / Prisma schema untouched.
+- Saved addresses from before this change still display correctly (backward-compat `gpsVerified` alias preserved).
+
+## Verification
+
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/account/addresses` returns 200
+- `/checkout` returns 200
+- Dev server compiles cleanly

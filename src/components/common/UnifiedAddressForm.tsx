@@ -28,7 +28,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { MapLocationPicker } from "@/components/common/MapLocationPicker";
 import { getGPSLocation } from "@/lib/gps";
 import { appToast } from "@/lib/toast";
 
@@ -620,14 +619,6 @@ export function UnifiedAddressForm({
           🔒 Address save blocked until GPS verified
         </p>
       )}
-
-      {/* Map Location Picker Dialog */}
-      <MapLocationPicker
-        open={mapPickerOpen}
-        onClose={() => setMapPickerOpen(false)}
-        onLocationSelect={handleMapLocationSelect}
-        initialLocation={gpsCoords ? { lat: gpsCoords.lat, lng: gpsCoords.lng } : null}
-      />
     </div>
   );
 }

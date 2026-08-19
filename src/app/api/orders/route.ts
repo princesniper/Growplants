@@ -239,6 +239,16 @@ export async function POST(req: NextRequest) {
   // 4. Try Prisma transaction
   try {
     const created = await db.$transaction(async (tx) => {
+      // FIX: Ensure User row exists (Firebase UID is used as userId, but Prisma User table may not have it)
+      await tx.user.upsert({
+        where: { id: firebaseUid },
+        update: {},
+        create: {
+          id: firebaseUid,
+          email: decoded.email ?? `${firebaseUid}@firebase.local`,
+        },
+      });
+
       // C9 FIX: Check if address already exists (dedup by userId + pincode + addressLine1)
       const existingAddr = await tx.address.findFirst({
         where: {

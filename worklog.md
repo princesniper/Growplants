@@ -632,3 +632,21 @@ Stage Summary:
 - Fixed by using separate, simple Tailwind classes (`h-[640px]`, `max-h-[85vh]`, `max-w-[560px]`) that the Tailwind compiler actually understands
 - Added proper z-index hierarchy so map + overlays + controls + sheet stack correctly
 - Double invalidateSize pass ensures Leaflet never uses stale dimensions
+
+---
+Task ID: map-picker-small-screen-fix
+Agent: main
+Task: "same problem map ko small screen me open krwao" — make the map modal open in a smaller size.
+
+Changes — `src/components/common/MapLocationPicker.tsx`:
+- Modal shell on desktop reduced from 560×640 → **440×560** (more compact, true popup feel)
+- max-h reduced from 85vh → 80vh (more headroom around the modal)
+- Bottom sheet content compacted:
+  - Padding `px-4 pb-4 pt-2` → `px-3 pb-3 pt-1.5`
+  - Map pin icon container `size-10` → `size-8`
+  - Action buttons height `h-12 text-base` → `h-10 text-sm`
+  - Confirm button gap `gap-2` → `gap-1.5`
+
+Net effect: modal takes less screen real estate on desktop while staying fully usable — Confirm Location button still always visible, draggable pin still works, map fills the visible area properly.
+
+Verified: TypeScript clean, /account/addresses returns 200.

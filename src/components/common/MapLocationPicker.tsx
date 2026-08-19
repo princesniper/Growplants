@@ -645,8 +645,9 @@ export function MapLocationPicker({
       >
         {/* ─── Modal shell ───
             Mobile  : full screen, anchored to viewport edges (100dvh = dynamic viewport height)
-            Desktop : centered modal, max 560px wide × max 640px tall, with 16px outer padding */}
-        <div className="relative w-full h-[100dvh] sm:h-[640px] sm:max-h-[85vh] sm:max-w-[560px] sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
+            Desktop : compact centered modal — 440px wide × 560px tall max,
+                      shrinks proportionally if viewport is shorter (max-h-[80vh]) */}
+        <div className="relative w-full h-[100dvh] sm:h-[560px] sm:max-h-[80vh] sm:max-w-[440px] sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
 
           {/* ─── Top bar: close + search + GPS locate ─── */}
           <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">
@@ -810,11 +811,11 @@ export function MapLocationPicker({
                 <div className="w-10 h-1 rounded-full bg-slate-300" />
               </div>
 
-              <div className="px-4 pb-4 pt-2">
+              <div className="px-3 pb-3 pt-1.5">
                 {/* Header row */}
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="size-10 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0">
-                    <MapPin className="size-5 text-[#1A6B3C]" />
+                  <div className="size-8 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0">
+                    <MapPin className="size-4 text-[#1A6B3C]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
@@ -891,14 +892,14 @@ export function MapLocationPicker({
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className="flex-1 border-slate-300 text-slate-600 h-12"
+                    className="flex-1 border-slate-300 text-slate-600 h-10 text-sm"
                     onClick={onClose}
                   >
                     Cancel
                   </Button>
                   <Button
                     className={cn(
-                      "flex-[2] h-12 gap-2 text-base",
+                      "flex-[2] h-10 gap-1.5 text-sm",
                       canConfirm
                         ? "bg-[#1A6B3C] hover:bg-[#16A34A]"
                         : "bg-slate-300 text-slate-500 cursor-not-allowed"

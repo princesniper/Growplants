@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { MapLocationPicker } from "@/components/common/MapLocationPicker";
-import { getGPSLocation, reverseGeocode, GPS_ACCURACY_THRESHOLD } from "@/lib/gps";
+import { getGPSLocation } from "@/lib/gps";
 import { appToast } from "@/lib/toast";
 
 // ─── Unified address data model (used everywhere) ───
@@ -214,34 +214,40 @@ export function UnifiedAddressForm({
     }
   }, [form.city, form.state, form.pincode, gpsState]);
 
-  // ─── GPS auto-detect handler ───
+  // ─── "Use Current Location" handler ───
+  // Blinks-style: opens the full-screen picker, pre-centered on the user's GPS.
+  // If GPS fails entirely, we still open the picker at the default center and let
+  // the user drag the map / search manually.
   const handleGPS = useCallback(async () => {
     setGpsState("detecting");
     setGpsError("");
     try {
       const loc = await getGPSLocation();
-      if (loc.accuracy > GPS_ACCURACY_THRESHOLD) {
-        setGpsState("failed");
-        setGpsError(`GPS accuracy too low (${Math.round(loc.accuracy)}m). Need within ${GPS_ACCURACY_THRESHOLD}m.`);
-        return;
-      }
-      setGpsState("fetching");
-      const geo = await reverseGeocode(loc.lat, loc.lng);
+      // Pre-center picker on GPS location. We no longer reject low-accuracy
+      // GPS outright — instead we pass it to the picker, which shows the
+      // accuracy as a hint and lets the user fine-tune the pin manually.
       setGpsCoords({ lat: loc.lat, lng: loc.lng, accuracy: loc.accuracy });
-      setForm((f) => ({
-        ...f,
-        city: geo.city || f.city,
-        state: geo.state || f.state,
-        pincode: geo.pincode || f.pincode,
-      }));
-      setGpsState("verified");
-      setLocationSource("gps"); // ← GPS detected
-      appToast.success("Location verified via GPS!", `Accuracy: ${Math.round(loc.accuracy)}m`);
+      setMapPickerOpen(true);
+      // Keep state as "detecting" until user confirms in the picker.
+      // The picker's onLocationSelect → handleMapLocationSelect will flip it to "verified".
     } catch (err) {
-      setGpsState("failed");
-      setLocationSource(null);
-      setGpsError(err instanceof Error ? err.message : "GPS verification failed");
+      // GPS failed entirely — still open picker at default center so user can
+      // search / drag to position. Show the error as a hint.
+      setGpsCoords(null);
+      setMapPickerOpen(true);
+      setGpsError(
+        err instanceof Error
+          ? `${err.message} You can still pick your location manually on the map.`
+          : "GPS detection failed. Please pick your location manually on the map."
+      );
+      setGpsState("idle");
     }
+  }, []);
+
+  // ─── "Adjust Location" handler ───
+  // Opens the picker at the currently-saved coordinates (or default center).
+  const handleAdjustLocation = useCallback(() => {
+    setMapPickerOpen(true);
   }, []);
 
   // ─── Manual map location handler ───
@@ -259,10 +265,27 @@ export function UnifiedAddressForm({
       pincode: location.pincode || f.pincode,
     }));
     setGpsState("verified");
-    setLocationSource("manual"); // ← Manual pin (dragged + confirmed)
+    // Location source: "gps" if accuracy > 0 (came from a GPS reading),
+    // "manual" if the user dragged/searched (accuracy 0).
+    setLocationSource(location.accuracy > 0 ? "gps" : "manual");
     setGpsError("");
-    appToast.success("Location set!", "Pin location confirmed on map");
+    appToast.success(
+      "Location confirmed!",
+      location.accuracy > 0
+        ? `GPS accuracy: ${Math.round(location.accuracy)}m`
+        : "Pin location confirmed on map"
+    );
   }, []);
+
+  // ─── Reset "detecting" state if picker closes without confirmation ───
+  // handleGPS sets state to "detecting" right before opening the picker. If
+  // the user closes the picker without confirming, we revert to "idle" so the
+  // button shows up again and the user can retry.
+  useEffect(() => {
+    if (!mapPickerOpen && gpsState === "detecting") {
+      setGpsState("idle");
+    }
+  }, [mapPickerOpen, gpsState]);
 
   // ─── Reset location source when verification resets ───
   useEffect(() => {

@@ -430,3 +430,50 @@ Stage Summary:
 - Root cause was a state-sync gap in the checkout auto-select effect (address form was populated but GPS coords were dropped)
 - Fixed at three layers: (a) auto-select copies coords, (b) manual select accepts both verification flags, (c) defensive validation prevents reaching the API without coords
 - No backend change needed — the API's behavior is correct (it should require GPS coords)
+
+---
+Task ID: blinkit-style-map-picker
+Agent: main
+Task: Replace existing inline/static map implementation with a Blinkit-style full-screen interactive location picker.
+
+Work Log:
+- Rewrote `src/components/common/MapLocationPicker.tsx` from scratch — completely replaced the old Dialog-based modal with a full-screen picker.
+- Key UX changes:
+  1. **Center-pin design (Blinkit-style)**: Pin is anchored to the center of the viewport. User drags the MAP, not the pin. As the map moves underneath, the selected coordinates are always the map's current center.
+  2. **Full-screen overlay** (mobile) / **large centered modal** (desktop 90vh max-w-3xl). Blocks body scroll while open. Animated bottom sheet slides up on mount.
+  3. **Top bar**: Close button (X), search toggle, GPS locate button (Locate icon, top-right).
+  4. **Search**: Tappable pill that expands to a full search input. Shows up to 5 results in a dropdown; user taps to fly to that location.
+  5. **GPS Locate**: Floating button top-right. Calls `getGPSLocation()`, recenters map at zoom 17 with animation, displays accuracy badge ("GPS · 23m") in the bottom sheet.
+  6. **Zoom controls**: Right-side floating +/- buttons (since default Leaflet zoomControl is hidden for cleaner UI).
+  7. **Bottom sheet (live reverse geocode)**: 
+     - Drag handle at top
+     - Header shows "Detecting address…" (skeleton) → "Confirm your location" (success)
+     - Street line (house + road + neighbourhood) as primary
+     - City, state, pincode as secondary
+     - GPS accuracy badge (if GPS was used)
+     - Coordinates in monospace (small, for advanced users)
+     - Large "Confirm Location" button (flex-2 width) + "Cancel" (flex-1)
+  8. **Debounced reverse geocode** (500ms) — fires as map moves. Uses AbortController so stale requests are cancelled.
+  9. **GPS accuracy hint**: If accuracy > 100m, shows amber warning telling user to fine-tune manually — no longer rejects outright.
+  10. **Hint banner**: "Drag the map to set your location" shown briefly at top-center until the first address resolves.
+
+- Updated `src/components/common/UnifiedAddressForm.tsx`:
+  - **`handleGPS`**: Now opens the picker (instead of doing reverse geocoding itself). Pre-fetches GPS coords so the picker opens centered on the user's GPS. If GPS fails entirely, picker still opens at default center with an inline error message.
+  - **`handleAdjustLocation`**: New handler — just opens the picker at currently-saved coords (or default).
+  - **`handleMapLocationSelect`**: Now infers `locationSource` from accuracy — "gps" if accuracy > 0 (came from a GPS reading), "manual" if accuracy 0 (user dragged/searched).
+  - **State cleanup**: Added effect that resets `gpsState` from "detecting" → "idle" if the picker is closed without confirmation (so the Verify button reappears for retry).
+  - Removed unused imports (`reverseGeocode`, `GPS_ACCURACY_THRESHOLD`).
+
+- Backward compatibility: API surface of `MapLocationPicker` (`open`, `onClose`, `onLocationSelect`, `initialLocation`) is unchanged — no consumer changes needed.
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- Dev server still running; `/account/addresses` and `/checkout` both return 200 after recompile
+- Old Dialog-based map picker is fully gone; new full-screen picker renders on both mobile and desktop breakpoints
+
+Stage Summary:
+- Map picker is now a proper Blinkit-style full-screen flow instead of a small inline modal
+- Center-pin (drag-map-not-pin) UX matches user expectation from food/grocery delivery apps
+- Live reverse-geocoded bottom sheet gives immediate visual feedback as user pans
+- GPS accuracy is shown as a hint (not a hard rejection) — user can always fine-tune manually
+- Confirmation remains strictly required (button disabled while reverse geocoding; no implicit verification)

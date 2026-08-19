@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 
 /**
  * PasswordStrengthMeter — real-time password strength indicator.
- * Shows a 4-segment bar + checklist of requirements.
+ * Shows a 4-segment bar + simple requirements.
  *
- * Used in: RegisterForm, future Change Password form.
+ * Minimum: 6 characters (no uppercase/lowercase/number required)
  */
 export interface PasswordStrengthMeterProps {
   password: string;
@@ -21,10 +21,7 @@ interface Requirement {
 }
 
 const REQUIREMENTS: Requirement[] = [
-  { label: "At least 8 characters", test: (pw) => pw.length >= 8 },
-  { label: "One uppercase letter (A-Z)", test: (pw) => /[A-Z]/.test(pw) },
-  { label: "One lowercase letter (a-z)", test: (pw) => /[a-z]/.test(pw) },
-  { label: "One number (0-9)", test: (pw) => /[0-9]/.test(pw) },
+  { label: "At least 6 characters", test: (pw) => pw.length >= 6 },
 ];
 
 function calculateStrength(password: string): {
@@ -36,11 +33,14 @@ function calculateStrength(password: string): {
   if (!password) return { score: 0, label: "", color: "", barColor: "" };
 
   let score = 0;
-  if (password.length >= 8) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[a-z]/.test(password)) score++;
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
   if (/[0-9]/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  // Cap at 4
+  score = Math.min(score, 4) as 0 | 1 | 2 | 3 | 4;
 
   if (score <= 1) return { score: 1, label: "Weak", color: "text-error", barColor: "bg-error" };
   if (score === 2) return { score: 2, label: "Fair", color: "text-warning", barColor: "bg-warning" };
@@ -73,8 +73,8 @@ export function PasswordStrengthMeter({ password, className }: PasswordStrengthM
         </span>
       </div>
 
-      {/* Requirements checklist */}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+      {/* Simple requirement */}
+      <ul className="grid grid-cols-1 gap-1">
         {REQUIREMENTS.map((req) => {
           const met = req.test(password);
           return (

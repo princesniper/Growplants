@@ -28,7 +28,7 @@ export const loginSchema = z.object({
     ),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(6, "Password must be at least 6 characters")
     .max(128, "Password is too long"),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -45,11 +45,8 @@ export const registerSchema = z
       .refine(isValidIndianPhone, "Enter a valid Indian phone number"),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(128, "Password is too long")
-      .regex(/[A-Z]/, "Add at least one uppercase letter")
-      .regex(/[a-z]/, "Add at least one lowercase letter")
-      .regex(/[0-9]/, "Add at least one number"),
+      .min(6, "Password must be at least 6 characters")
+      .max(128, "Password is too long"),
     confirmPassword: z.string(),
     acceptTerms: z
       .boolean()

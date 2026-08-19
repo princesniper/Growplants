@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       } else {
         await new Promise((r) => setTimeout(r, 800));
-        if (password.length < 8) return { success: false, error: "Password must be at least 8 characters" }; // D4: clearer error
+        if (password.length < 6) return { success: false, error: "Password must be at least 6 characters" };
         const isEmail = email.includes("@");
         const mockUser: AuthUser = {
           id: `user-${Date.now()}`,

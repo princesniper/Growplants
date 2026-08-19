@@ -50,9 +50,7 @@ function ShopPageInner() {
   const [sort, setSort] = useState<SortValue>("featured");
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const mountedRef = useRef(false);
-  useEffect(() => { if (!mountedRef.current) { mountedRef.current = true; const t = setTimeout(() => setIsLoading(false), 300); return () => clearTimeout(t); } }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   // C13 FIX: Sync ALL filters to URL (was missing price, sunlight, difficulty, suitableFor)
   const updateURL = useCallback((newFilters: ShopFilters) => {

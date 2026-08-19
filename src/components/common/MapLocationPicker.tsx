@@ -283,20 +283,26 @@ export function MapLocationPicker({
         // Initial reverse geocode
         scheduleReverseGeocode(center[0], center[1]);
 
-        // Fix size after render + invalidate on resize
-        // Two passes (100ms + 350ms) so we cover both the immediate layout
-        // flush AND any later reflow from the browser (e.g. mobile URL bar).
-        setTimeout(() => {
+        // ─── invalidateSize: critical for modal-mounted maps ───
+        // Leaflet computes its tile layout based on the container size at init.
+        // When mounted inside a modal that animates in (gp-pop-in), the container
+        // size is unstable for the first ~400ms. We poll across multiple frames
+        // so the map always ends up correctly sized regardless of when the
+        // browser finishes layout. Three passes:
+        //   - 1 frame (~16ms): immediate post-mount layout
+        //   - 200ms: post-animation layout (gp-pop-in is 280ms)
+        //   - 500ms: post-reflow (covers mobile URL bar show/hide)
+        const invalidate = () => {
           if (mapInstance.current && !cancelled) {
             mapInstance.current.invalidateSize();
           }
-        }, 100);
+        };
+        requestAnimationFrame(invalidate);
+        setTimeout(invalidate, 200);
         setTimeout(() => {
-          if (mapInstance.current && !cancelled) {
-            mapInstance.current.invalidateSize();
-            setIsMapReady(true);
-          }
-        }, 350);
+          invalidate();
+          setIsMapReady(true);
+        }, 500);
       })
       .catch((err) => {
         setError({
@@ -556,319 +562,340 @@ export function MapLocationPicker({
 
   return (
     <>
-      {/* ─── Inline styles for marker + animations ─── */}
+      {/* ─── Inline styles for marker, animations, modal polish ─── */}
       <style>{`
+        /* ─── Professional draggable marker (Blinkit-style) ─── */
         .gp-marker { background: transparent; border: none; }
         .gp-marker-wrap {
           position: relative;
-          width: 36px;
-          height: 48px;
+          width: 38px;
+          height: 50px;
           cursor: grab;
-          touch-action: none;             /* let Leaflet handle the touch drag */
-          animation: gp-marker-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-          transition: transform 0.15s ease;
+          touch-action: none;
+          animation: gp-marker-drop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transition: transform 0.18s ease;
+          transform-origin: bottom center;
         }
-        .gp-marker-wrap:hover { transform: translateY(-2px); }
-        .gp-marker-wrap:active { cursor: grabbing; }
+        .gp-marker-wrap:hover { transform: scale(1.08); }
+        .gp-marker-wrap:active { cursor: grabbing; transform: scale(1.12); }
         @keyframes gp-marker-drop {
-          0%   { transform: translateY(-24px); opacity: 0; }
-          60%  { transform: translateY(4px);   opacity: 1; }
-          100% { transform: translateY(0);     opacity: 1; }
+          0%   { transform: translateY(-30px) scale(0.8); opacity: 0; }
+          55%  { transform: translateY(6px) scale(1.05); opacity: 1; }
+          100% { transform: translateY(0) scale(1);     opacity: 1; }
         }
         .gp-marker-head {
           position: absolute;
-          top: 0;
-          left: 50%;
+          top: 0; left: 50%;
           transform: translateX(-50%) rotate(-45deg);
-          width: 28px;
-          height: 28px;
-          background: #1A6B3C;
+          width: 30px;
+          height: 30px;
+          background: linear-gradient(135deg, #1A6B3C 0%, #16A34A 100%);
           border: 3px solid white;
           border-radius: 50% 50% 50% 0;
-          box-shadow: 0 4px 12px rgba(26, 107, 60, 0.45);
+          box-shadow: 0 6px 14px rgba(26, 107, 60, 0.45), 0 1px 3px rgba(0,0,0,0.18);
         }
         .gp-marker-dot {
           position: absolute;
           top: 6px; left: 6px;
-          width: 10px; height: 10px;
+          width: 12px; height: 12px;
           background: white;
           border-radius: 50%;
+          box-shadow: inset 0 0 0 2px rgba(26, 107, 60, 0.2);
         }
         .gp-marker-stem {
           position: absolute;
-          top: 26px;
-          left: 50%;
+          top: 28px; left: 50%;
           transform: translateX(-50%);
           width: 4px;
-          height: 12px;
-          background: #1A6B3C;
+          height: 14px;
+          background: linear-gradient(180deg, #1A6B3C 0%, #0d4a26 100%);
+          border-radius: 0 0 2px 2px;
         }
         .gp-marker-shadow {
           position: absolute;
-          top: 38px;
-          left: 50%;
+          top: 42px; left: 50%;
           transform: translateX(-50%);
-          width: 16px;
-          height: 5px;
-          background: rgba(0,0,0,0.22);
+          width: 18px;
+          height: 6px;
+          background: rgba(0,0,0,0.25);
           border-radius: 50%;
-          filter: blur(2px);
+          filter: blur(2.5px);
         }
 
+        /* ─── Leaflet container polish ─── */
         .leaflet-container {
           background: #e5e7eb;
           font-family: inherit;
-          touch-action: none;          /* allow Leaflet to handle all touches */
+          touch-action: none;
         }
         .leaflet-marker-icon, .leaflet-marker-shadow { user-select: none; }
         .leaflet-marker-draggable { cursor: grab; }
         .leaflet-marker-draggable:active { cursor: grabbing; }
+        .leaflet-tile { filter: contrast(1.02) saturate(1.05); }
 
+        /* ─── Animations ─── */
         @keyframes gp-sheet-in {
-          from { transform: translateY(100%); opacity: 0.5; }
+          from { transform: translateY(100%); opacity: 0.4; }
           to   { transform: translateY(0);     opacity: 1; }
         }
-        .gp-sheet-enter { animation: gp-sheet-in 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+        .gp-sheet-enter { animation: gp-sheet-in 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
         @keyframes gp-fade-in {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
         .gp-fade-in { animation: gp-fade-in 0.25s ease-out; }
+        @keyframes gp-pop-in {
+          0%   { opacity: 0; transform: scale(0.95) translateY(8px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .gp-pop-in { animation: gp-pop-in 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes gp-pulse-ring {
+          0%   { transform: scale(0.9); opacity: 0.7; }
+          70%  { transform: scale(1.4); opacity: 0; }
+          100% { transform: scale(1.4); opacity: 0; }
+        }
+        .gp-pulse-ring::after {
+          content: ""; position: absolute; inset: 0;
+          border-radius: inherit;
+          background: inherit;
+          animation: gp-pulse-ring 1.8s ease-out infinite;
+        }
       `}</style>
 
-      {/* ─── Full-screen overlay (mobile + desktop) ───
-          TRUE full-screen on all breakpoints — like Swiggy/Zomato/Blinkit.
-          No centered modal. Map fills the entire viewport so the pin is
-          clearly visible, the bottom sheet is always reachable, and Confirm
-          can never be cut off by viewport edges. */}
+      {/* ─── Backdrop ─── */}
       <div
-        className="fixed inset-0 z-[100] gp-fade-in bg-slate-200"
+        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-[2px] flex items-center justify-center gp-fade-in p-0 sm:p-4"
         role="dialog"
         aria-modal="true"
         aria-label="Location picker"
       >
-        {/* ─── Map container (fills entire viewport) ───
-            This is the first child so all overlays naturally stack above it. */}
-        <div
-          ref={mapRef}
-          className="absolute inset-0 z-[1]"
-          style={{ background: "#e5e7eb" }}
-          aria-label="Interactive map — drag the pin to your delivery location"
-        />
+        {/* ─── Modal shell ───
+            Mobile  : 92% width × 88vh height (max 600px wide)
+            Desktop : 600px × 520px (max 90vw × 85vh on smaller screens)
+            Centered. Rounded corners on all breakpoints for the modern feel. */}
+        <div className="relative gp-pop-in
+                        w-[94vw] max-w-[600px]
+                        h-[88vh] sm:h-[520px] sm:max-h-[85vh]
+                        rounded-2xl overflow-hidden bg-white shadow-2xl
+                        flex flex-col">
 
-        {/* ─── Loading overlay (map not ready yet) ─── */}
-        {!isMapReady && (
-          <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="size-8 animate-spin text-[#1A6B3C]" />
-              <p className="text-sm text-slate-500">Loading map…</p>
+          {/* ─── Header ─── */}
+          <div className="relative z-[1000] shrink-0 bg-white border-b border-slate-100">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <button
+                onClick={onClose}
+                className="size-9 shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 flex items-center justify-center transition-all"
+                aria-label="Close"
+              >
+                <X className="size-5 text-slate-700" />
+              </button>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-bold text-slate-800 leading-tight">
+                  Select Location
+                </h2>
+                <p className="text-[11px] text-slate-500 leading-tight">
+                  Drag the pin to your exact delivery spot
+                </p>
+              </div>
+              {/* GPS locate — always visible in header */}
+              <button
+                onClick={handleLocate}
+                disabled={isLocating}
+                className={cn(
+                  "shrink-0 h-9 px-3 rounded-full gap-1.5 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50",
+                  isLocating
+                    ? "bg-slate-100 text-slate-500"
+                    : "bg-[#F0FAF4] hover:bg-[#DCFCE7] text-[#1A6B3C]"
+                )}
+                aria-label="Use my current GPS location"
+              >
+                {isLocating ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Locate className="size-4" />
+                )}
+                <span className="text-xs font-semibold hidden xs:inline">
+                  {isLocating ? "Detecting" : "Use GPS"}
+                </span>
+              </button>
             </div>
-          </div>
-        )}
 
-        {/* ─── Load-error overlay (Leaflet failed to load) ─── */}
-        {error?.kind === "load" && (
-          <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100 p-6">
-            <div className="flex flex-col items-center gap-3 max-w-sm text-center">
-              <AlertCircle className="size-10 text-red-500" />
-              <p className="text-sm font-medium text-slate-700">{error.message}</p>
-              <Button variant="outline" onClick={onClose}>Close</Button>
-            </div>
-          </div>
-        )}
-
-        {/* ─── Top bar: close + search + GPS locate ───
-            Floating bar with gradient backdrop so it stays visible over any map state.
-            `pointer-events-none` on wrapper so map receives touch/clicks in empty areas;
-            interactive elements opt back in with `pointer-events-auto`. */}
-        <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">
-          {/* Gradient backdrop for readability over bright map tiles */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/15 to-transparent pointer-events-none h-24" />
-
-          <div className="relative flex items-start gap-2 pointer-events-auto">
-            <button
-              onClick={onClose}
-              className="size-11 shrink-0 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
-              aria-label="Close map picker"
-            >
-              <X className="size-5 text-slate-700" />
-            </button>
-
-            {/* Search bar — toggleable */}
-            <div className="flex-1 min-w-0">
-              {!searchOpen ? (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="w-full h-11 rounded-full bg-white shadow-lg px-4 flex items-center gap-2 hover:bg-slate-50 active:scale-[0.98] transition-all"
-                >
-                  <Search className="size-4 text-slate-400" />
-                  <span className="text-sm text-slate-500 truncate">
-                    Search area, street, or landmark…
-                  </span>
-                </button>
-              ) : (
-                <div className="bg-white shadow-lg rounded-full flex items-center gap-1 pl-4 pr-1 h-11">
-                  <Search className="size-4 text-slate-400 shrink-0" />
-                  <input
-                    autoFocus
-                    type="text"
-                    placeholder="Search location…"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSearch();
-                      if (e.key === "Escape") {
-                        setSearchOpen(false);
-                        setSearchQuery("");
-                        setSearchResults([]);
-                      }
-                    }}
-                    className="flex-1 bg-transparent outline-none text-sm text-slate-700 min-w-0"
-                  />
+            {/* ─── Search bar ─── */}
+            <div className="px-4 pb-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search area, street, or landmark…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                    if (e.key === "Escape") {
+                      setSearchQuery("");
+                      setSearchResults([]);
+                    }
+                  }}
+                  className="w-full h-10 pl-10 pr-4 rounded-full bg-slate-100 focus:bg-white border border-transparent focus:border-[#1A6B3C] focus:ring-2 focus:ring-[#1A6B3C]/20 outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
+                />
+                {searchQuery && (
                   <button
                     onClick={() => {
-                      setSearchOpen(false);
                       setSearchQuery("");
                       setSearchResults([]);
                     }}
-                    className="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center shrink-0"
-                    aria-label="Close search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 size-5 rounded-full hover:bg-slate-200 flex items-center justify-center"
+                    aria-label="Clear search"
                   >
-                    <X className="size-4 text-slate-500" />
+                    <X className="size-3.5 text-slate-500" />
                   </button>
+                )}
+              </div>
+
+              {/* ─── Search results dropdown ─── */}
+              {searchResults.length > 0 && (
+                <div className="absolute left-4 right-4 top-full mt-1 bg-white rounded-xl shadow-xl border border-slate-100 max-h-[40vh] overflow-y-auto z-[1001]">
+                  {searchResults.map((r, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSelectSearchResult(r)}
+                      className="w-full text-left px-3 py-2.5 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-0 flex items-start gap-2"
+                    >
+                      <MapPin className="size-4 text-[#1A6B3C] mt-0.5 shrink-0" />
+                      <span className="text-xs text-slate-700 line-clamp-2 leading-snug">
+                        {r.displayName}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-
-            {/* GPS locate */}
-            <button
-              onClick={handleLocate}
-              disabled={isLocating}
-              className={cn(
-                "size-11 shrink-0 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-all disabled:opacity-50",
-                "bg-white hover:bg-slate-50"
-              )}
-              aria-label="Use my current GPS location"
-              title="Use my current GPS location"
-            >
-              {isLocating ? (
-                <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
-              ) : (
-                <Locate className="size-5 text-[#1A6B3C]" />
-              )}
-            </button>
           </div>
 
-          {/* ─── Search results dropdown ─── */}
-          {searchOpen && searchResults.length > 0 && (
-            <div className="pointer-events-auto mt-2 bg-white rounded-xl shadow-xl max-h-[40vh] overflow-y-auto">
-              {searchResults.map((r, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSelectSearchResult(r)}
-                  className="w-full text-left px-4 py-3 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-0 flex items-start gap-2"
-                >
-                  <MapPin className="size-4 text-slate-400 mt-0.5 shrink-0" />
-                  <span className="text-sm text-slate-700 line-clamp-2">
-                    {r.displayName}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+          {/* ─── Map area (relative container for map + zoom controls + hint) ─── */}
+          <div className="relative flex-1 min-h-0 bg-slate-200">
+            {/* Map container — fills the available space */}
+            <div
+              ref={mapRef}
+              className="absolute inset-0 z-[1]"
+              style={{ background: "#e5e7eb" }}
+              aria-label="Interactive map — drag the pin to your delivery location"
+            />
 
-        {/* ─── Zoom controls (right side, vertically centered relative to visible map area) ─── */}
-        <div className="absolute right-3 top-[42%] -translate-y-1/2 z-[1000] flex flex-col gap-2">
-          <button
-            onClick={handleZoomIn}
-            className="size-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xl text-slate-700 font-light"
-            aria-label="Zoom in"
-          >
-            <Plus className="size-5" />
-          </button>
-          <button
-            onClick={handleZoomOut}
-            className="size-11 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xl text-slate-700 font-light"
-            aria-label="Zoom out"
-          >
-            <Minus className="size-5" />
-          </button>
-        </div>
+            {/* Loading overlay */}
+            {!isMapReady && (
+              <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100">
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="size-7 animate-spin text-[#1A6B3C]" />
+                  <p className="text-xs text-slate-500">Loading map…</p>
+                </div>
+              </div>
+            )}
 
-        {/* ─── "Drag the pin" hint (top center) — fades out once user interacts ─── */}
-        {isMapReady && !address && !isReverseGeocoding && !isDragging && (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
-            <div className="bg-slate-900/85 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
-              <Navigation className="size-3" />
-              Drag the pin to your exact delivery spot
+            {/* Load-error overlay */}
+            {error?.kind === "load" && (
+              <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100 p-6">
+                <div className="flex flex-col items-center gap-2 max-w-xs text-center">
+                  <AlertCircle className="size-9 text-red-500" />
+                  <p className="text-xs font-medium text-slate-700">{error.message}</p>
+                  <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+                </div>
+              </div>
+            )}
+
+            {/* Zoom controls — bottom-right, vertical */}
+            <div className="absolute right-3 bottom-3 z-[1000] flex flex-col gap-1.5">
+              <button
+                onClick={handleZoomIn}
+                className="size-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+                aria-label="Zoom in"
+              >
+                <Plus className="size-4 text-slate-700" />
+              </button>
+              <button
+                onClick={handleZoomOut}
+                className="size-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+                aria-label="Zoom out"
+              >
+                <Minus className="size-4 text-slate-700" />
+              </button>
             </div>
+
+            {/* "Drag the pin" hint — top center of map area */}
+            {isMapReady && !address && !isReverseGeocoding && !isDragging && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
+                <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+                  <Navigation className="size-3" />
+                  Drag the pin to set your exact location
+                </div>
+              </div>
+            )}
+
+            {/* Dragging indicator */}
+            {isDragging && (
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
+                <div className="bg-[#1A6B3C] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                  <Loader2 className="size-3 animate-spin" />
+                  Pin moving… {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+                </div>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* ─── Bottom sheet (confirm panel) — always visible at bottom ───
-            Scrollable if content overflows (small screens, lots of error messages). */}
-        <div className="absolute bottom-0 inset-x-0 z-[1000] gp-sheet-enter">
-          <div className="bg-white rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.15)] pb-[env(safe-area-inset-bottom)] max-h-[60vh] overflow-y-auto">
+          {/* ─── Bottom sheet (confirm panel) ─── */}
+          <div className="relative z-[1000] shrink-0 bg-white border-t border-slate-100 gp-sheet-enter">
+            <div className="px-4 py-3">
 
-            {/* Drag handle */}
-            <div className="flex justify-center pt-2 pb-1 sticky top-0 bg-white rounded-t-2xl">
-              <div className="w-10 h-1 rounded-full bg-slate-300" />
-            </div>
-
-            <div className="px-3 pb-3 pt-1.5">
-              {/* Header row */}
-              <div className="flex items-start gap-3 mb-3">
-                <div className="size-9 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0">
+              {/* Address row */}
+              <div className="flex items-start gap-3 mb-2.5">
+                <div className="size-9 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0 mt-0.5">
                   <MapPin className="size-4 text-[#1A6B3C]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <p className="text-sm font-semibold text-slate-800">
-                      {isDragging ? "Dragging…" :
-                       isReverseGeocoding ? "Detecting address…" :
-                       address ? "Confirm your location" :
-                       "Move the pin to set location"}
-                    </p>
-                    {gpsAccuracy != null && !isReverseGeocoding && (
-                      <span className={cn(
-                        "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
-                        gpsAccuracy > 100
-                          ? "text-amber-700 bg-amber-100"
-                          : "text-green-700 bg-green-100"
-                      )}>
-                        GPS · {Math.round(gpsAccuracy)}m
-                      </span>
-                    )}
-                  </div>
                   {isReverseGeocoding ? (
-                    <div className="space-y-1">
-                      <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse" />
+                    <div className="space-y-1.5">
+                      <div className="h-3.5 w-3/4 bg-slate-100 rounded animate-pulse" />
                       <div className="h-3 w-1/2 bg-slate-100 rounded animate-pulse" />
                     </div>
                   ) : address ? (
                     <>
-                      <p className="text-sm text-slate-700 line-clamp-1 font-medium">
+                      <p className="text-sm font-semibold text-slate-800 line-clamp-1 leading-snug">
                         {address.street || address.area || "Selected location"}
                       </p>
-                      <p className="text-xs text-slate-500 line-clamp-1">
+                      <p className="text-xs text-slate-500 line-clamp-1 leading-tight mt-0.5">
                         {[address.area, address.pincode].filter(Boolean).join(" · ") ||
                          address.displayName ||
                          "Address details unavailable"}
                       </p>
                     </>
                   ) : (
-                    <p className="text-xs text-slate-500">
-                      Drag the pin or use GPS to set your delivery spot.
-                    </p>
+                    <>
+                      <p className="text-sm font-semibold text-slate-700 leading-snug">
+                        No location picked yet
+                      </p>
+                      <p className="text-xs text-slate-500 leading-tight mt-0.5">
+                        Drag the pin or use GPS to set your delivery spot.
+                      </p>
+                    </>
                   )}
                 </div>
+                {/* Status badge */}
+                {gpsAccuracy != null && !isReverseGeocoding && (
+                  <span className={cn(
+                    "shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full self-start mt-0.5",
+                    gpsAccuracy > 100
+                      ? "text-amber-700 bg-amber-100"
+                      : "text-green-700 bg-green-100"
+                  )}>
+                  GPS · {Math.round(gpsAccuracy)}m
+                </span>
+                )}
               </div>
 
-              {/* Error */}
+              {/* Error / warning messages */}
               {error && error.kind !== "load" && (
                 <div className={cn(
-                  "mb-2 flex items-start gap-1.5 text-xs px-2.5 py-1.5 rounded-md",
+                  "mb-2 flex items-start gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md",
                   error.kind === "permission" || error.kind === "position" || error.kind === "timeout"
                     ? "text-amber-700 bg-amber-50"
                     : "text-red-600 bg-red-50"
@@ -878,9 +905,8 @@ export function MapLocationPicker({
                 </div>
               )}
 
-              {/* GPS inaccurate hint */}
               {gpsAccuracy != null && gpsAccuracy > 100 && (
-                <div className="mb-2 flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 px-2.5 py-1.5 rounded-md">
+                <div className="mb-2 flex items-start gap-1.5 text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1.5 rounded-md">
                   <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
                   <span>
                     GPS accuracy is low ({Math.round(gpsAccuracy)}m). Drag the pin to fine-tune your exact delivery location.
@@ -888,38 +914,33 @@ export function MapLocationPicker({
                 </div>
               )}
 
-              {/* Coordinates (monospace, small) */}
-              <div className="mb-3 text-[10px] text-slate-400 tabular-nums font-mono">
-                {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
-              </div>
-
               {/* Action buttons */}
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 border-slate-300 text-slate-600 h-12 text-base"
+                  className="flex-1 border-slate-300 text-slate-600 h-11"
                   onClick={onClose}
                 >
                   Cancel
                 </Button>
                 <Button
                   className={cn(
-                    "flex-[2] h-12 gap-2 text-base",
+                    "flex-[2] h-11 gap-2 text-sm font-semibold",
                     canConfirm
-                      ? "bg-[#1A6B3C] hover:bg-[#16A34A]"
+                      ? "bg-[#1A6B3C] hover:bg-[#16A34A] shadow-md shadow-[#1A6B3C]/20"
                       : "bg-slate-300 text-slate-500 cursor-not-allowed"
                   )}
                   onClick={handleConfirm}
                   disabled={!canConfirm}
                 >
                   {isConfirming ? (
-                    <><Loader2 className="size-5 animate-spin" /> Confirming…</>
+                    <><Loader2 className="size-4 animate-spin" /> Confirming…</>
                   ) : isDragging ? (
-                    <><MapPin className="size-5" /> Drop the pin first</>
+                    <><MapPin className="size-4" /> Drop the pin first</>
                   ) : isReverseGeocoding ? (
-                    <><Loader2 className="size-5 animate-spin" /> Detecting…</>
+                    <><Loader2 className="size-4 animate-spin" /> Detecting…</>
                   ) : (
-                    <><Check className="size-5" /> Confirm Location</>
+                    <><Check className="size-4" /> Confirm Location</>
                   )}
                 </Button>
               </div>

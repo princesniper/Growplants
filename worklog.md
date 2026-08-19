@@ -705,3 +705,95 @@ Verification:
 - `bunx tsc --noEmit` → clean (0 errors)
 - `/account/addresses` and `/checkout` both return 200
 - Dev server compiles cleanly with no warnings
+
+---
+Task ID: map-picker-blinkit-redesign
+Agent: main
+Task: Address Map Pin Picker completely redesign — small centered responsive modal, ~600×520 desktop, 92-95% mobile. Blinkit/modern delivery-app quality professional picker.
+
+Architecture Decisions:
+- Kept existing map init logic (draggable marker, dragstart/drag/dragend handlers, GPS locate, search). It was already correct.
+- Replaced ONLY the JSX render block (lines 555-937 → fresh design).
+- Removed all "full-screen overlay" attempts and "small modal with min()/max()" hacks.
+
+New Layout — `src/components/common/MapLocationPicker.tsx`:
+
+1. **Modal Shell Sizing** (the user's actual requirement):
+   - Mobile: `w-[94vw] max-w-[600px] h-[88vh]` → 94% viewport width × 88% viewport height
+   - Desktop: `sm:h-[520px] sm:max-h-[85vh]` → fixed 520px height (capped at 85vh on shorter screens)
+   - Max width 600px on all breakpoints
+   - Centered via `flex items-center justify-center`
+   - Outer padding `p-0 sm:p-4` (no padding on mobile so modal goes edge-to-edge; 16px gutter on desktop)
+   - Rounded `rounded-2xl` corners on all breakpoints
+   - Background `backdrop-blur-[2px]` + `bg-black/60` for premium feel
+   - Mount animation: `gp-pop-in` (scale 0.95 → 1.0 + slide-up, 280ms cubic-bezier)
+
+2. **Header Section** (sticky top, with bottom border):
+   - Close button (X, slate-100 bg, hover slate-200)
+   - Title "Select Location" + subtitle "Drag the pin to your exact delivery spot"
+   - GPS button "Use GPS" (green pill, `bg-[#F0FAF4]`, hover `bg-[#DCFCE7]`) — always visible
+   - Search bar below header (slate-100 bg, focus green ring)
+   - Inline search clear button (X)
+   - Dropdown search results (max-h-40vh, scrollable)
+
+3. **Map Area** (flex-1, relative, min-h-0):
+   - Map container `absolute inset-0 z-[1]`
+   - Loading overlay `z-[2]` (with spinner)
+   - Load-error overlay `z-[2]` (with AlertCircle)
+   - Zoom controls bottom-right (`size-10 rounded-lg`, white shadow)
+   - "Drag the pin" hint top-center (`bg-slate-900/85` pill, fades when address resolves)
+   - Dragging indicator (green pill showing live lat/lng during drag)
+
+4. **Bottom Sheet** (sticky bottom, with top border):
+   - Address row: pin icon + (skeleton during geocoding / address when resolved / "No location picked" prompt)
+   - GPS accuracy badge (green if ≤100m, amber if >100m)
+   - Error/warning messages (amber for permission/position/timeout, red for others)
+   - Action buttons:
+     - Cancel: `flex-1 h-11 outline variant`
+     - Confirm Location: `flex-[2] h-11` with `shadow-[#1A6B3C]/20` glow when enabled
+   - Helper text below buttons
+
+5. **Custom Professional Pin Marker** (Blinkit-style):
+   - Teardrop shape with gradient: `linear-gradient(135deg, #1A6B3C 0%, #16A34A 100%)`
+   - 3px white border + box-shadow for depth
+   - Inner white dot with subtle green ring inset
+   - Stem with darker gradient (top-to-bottom)
+   - Drop shadow (blurred)
+   - Drop animation: `gp-marker-drop` (translateY -30→0 + scale 0.8→1.05→1, 450ms cubic-bezier overshoot)
+   - Hover: scale 1.08; Active: scale 1.12 (micro-interaction)
+   - `cursor: grab` / `:active: grabbing` for clear affordance
+
+6. **invalidateSize Polling** (critical for modal-mounted maps):
+   - Three passes to handle modal mount animation (gp-pop-in 280ms):
+     - `requestAnimationFrame` (~16ms): immediate post-mount
+     - 200ms timeout: post-animation
+     - 500ms timeout: post-reflow (covers mobile URL bar show/hide) + sets `isMapReady = true`
+
+7. **Z-index Hierarchy**:
+   - Map container: `z-[1]`
+   - Loading + error overlays: `z-[2]`
+   - Hint banner + dragging indicator: `z-[999]`
+   - Header, zoom controls, bottom sheet, search dropdown: `z-[1000]` and `z-[1001]` (search dropdown inside header)
+
+8. **Touch + Mouse Drag**:
+   - Marker has `draggable: true` (Leaflet handles both input modes in 1.9+)
+   - Map options: `tap: true, tapTolerance: 15, touchZoom: true, inertia: true`
+   - CSS `touch-action: none` on `.leaflet-container` and `.gp-marker-wrap`
+   - `dragstart` → `isDraggingRef = true` (suppress confirm)
+   - `drag` → live update of `coords` state (no reverse geocode spam)
+   - `dragend` → debounced reverse geocode (350ms)
+   - Map click → moves marker (alternative for desktop users)
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/account/addresses` returns 200
+- `/checkout` returns 200
+- Dev server compiles cleanly
+
+Stage Summary:
+- Modal is now a small centered popup (94vw × 88vh on mobile, 600×520 on desktop) — exactly what user asked
+- Custom professional marker with gradient + drop animation
+- True draggable marker (not simulated) — Leaflet native `draggable: true`
+- Bottom sheet always visible — Confirm button never cut off
+- 3-pass invalidateSize ensures map renders correctly even during modal mount animation
+- All 7 location flow states handled: GPS detect → show pin → drag pin → reverse geocode → show address → confirm → locationVerified = true. If user moves pin after confirm → canConfirm becomes false (Drag the pin first) → user must re-confirm.

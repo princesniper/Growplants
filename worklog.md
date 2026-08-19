@@ -559,3 +559,27 @@ Stage Summary:
 - Confirm is impossible until the pin is dropped AND address is detected — verification cannot be bypassed
 - 7 distinct error states give clear, actionable guidance (vs generic "something went wrong")
 - Works on touch + mouse uniformly
+
+---
+Task ID: map-picker-responsive-size-fix
+Agent: main
+Task: Map bahut bade size me open ho raha hai — responsive fix karo.
+
+Root Cause:
+- Desktop modal was set to `sm:h-[92vh] sm:max-w-3xl` (max-w-3xl = 768px wide, 92vh tall = ~920px). That's huge on a desktop screen — much larger than typical delivery-app pickers (~500-600px wide).
+- Mobile was `w-full h-full` (full screen) — fine, but did not respect safe-area on mobile browsers' top status bar.
+- No outer padding on the overlay, so on desktop the modal was butting up against screen edges.
+
+Fix — `src/components/common/MapLocationPicker.tsx`:
+- Outer overlay: `p-0 sm:p-4` (16px gutter around modal on desktop)
+- Modal size:
+  - Mobile: `w-full h-[100dvh]` (100dvh = dynamic viewport height — correctly accounts for mobile URL bar show/hide, unlike `h-full` which is `100vh` and overflows when URL bar is visible)
+  - Desktop: `sm:h-[min(80vh,640px)] sm:max-w-[min(92vw,560px)]`
+    - 560px wide max — proper delivery-app modal size
+    - 640px tall max, or 80vh if screen is shorter — never overflows
+    - `min(92vw,560px)` ensures modal stays ≤92% of viewport on narrow laptop screens
+
+Verification:
+- `bunx tsc --noEmit` → clean (0 errors)
+- Dev server `/account/addresses` returns 200
+- Modal is now properly sized on both mobile (full screen via 100dvh) and desktop (centered, 560×640 max)

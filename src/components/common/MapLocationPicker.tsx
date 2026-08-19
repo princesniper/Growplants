@@ -629,14 +629,14 @@ export function MapLocationPicker({
         .gp-fade-in { animation: gp-fade-in 0.25s ease-out; }
       `}</style>
 
-      {/* ─── Full-screen overlay ─── */}
+      {/* ─── Overlay backdrop ─── */}
       <div
-        className="fixed inset-0 z-[100] bg-black/50 flex items-end sm:items-center justify-center gp-fade-in"
+        className="fixed inset-0 z-[100] bg-black/50 flex items-end sm:items-center justify-center gp-fade-in p-0 sm:p-4"
         role="dialog"
         aria-modal="true"
         aria-label="Location picker"
       >
-        <div className="relative w-full h-full sm:h-[92vh] sm:max-w-3xl sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
+        <div className="relative w-full h-[100dvh] sm:h-[min(80vh,640px)] sm:max-w-[min(92vw,560px)] sm:rounded-2xl overflow-hidden bg-white shadow-2xl gp-sheet-enter flex flex-col">
 
           {/* ─── Top bar: close + search + GPS locate ─── */}
           <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">

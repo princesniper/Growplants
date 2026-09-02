@@ -1,0 +1,895 @@
+     1→"use client";
+     2→
+     3→/**
+     4→ * ============================================================================
+     5→ * GrowPlants — Phase 1 + Phase 2 Verification Scratch Page
+     6→ * ============================================================================
+     7→ *
+     8→ * This page is TEMPORARY — it will be replaced in Phase 4 (Homepage).
+     9→ *
+    10→ * Phase 1 verification: design tokens, typography, shadcn/ui base, bilingual
+    11→ * store, lucide icons, utility formatters, constants, folder structure.
+    12→ *
+    13→ * Phase 2 verification: the GrowPlants-specific component library built on
+    14→ * top of shadcn/ui — common/ domain primitives, feedback/ states, and
+    15→ * products/ primitives.
+    16→ *
+    17→ * Once Phase 4 (Homepage) is approved, this page is replaced with the real
+    18→ * GrowPlants landing page composed from sections.
+    19→ * ============================================================================
+    20→ */
+    21→import { useState } from "react";
+    22→import {
+    23→  Sprout,
+    24→  ShoppingCart,
+    25→  Heart,
+    26→  Sun,
+    27→  Droplets,
+    28→  Leaf,
+    29→  Star,
+    30→  CheckCircle2,
+    31→  Languages,
+    32→  PackageSearch,
+    33→  Bell,
+    34→  Search,
+    35→  AlertTriangle,
+    36→  RefreshCw,
+    37→} from "lucide-react";
+    38→import { Button } from "@/components/ui/button";
+    39→import { Badge } from "@/components/ui/badge";
+    40→import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+    41→import { Separator } from "@/components/ui/separator";
+    42→
+    43→/* Phase 2 component library */
+    44→import { Logo } from "@/components/common/Logo";
+    45→import { LogoMark } from "@/components/common/LogoMark";
+    46→import { Rating } from "@/components/common/Rating";
+    47→import { Price } from "@/components/common/Price";
+    48→import { StatusPill } from "@/components/common/StatusPill";
+    49→import { SectionHeader } from "@/components/common/SectionHeader";
+    50→import { Container } from "@/components/common/Container";
+    51→import { EmptyState } from "@/components/common/EmptyState";
+    52→import { ErrorState } from "@/components/common/ErrorState";
+    53→import { LanguageToggle } from "@/components/common/LanguageToggle";
+    54→import { IconBadge } from "@/components/common/IconBadge";
+    55→import { FilterChip } from "@/components/common/FilterChip";
+    56→import { FreeShippingProgressBar } from "@/components/common/FreeShippingProgressBar";
+    57→import { ProductCardSkeleton } from "@/components/feedback/ProductCardSkeleton";
+    58→import { SectionSkeleton } from "@/components/feedback/SectionSkeleton";
+    59→import { ListSkeleton } from "@/components/feedback/ListSkeleton";
+    60→import { FormSkeleton } from "@/components/feedback/FormSkeleton";
+    61→import { StockStatus } from "@/components/products/StockStatus";
+    62→import { CareSpecs } from "@/components/products/CareSpecs";
+    63→import { QuantitySelector } from "@/components/products/QuantitySelector";
+    64→import { ProductBadges } from "@/components/products/ProductBadges";
+    65→import { DiscountBadge } from "@/components/products/DiscountBadge";
+    66→import { RatingHistogram } from "@/components/products/RatingHistogram";
+    67→
+    68→import { useBilingual } from "@/store/useBilingual";
+    69→import {
+    70→  formatINR,
+    71→  formatDate,
+    72→  formatDateTime,
+    73→  formatPhone,
+    74→  formatTimeSlot,
+    75→  discountPercent,
+    76→  slugify,
+    77→  formatNumberIN,
+    78→} from "@/lib/utils";
+    79→import {
+    80→  FREE_SHIPPING_THRESHOLD,
+    81→  COD_MAX_AMOUNT,
+    82→  BOOKING_SLOTS,
+    83→  DEFAULT_CITY,
+    84→  DEFAULT_PROVIDER_COMMISSION,
+    85→  APP_NAME,
+    86→  APP_TAGLINE_EN,
+    87→  APP_TAGLINE_HI,
+    88→} from "@/lib/constants";
+    89→
+    90→export default function FoundationVerificationPage() {
+    91→  const { language, toggleLanguage, setLanguage, t } = useBilingual();
+    92→  const [count, setCount] = useState(0);
+    93→  const [quantity, setQuantity] = useState(1);
+    94→  const [interactiveRating, setInteractiveRating] = useState(4);
+    95→  const [chips, setChips] = useState([
+    96→    "Indoor Plants",
+    97→    "₹100–₹500",
+    98→    "4★ & above",
+    99→    "Easy care",
+   100→  ]);
+   101→
+   102→  return (
+   103→    <main
+   104→      id="main-content"
+   105→      className="min-h-screen w-full"
+   106→    >
+   107→      <Container variant="default" className="section-py">
+   108→        {/* ---------- Header ---------- */}
+   109→        <header className="flex flex-col gap-6 mb-12">
+   110→          <div className="flex items-center justify-between gap-3 flex-wrap">
+   111→            <Logo size="lg" showTagline />
+   112→            <div className="flex items-center gap-2">
+   113→              <IconBadge icon={Search} count={0} label="Search" />
+   114→              <IconBadge icon={Heart} count={3} label="Wishlist" href="/wishlist" />
+   115→              <IconBadge icon={ShoppingCart} count={2} label="Cart" href="/cart" />
+   116→              <LanguageToggle variant="segmented" />
+   117→            </div>
+   118→          </div>
+   119→          <p className="text-overline text-muted-foreground">
+   120→            Phase 1 — Project Foundation · Phase 2 — Design System & Component Library
+   121→          </p>
+   122→          <p className="text-body-sm text-muted-foreground max-w-2xl">
+   123→            This is a temporary verification page. It confirms the design tokens,
+   124→            typography, base shadcn/ui, bilingual store, utility formatters, and
+   125→            the GrowPlants-specific component library are all wired correctly
+   126→            before Phase 3 (Layout System) begins. It will be replaced by the
+   127→            real homepage in Phase 4.
+   128→          </p>
+   129→        </header>
+   130→
+   131→        {/* ---------- Status Banner ---------- */}
+   132→        <Card className="mb-12 border-primary/30 bg-primary/5">
+   133→          <CardContent className="flex items-start gap-3 p-4">
+   134→            <CheckCircle2 className="size-5 text-primary mt-0.5 shrink-0" aria-hidden="true" />
+   135→            <div className="text-body-sm">
+   136→              <p className="font-semibold text-foreground">
+   137→                Phase 1 + Phase 2 ready for Phase 3
+   138→              </p>
+   139→              <p className="text-muted-foreground mt-1">
+   140→                Foundation + 23 GrowPlants-specific components are in place. The
+   141→                real Header, Footer, CartDrawer, and MobileBottomNav will be
+   142→                composed in Phase 3 using these primitives.
+   143→              </p>
+   144→            </div>
+   145→          </CardContent>
+   146→        </Card>
+   147→
+   148→        {/* ============================================================ */}
+   149→        {/* PHASE 1 — Color Tokens                                        */}
+   150→        {/* ============================================================ */}
+   151→        <Section
+   152→          title="Color Tokens"
+   153→          subtitle="Brand palette from the approved Design System (Part E.2)"
+   154→        >
+   155→          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+   156→            <ColorSwatch name="brand-bg (olive)" value="#f7fbf0" className="bg-background border" textClass="text-foreground" />
+   157→            <ColorSwatch name="brand-fg (pine)" value="#181d17" className="bg-foreground text-background" />
+   158→            <ColorSwatch name="primary (forest green)" value="#2e7d32" className="bg-primary text-primary-foreground" />
+   159→            <ColorSwatch name="accent (amber)" value="#f59e0b" className="bg-accent text-accent-foreground" />
+   160→            <ColorSwatch name="secondary (sage)" value="#6b8e4e" className="bg-secondary text-secondary-foreground" />
+   161→            <ColorSwatch name="success" value="#16a34a" className="bg-[#16a34a] text-white" />
+   162→            <ColorSwatch name="warning" value="#d97706" className="bg-[#d97706] text-white" />
+   163→            <ColorSwatch name="danger" value="#dc2626" className="bg-[#dc2626] text-white" />
+   164→            <ColorSwatch name="surface (white)" value="#ffffff" className="bg-card text-card-foreground border" />
+   165→            <ColorSwatch name="surface-alt" value="#f1f5e8" className="bg-muted text-muted-foreground" />
+   166→            <ColorSwatch name="border" value="#e3e8d8" className="bg-border text-foreground" />
+   167→            <ColorSwatch name="muted-fg" value="#6b7561" className="bg-muted-foreground text-background" />
+   168→          </div>
+   169→        </Section>
+   170→
+   171→        <Separator className="my-12" />
+   172→
+   173→        {/* ============================================================ */}
+   174→        {/* PHASE 1 — Typography                                          */}
+   175→        {/* ============================================================ */}
+   176→        <Section
+   177→          title="Typography"
+   178→          subtitle="Plus Jakarta Sans (headings) + Inter (body) + Noto Sans Devanagari (Hindi) + JetBrains Mono (code)"
+   179→        >
+   180→          <div className="space-y-6">
+   181→            <div>
+   182→              <p className="text-overline text-muted-foreground mb-2">Display</p>
+   183→              <p className="text-display">Bring home a little green</p>
+   184→            </div>
+   185→            <div>
+   186→              <p className="text-overline text-muted-foreground mb-2">H1 / H2 / H3 / H4</p>
+   187→              <p className="text-h1 mb-1">Healthy plants, delivered with care</p>
+   188→              <p className="text-h2 mb-1">Best sellers this week</p>
+   189→              <p className="text-h3 mb-1">Snake Plant — Sansevieria</p>
+   190→              <p className="text-h4">Featured categories</p>
+   191→            </div>
+   192→            <div>
+   193→              <p className="text-overline text-muted-foreground mb-2">Body (Inter)</p>
+   194→              <p className="text-body-lg mb-2">
+   195→                GrowPlants is Sonipat&apos;s trusted botanical marketplace — shop
+   196→                healthy plants, premium planters, and gardening supplies, or book
+   197→                verified local gardeners for balcony setup, landscaping, and
+   198→                plant care.
+   199→              </p>
+   200→              <p className="text-body mb-1">
+   201→                Body text uses Inter at 16px with 1.5 line-height for
+   202→                readability across all breakpoints.
+   203→              </p>
+   204→              <p className="text-body-sm text-muted-foreground">
+   205→                Secondary text uses the muted-foreground token at 14px.
+   206→              </p>
+   207→            </div>
+   208→            <div>
+   209→              <p className="text-overline text-muted-foreground mb-2">Devanagari (Noto Sans)</p>
+   210→              <p className="text-body" style={{ fontFamily: "var(--font-noto-devanagari)" }}>
+   211→                ग्रोप्लांट्स सोनीपत का भरोसेमंद वनस्पति बाज़ार है — स्वस्थ पौधे, प्रीमियम
+   212→                प्लांटर और बागवानी सामग्री खरीदें, या सत्यापित माली बुक करें।
+   213→              </p>
+   214→            </div>
+   215→          </div>
+   216→        </Section>
+   217→
+   218→        <Separator className="my-12" />
+   219→
+   220→        {/* ============================================================ */}
+   221→        {/* PHASE 1 — Bilingual Store                                     */}
+   222→        {/* ============================================================ */}
+   223→        <Section
+   224→          title="Bilingual Store (Zustand)"
+   225→          subtitle="Instant EN ↔ HI toggle, persisted to localStorage"
+   226→        >
+   227→          <Card>
+   228→            <CardHeader className="flex flex-row items-center justify-between">
+   229→              <CardTitle className="text-h3">Live language toggle</CardTitle>
+   230→              <div className="flex items-center gap-2">
+   231→                <LanguageToggle variant="button" />
+   232→                <LanguageToggle variant="icon" />
+   233→              </div>
+   234→            </CardHeader>
+   235→            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+   236→              <div className="space-y-3">
+   237→                <p className="text-overline text-muted-foreground">Common labels</p>
+   238→                <div className="flex flex-wrap gap-2">
+   239→                  <Badge variant="secondary">{t("common.btn.addToCart")}</Badge>
+   240→                  <Badge variant="secondary">{t("common.btn.buyNow")}</Badge>
+   241→                  <Badge variant="secondary">{t("common.btn.viewAll")}</Badge>
+   242→                  <Badge variant="secondary">{t("common.btn.saveChanges")}</Badge>
+   243→                </div>
+   244→              </div>
+   245→              <div className="space-y-3">
+   246→                <p className="text-overline text-muted-foreground">Hero copy</p>
+   247→                <p className="text-h4">{t("hero.title")}</p>
+   248→                <p className="text-body-sm text-muted-foreground">{t("hero.subtitle")}</p>
+   249→                <div className="flex gap-2">
+   250→                  <Button size="sm">{t("hero.ctaPrimary")}</Button>
+   251→                  <Button size="sm" variant="outline">{t("hero.ctaSecondary")}</Button>
+   252→                </div>
+   253→              </div>
+   254→            </CardContent>
+   255→          </Card>
+   256→        </Section>
+   257→
+   258→        <Separator className="my-12" />
+   259→
+   260→        {/* ============================================================ */}
+   261→        {/* PHASE 1 — shadcn/ui Base                                      */}
+   262→        {/* ============================================================ */}
+   263→        <Section
+   264→          title="shadcn/ui Base Components"
+   265→          subtitle="50+ primitives pre-installed (button, input, dialog, sheet, drawer, table, calendar, etc.)"
+   266→        >
+   267→          <Card>
+   268→            <CardContent className="p-6 space-y-6">
+   269→              <div>
+   270→                <p className="text-overline text-muted-foreground mb-3">Button variants & sizes</p>
+   271→                <div className="flex flex-wrap items-center gap-3">
+   272→                  <Button>Primary</Button>
+   273→                  <Button variant="secondary">Secondary</Button>
+   274→                  <Button variant="outline">Outline</Button>
+   275→                  <Button variant="ghost">Ghost</Button>
+   276→                  <Button variant="destructive">Destructive</Button>
+   277→                  <Button size="sm">Small</Button>
+   278→                  <Button size="lg">Large</Button>
+   279→                  <Button size="icon" aria-label="Cart">
+   280→                    <ShoppingCart className="size-4" />
+   281→                  </Button>
+   282→                </div>
+   283→              </div>
+   284→              <div>
+   285→                <p className="text-overline text-muted-foreground mb-3">Interactive state check</p>
+   286→                <div className="flex items-center gap-3">
+   287→                  <Button onClick={() => setCount((c) => c + 1)}>
+   288→                    Clicked {count} times
+   289→                  </Button>
+   290→                  <Button variant="outline" onClick={() => setCount(0)} disabled={count === 0}>
+   291→                    Reset
+   292→                  </Button>
+   293→                </div>
+   294→              </div>
+   295→              <div>
+   296→                <p className="text-overline text-muted-foreground mb-3">Lucide icons</p>
+   297→                <div className="flex flex-wrap gap-4 text-foreground">
+   298→                  <Sprout className="size-5" aria-label="Plant" />
+   299→                  <ShoppingCart className="size-5" aria-label="Cart" />
+   300→                  <Heart className="size-5" aria-label="Wishlist" />
+   301→                  <Sun className="size-5" aria-label="Sunlight" />
+   302→                  <Droplets className="size-5" aria-label="Water" />
+   303→                  <Leaf className="size-5" aria-label="Leaf" />
+   304→                  <Star className="size-5" aria-label="Rating" />
+   305→                  <CheckCircle2 className="size-5" aria-label="Verified" />
+   306→                  <Languages className="size-5" aria-label="Language" />
+   307→                  <PackageSearch className="size-5" aria-label="Package" />
+   308→                  <Bell className="size-5" aria-label="Notify" />
+   309→                </div>
+   310→              </div>
+   311→            </CardContent>
+   312→          </Card>
+   313→        </Section>
+   314→
+   315→        <Separator className="my-12" />
+   316→
+   317→        {/* ============================================================ */}
+   318→        {/* PHASE 1 — Utility Formatters                                  */}
+   319→        {/* ============================================================ */}
+   320→        <Section
+   321→          title="Utility Formatters"
+   322→          subtitle="INR currency, dates, phone, time slots — all PRD §29.7 compliant"
+   323→        >
+   324→          <Card>
+   325→            <CardContent className="p-6">
+   326→              <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-body-sm">
+   327→                <FormatRow label="formatINR(499)" value={formatINR(499)} />
+   328→                <FormatRow label="formatINR(1299.5, { decimals: 2 })" value={formatINR(1299.5, { decimals: 2 })} />
+   329→                <FormatRow label="formatINR(999, { symbol: false })" value={formatINR(999, { symbol: false })} />
+   330→                <FormatRow label="formatNumberIN(125000)" value={formatNumberIN(125000)} />
+   331→                <FormatRow label="discountPercent(999, 699)" value={`${discountPercent(999, 699)}%`} />
+   332→                <FormatRow label="formatDate('2024-07-15')" value={formatDate("2024-07-15")} />
+   333→                <FormatRow label="formatDateTime(now)" value={formatDateTime(new Date())} />
+   334→                <FormatRow label="formatPhone('919876543210')" value={formatPhone("919876543210")} />
+   335→                <FormatRow label="formatTimeSlot('09:00-11:00')" value={formatTimeSlot("09:00-11:00")} />
+   336→                <FormatRow label="slugify('Snake Plant - Sansevieria')" value={slugify("Snake Plant - Sansevieria")} />
+   337→              </dl>
+   338→            </CardContent>
+   339→          </Card>
+   340→        </Section>
+   341→
+   342→        <Separator className="my-12" />
+   343→
+   344→        {/* ============================================================ */}
+   345→        {/* PHASE 2 — Brand Lockup                                        */}
+   346→        {/* ============================================================ */}
+   347→        <Section
+   348→          title="Phase 2 — Brand Lockup"
+   349→          subtitle="Logo, LogoMark — used in Header, Auth layout, Footer, Email templates"
+   350→        >
+   351→          <Card>
+   352→            <CardContent className="p-6 space-y-6">
+   353→              <div>
+   354→                <p className="text-overline text-muted-foreground mb-3">LogoMark — icon variants</p>
+   355→                <div className="flex items-end gap-6 flex-wrap">
+   356→                  <div className="flex flex-col items-center gap-2">
+   357→                    <LogoMark size="sm" />
+   358→                    <span className="text-caption text-muted-foreground">sm</span>
+   359→                  </div>
+   360→                  <div className="flex flex-col items-center gap-2">
+   361→                    <LogoMark size="md" />
+   362→                    <span className="text-caption text-muted-foreground">md</span>
+   363→                  </div>
+   364→                  <div className="flex flex-col items-center gap-2">
+   365→                    <LogoMark size="lg" />
+   366→                    <span className="text-caption text-muted-foreground">lg</span>
+   367→                  </div>
+   368→                  <div className="flex flex-col items-center gap-2">
+   369→                    <LogoMark size="xl" />
+   370→                    <span className="text-caption text-muted-foreground">xl</span>
+   371→                  </div>
+   372→                  <div className="flex flex-col items-center gap-2">
+   373→                    <LogoMark size="lg" variant="tile" className="text-primary" />
+   374→                    <span className="text-caption text-muted-foreground">tile</span>
+   375→                  </div>
+   376→                </div>
+   377→              </div>
+   378→              <Separator />
+   379→              <div>
+   380→                <p className="text-overline text-muted-foreground mb-3">Logo — full lockup variants</p>
+   381→                <div className="space-y-4">
+   382→                  <Logo size="sm" showTagline />
+   383→                  <Logo size="md" showTagline />
+   384→                  <Logo size="lg" showTagline />
+   385→                </div>
+   386→              </div>
+   387→            </CardContent>
+   388→          </Card>
+   389→        </Section>
+   390→
+   391→        <Separator className="my-12" />
+   392→
+   393→        {/* ============================================================ */}
+   394→        {/* PHASE 2 — Rating + Price                                      */}
+   395→        {/* ============================================================ */}
+   396→        <Section
+   397→          title="Rating & Price"
+   398→          subtitle="Interactive rating, display rating (half-stars), INR-formatted price with discount"
+   399→        >
+   400→          <Card>
+   401→            <CardContent className="p-6 space-y-8">
+   402→              <div>
+   403→                <p className="text-overline text-muted-foreground mb-3">Rating — display (with half-stars + count)</p>
+   404→                <div className="space-y-2">
+   405→                  <Rating value={4.5} count={128} showCount size="md" />
+   406→                  <Rating value={3.7} count={42} showCount size="md" />
+   407→                  <Rating value={5} count={9} showCount size="md" />
+   408→                  <Rating value={0} count={0} showCount size="md" countLabel="No reviews yet" />
+   409→                </div>
+   410→              </div>
+   411→              <Separator />
+   412→              <div>
+   413→                <p className="text-overline text-muted-foreground mb-3">Rating — interactive (try clicking)</p>
+   414→                <div className="space-y-3">
+   415→                  <Rating
+   416→                    value={interactiveRating}
+   417→                    variant="interactive"
+   418→                    size="lg"
+   419→                    onChange={setInteractiveRating}
+   420→                  />
+   421→                  <p className="text-body-sm text-muted-foreground">
+   422→                    Selected: <span className="font-semibold text-foreground">{interactiveRating} star{interactiveRating > 1 ? "s" : ""}</span>
+   423→                  </p>
+   424→                </div>
+   425→              </div>
+   426→              <Separator />
+   427→              <div>
+   428→                <p className="text-overline text-muted-foreground mb-3">Price — INR formatted with discount</p>
+   429→                <div className="space-y-3">
+   430→                  <Price sellingPrice={499} basePrice={799} size="lg" />
+   431→                  <Price sellingPrice={1299} basePrice={1999} size="md" />
+   432→                  <Price sellingPrice={149} size="sm" />
+   433→                  <Price sellingPrice={2499} basePrice={2999} size="xl" />
+   434→                </div>
+   435→              </div>
+   436→              <Separator />
+   437→              <div>
+   438→                <p className="text-overline text-muted-foreground mb-3">DiscountBadge — standalone pill</p>
+   439→                <div className="flex items-center gap-3">
+   440→                  <DiscountBadge basePrice={999} sellingPrice={699} size="sm" />
+   441→                  <DiscountBadge basePrice={1999} sellingPrice={1499} size="md" />
+   442→                  <DiscountBadge basePrice={4999} sellingPrice={3499} size="lg" />
+   443→                </div>
+   444→              </div>
+   445→            </CardContent>
+   446→          </Card>
+   447→        </Section>
+   448→
+   449→        <Separator className="my-12" />
+   450→
+   451→        {/* ============================================================ */}
+   452→        {/* PHASE 2 — StatusPill                                          */}
+   453→        {/* ============================================================ */}
+   454→        <Section
+   455→          title="StatusPill"
+   456→          subtitle="Enum-aware status badges — used across orders, bookings, providers, returns"
+   457→        >
+   458→          <Card>
+   459→            <CardContent className="p-6 space-y-4">
+   460→              <div>
+   461→                <p className="text-overline text-muted-foreground mb-2">Order statuses</p>
+   462→                <div className="flex flex-wrap gap-2">
+   463→                  <StatusPill status="pending" />
+   464→                  <StatusPill status="confirmed" />
+   465→                  <StatusPill status="processing" />
+   466→                  <StatusPill status="out_for_delivery" />
+   467→                  <StatusPill status="delivered" />
+   468→                  <StatusPill status="cancelled" />
+   469→                  <StatusPill status="return_requested" />
+   470→                  <StatusPill status="refunded" />
+   471→                </div>
+   472→              </div>
+   473→              <div>
+   474→                <p className="text-overline text-muted-foreground mb-2">Booking statuses</p>
+   475→                <div className="flex flex-wrap gap-2">
+   476→                  <StatusPill status="pending" />
+   477→                  <StatusPill status="provider_assigned" />
+   478→                  <StatusPill status="in_progress" />
+   479→                  <StatusPill status="completed" />
+   480→                  <StatusPill status="no_show_provider" />
+   481→                  <StatusPill status="disputed" />
+   482→                </div>
+   483→              </div>
+   484→              <div>
+   485→                <p className="text-overline text-muted-foreground mb-2">Payment & verification statuses</p>
+   486→                <div className="flex flex-wrap gap-2">
+   487→                  <StatusPill status="paid" />
+   488→                  <StatusPill status="failed" />
+   489→                  <StatusPill status="partial_refund" />
+   490→                  <StatusPill status="approved" />
+   491→                  <StatusPill status="rejected" />
+   492→                  <StatusPill status="under_review" />
+   493→                </div>
+   494→              </div>
+   495→            </CardContent>
+   496→          </Card>
+   497→        </Section>
+   498→
+   499→        <Separator className="my-12" />
+   500→
+   501→        {/* ============================================================ */}
+   502→        {/* PHASE 2 — SectionHeader + Container                           */}
+   503→        {/* ============================================================ */}
+   504→        <Section
+   505→          title="SectionHeader"
+   506→          subtitle="Reusable section title + subtitle + optional action link"
+   507→        >
+   508→          <Card>
+   509→            <CardContent className="p-6 space-y-6">
+   510→              <SectionHeader
+   511→                title="Featured Plants"
+   512→                subtitle="Hand-picked healthy plants for your home"
+   513→                action={{ label: "View All", href: "/shop" }}
+   514→                icon={Sprout}
+   515→              />
+   516→              <Separator />
+   517→              <SectionHeader
+   518→                title="Best Sellers"
+   519→                subtitle="Most-loved plants by Sonipat customers"
+   520→                icon={Star}
+   521→              />
+   522→              <Separator />
+   523→              <SectionHeader
+   524→                title=" Gardening Services"
+   525→                subtitle="Book verified local gardeners"
+   526→                action={{ label: "Browse Services", href: "/services" }}
+   527→                align="center"
+   528→              />
+   529→            </CardContent>
+   530→          </Card>
+   531→        </Section>
+   532→
+   533→        <Separator className="my-12" />
+   534→
+   535→        {/* ============================================================ */}
+   536→        {/* PHASE 2 — Product Primitives                                  */}
+   537→        {/* ============================================================ */}
+   538→        <Section
+   539→          title="Product Primitives"
+   540→          subtitle="StockStatus, CareSpecs, QuantitySelector, ProductBadges"
+   541→        >
+   542→          <Card>
+   543→            <CardContent className="p-6 space-y-8">
+   544→              <div>
+   545→                <p className="text-overline text-muted-foreground mb-3">StockStatus — inventory states</p>
+   546→                <div className="space-y-2">
+   547→                  <StockStatus availableStock={25} />
+   548→                  <StockStatus availableStock={3} />
+   549→                  <StockStatus availableStock={0} />
+   550→                  <StockStatus availableStock={0} variant="notify-me" onNotify={() => alert("Notify me clicked!")} />
+   551→                </div>
+   552→              </div>
+   553→              <Separator />
+   554→              <div>
+   555→                <p className="text-overline text-muted-foreground mb-3">CareSpecs — plant care at a glance</p>
+   556→                <div className="space-y-4">
+   557→                  <CareSpecs
+   558→                    sunlight="partial_shade"
+   559→                    water="weekly"
+   560→                    difficulty="easy"
+   561→                    isPetSafe={true}
+   562→                    variant="compact"
+   563→                  />
+   564→                  <CareSpecs
+   565→                    sunlight="full_sun"
+   566→                    water="daily"
+   567→                    difficulty="moderate"
+   568→                    isPetSafe={false}
+   569→                    variant="full"
+   570→                  />
+   571→                </div>
+   572→              </div>
+   573→              <Separator />
+   574→              <div>
+   575→                <p className="text-overline text-muted-foreground mb-3">QuantitySelector — try clicking +/-</p>
+   576→                <div className="flex items-end gap-6 flex-wrap">
+   577→                  <div className="flex flex-col gap-2">
+   578→                    <QuantitySelector
+   579→                      value={quantity}
+   580→                      onChange={setQuantity}
+   581→                      max={10}
+   582→                    />
+   583→                    <span className="text-caption text-muted-foreground">sm (default) · max 10</span>
+   584→                  </div>
+   585→                  <div className="flex flex-col gap-2">
+   586→                    <QuantitySelector
+   587→                      value={1}
+   588→                      onChange={() => {}}
+   589→                      max={5}
+   590→                      size="md"
+   591→                    />
+   592→                    <span className="text-caption text-muted-foreground">md · max 5</span>
+   593→                  </div>
+   594→                  <div className="flex flex-col gap-2">
+   595→                    <QuantitySelector
+   596→                      value={3}
+   597→                      onChange={() => {}}
+   598→                      variant="readonly"
+   599→                    />
+   600→                    <span className="text-caption text-muted-foreground">readonly (order history)</span>
+   601→                  </div>
+   602→                </div>
+   603→              </div>
+   604→              <Separator />
+   605→              <div>
+   606→                <p className="text-overline text-muted-foreground mb-3">ProductBadges — Sale / New / Best Seller / OOS</p>
+   607→                <div className="space-y-3">
+   608→                  <ProductBadges isOnSale discountPercent={30} />
+   609→                  <ProductBadges isBestseller isNewArrival />
+   610→                  <ProductBadges isOutOfStock />
+   611→                  <ProductBadges isOnSale discountPercent={45} isBestseller isNewArrival />
+   612→                </div>
+   613→              </div>
+   614→              <Separator />
+   615→              <div>
+   616→                <p className="text-overline text-muted-foreground mb-3">RatingHistogram — review breakdown</p>
+   617→                <RatingHistogram
+   618→                  averageRating={4.3}
+   619→                  totalCount={156}
+   620→                  showHeader
+   621→                  breakdown={[
+   622→                    { stars: 5, count: 89, percentage: 57 },
+   623→                    { stars: 4, count: 42, percentage: 27 },
+   624→                    { stars: 3, count: 14, percentage: 9 },
+   625→                    { stars: 2, count: 7, percentage: 4 },
+   626→                    { stars: 1, count: 4, percentage: 3 },
+   627→                  ]}
+   628→                />
+   629→              </div>
+   630→            </CardContent>
+   631→          </Card>
+   632→        </Section>
+   633→
+   634→        <Separator className="my-12" />
+   635→
+   636→        {/* ============================================================ */}
+   637→        {/* PHASE 2 — Cart Indicator                                      */}
+   638→        {/* ============================================================ */}
+   639→        <Section
+   640→          title="Free Shipping Progress"
+   641→          subtitle="Cart drawer / cart page indicator — ₹499 threshold (PRD §32.2)"
+   642→        >
+   643→          <Card>
+   644→            <CardContent className="p-6 space-y-4">
+   645→              <FreeShippingProgressBar subtotal={199} />
+   646→              <FreeShippingProgressBar subtotal={399} />
+   647→              <FreeShippingProgressBar subtotal={499} />
+   648→              <Separator />
+   649→              <p className="text-overline text-muted-foreground">Compact variant (mobile)</p>
+   650→              <FreeShippingProgressBar subtotal={349} variant="compact" />
+   651→              <FreeShippingProgressBar subtotal={499} variant="compact" />
+   652→            </CardContent>
+   653→          </Card>
+   654→        </Section>
+   655→
+   656→        <Separator className="my-12" />
+   657→
+   658→        {/* ============================================================ */}
+   659→        {/* PHASE 2 — Filter Chips + IconBadge                            */}
+   660→        {/* ============================================================ */}
+   661→        <Section
+   662→          title="Filter Chips & Icon Badge"
+   663→          subtitle="Active-filter bar + Header icons (cart/wishlist/notifications)"
+   664→        >
+   665→          <Card>
+   666→            <CardContent className="p-6 space-y-6">
+   667→              <div>
+   668→                <p className="text-overline text-muted-foreground mb-3">FilterChip — try removing</p>
+   669→                <div className="flex flex-wrap gap-2">
+   670→                  {chips.map((chip, i) => (
+   671→                    <FilterChip
+   672→                      key={chip}
+   673→                      label={chip}
+   674→                      onRemove={() => setChips((c) => c.filter((_, idx) => idx !== i))}
+   675→                    />
+   676→                  ))}
+   677→                  {chips.length === 0 && (
+   678→                    <span className="text-body-sm text-muted-foreground">All filters cleared.</span>
+   679→                  )}
+   680→                  {chips.length === 0 && (
+   681→                    <Button
+   682→                      variant="outline"
+   683→                      size="sm"
+   684→                      onClick={() => setChips(["Indoor Plants", "₹100–₹500", "4★ & above", "Easy care"])}
+   685→                    >
+   686→                      Reset chips
+   687→                    </Button>
+   688→                  )}
+   689→                </div>
+   690→              </div>
+   691→              <Separator />
+   692→              <div>
+   693→                <p className="text-overline text-muted-foreground mb-3">IconBadge — header icon variants</p>
+   694→                <div className="flex items-center gap-6">
+   695→                  <IconBadge icon={Search} count={0} label="Search" />
+   696→                  <IconBadge icon={Heart} count={3} label="Wishlist" href="/wishlist" />
+   697→                  <IconBadge icon={ShoppingCart} count={2} label="Cart" href="/cart" />
+   698→                  <IconBadge icon={Bell} count={12} label="Notifications" />
+   699→                  <IconBadge icon={Bell} count={150} label="Notifications (capped)" />
+   700→                </div>
+   701→              </div>
+   702→            </CardContent>
+   703→          </Card>
+   704→        </Section>
+   705→
+   706→        <Separator className="my-12" />
+   707→
+   708→        {/* ============================================================ */}
+   709→        {/* PHASE 2 — Empty + Error States                                */}
+   710→        {/* ============================================================ */}
+   711→        <Section
+   712→          title="Empty & Error States"
+   713→          subtitle="Composable feedback components used across cart, wishlist, orders, bookings, search"
+   714→        >
+   715→          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+   716→            <Card>
+   717→              <CardContent className="p-2">
+   718→                <EmptyState
+   719→                  icon={ShoppingCart}
+   720→                  title="Your cart is empty"
+   721→                  description="Browse our healthy plants and premium planters to get started."
+   722→                  action={{ label: "Shop Plants", href: "/shop" }}
+   723→                />
+   724→              </CardContent>
+   725→            </Card>
+   726→            <Card>
+   727→              <CardContent className="p-2">
+   728→                <EmptyState
+   729→                  icon={Heart}
+   730→                  title="Your wishlist is empty"
+   731→                  description="Tap the heart on any product to save it here."
+   732→                  action={{ label: "Browse Shop", href: "/shop" }}
+   733→                />
+   734→              </CardContent>
+   735→            </Card>
+   736→            <Card>
+   737→              <CardContent className="p-2">
+   738→                <EmptyState
+   739→                  icon={PackageSearch}
+   740→                  title="No orders yet"
+   741→                  description="When you place your first order, it will appear here."
+   742→                  size="sm"
+   743→                />
+   744→              </CardContent>
+   745→            </Card>
+   746→            <Card>
+   747→              <CardContent className="p-2">
+   748→                <ErrorState
+   749→                  title="Couldn't load orders"
+   750→                  description="Check your connection and try again."
+   751→                  retry={{ label: "Retry", onClick: () => alert("Retrying...") }}
+   752→                  errorCode="NETWORK_001"
+   753→                  showSupport
+   754→                />
+   755→              </CardContent>
+   756→            </Card>
+   757→          </div>
+   758→        </Section>
+   759→
+   760→        <Separator className="my-12" />
+   761→
+   762→        {/* ============================================================ */}
+   763→        {/* PHASE 2 — Skeletons                                           */}
+   764→        {/* ============================================================ */}
+   765→        <Section
+   766→          title="Loading Skeletons"
+   767→          subtitle="ProductCardSkeleton, SectionSkeleton, ListSkeleton, FormSkeleton"
+   768→        >
+   769→          <div className="space-y-6">
+   770→            <div>
+   771→              <p className="text-overline text-muted-foreground mb-3">ProductCardSkeleton (×4 in a grid)</p>
+   772→              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+   773→                <ProductCardSkeleton />
+   774→                <ProductCardSkeleton />
+   775→                <ProductCardSkeleton />
+   776→                <ProductCardSkeleton />
+   777→              </div>
+   778→            </div>
+   779→            <Separator />
+   780→            <div>
+   781→              <p className="text-overline text-muted-foreground mb-3">ListSkeleton (orders/bookings)</p>
+   782→              <ListSkeleton count={3} />
+   783→            </div>
+   784→            <Separator />
+   785→            <div>
+   786→              <p className="text-overline text-muted-foreground mb-3">FormSkeleton (auth/profile/address)</p>
+   787→              <div className="max-w-md">
+   788→                <FormSkeleton fields={4} />
+   789→              </div>
+   790→            </div>
+   791→          </div>
+   792→        </Section>
+   793→
+   794→        <Separator className="my-12" />
+   795→
+   796→        {/* ============================================================ */}
+   797→        {/* PHASE 2 — Constants Sanity                                    */}
+   798→        {/* ============================================================ */}
+   799→        <Section
+   800→          title="Constants Sanity Check"
+   801→          subtitle="All PRD §32.2 defaults imported successfully"
+   802→        >
+   803→          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+   804→            <ConstantCard label="FREE_SHIPPING_THRESHOLD" value={`₹${FREE_SHIPPING_THRESHOLD}`} />
+   805→            <ConstantCard label="COD_MAX_AMOUNT" value={`₹${COD_MAX_AMOUNT}`} />
+   806→            <ConstantCard label="DEFAULT_CITY" value={DEFAULT_CITY} />
+   807→            <ConstantCard label="DEFAULT_PROVIDER_COMMISSION" value={`${DEFAULT_PROVIDER_COMMISSION}%`} />
+   808→            <ConstantCard label="BOOKING_SLOTS" value={`${BOOKING_SLOTS.length} slots`} />
+   809→            <ConstantCard label="APP_NAME" value={APP_NAME} />
+   810→          </div>
+   811→          <div className="mt-4 flex flex-wrap gap-2">
+   812→            {BOOKING_SLOTS.map((slot) => (
+   813→              <Badge key={slot} variant="outline" className="font-mono">
+   814→                {formatTimeSlot(slot)}
+   815→              </Badge>
+   816→            ))}
+   817→          </div>
+   818→        </Section>
+   819→
+   820→        {/* ---------- Footer ---------- */}
+   821→        <footer className="mt-16 pt-8 border-t border-border text-body-sm text-muted-foreground">
+   822→          <p>
+   823→            Phase 1 (Foundation) + Phase 2 (Design System & Component Library) complete.
+   824→            Awaiting approval before starting Phase 3 (Layout System — Header, Footer,
+   825→            CartDrawer, MobileNav).
+   826→          </p>
+   827→        </footer>
+   828→      </Container>
+   829→    </main>
+   830→  );
+   831→}
+   832→
+   833→/* ---------- Sub-components (local to scratch page only) ---------- */
+   834→
+   835→function Section({
+   836→  title,
+   837→  subtitle,
+   838→  children,
+   839→}: {
+   840→  title: string;
+   841→  subtitle?: string;
+   842→  children: React.ReactNode;
+   843→}) {
+   844→  return (
+   845→    <section className="mb-4">
+   846→      <div className="mb-6">
+   847→        <h2 className="text-h2 md:text-h2 mb-1">{title}</h2>
+   848→        {subtitle && (
+   849→          <p className="text-body-sm text-muted-foreground">{subtitle}</p>
+   850→        )}
+   851→      </div>
+   852→      {children}
+   853→    </section>
+   854→  );
+   855→}
+   856→
+   857→function ColorSwatch({
+   858→  name,
+   859→  value,
+   860→  className,
+   861→  textClass = "text-foreground",
+   862→}: {
+   863→  name: string;
+   864→  value: string;
+   865→  className: string;
+   866→  textClass?: string;
+   867→}) {
+   868→  return (
+   869→    <div
+   870→      className={`rounded-lg p-4 ${className} flex flex-col gap-2 aspect-[4/3] justify-end`}
+   871→    >
+   872→      <p className={`text-caption font-medium ${textClass}`}>{name}</p>
+   873→      <p className={`text-overline font-mono ${textClass} opacity-70`}>{value}</p>
+   874→    </div>
+   875→  );
+   876→}
+   877→
+   878→function FormatRow({ label, value }: { label: string; value: string }) {
+   879→  return (
+   880→    <div className="flex flex-col gap-1 py-2 border-b border-border last:border-0">
+   881→      <dt className="text-caption text-muted-foreground font-mono">{label}</dt>
+   882→      <dd className="text-body font-medium text-foreground">{value}</dd>
+   883→    </div>
+   884→  );
+   885→}
+   886→
+   887→function ConstantCard({ label, value }: { label: string; value: string }) {
+   888→  return (
+   889→    <div className="rounded-lg border border-border bg-card p-3">
+   890→      <p className="text-caption text-muted-foreground font-mono">{label}</p>
+   891→      <p className="text-body font-semibold mt-1">{value}</p>
+   892→    </div>
+   893→  );
+   894→}
+   895→

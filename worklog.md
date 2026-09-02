@@ -1138,3 +1138,25 @@ The cryptic "Failed to execute 'json' on 'Response': Unexpected end of JSON inpu
 - /account/addresses returns 200
 - /checkout returns 200
 - Dev server compiles cleanly
+
+---
+Task ID: homepage-scratch-page-removed
+Agent: main
+Task: Homepage par "Project Foundation Design System & Component Library" scratch page dikh raha tha — real GrowPlants homepage load karo.
+
+Root Cause:
+- Project mein DO root-level page files thi: `src/app/page.tsx` (894 lines, temporary Phase 1+2 verification scratch page) AND `src/app/(main)/page.tsx` (real GrowPlants homepage with HeroSection, QuickCategoryGrid, BestSellersSection, etc.).
+- Next.js App Router mein, root-level `src/app/page.tsx` FIRST priority milti hai `/` route par. Wo (main) route group ke andar wale page ko OVERRIDE karti thi.
+- Scratch page clearly commented tha: "This page is TEMPORARY — it will be replaced in Phase 4 (Homepage)."
+- Phase 4 ke baad bhi kabhi delete nahi hua — isliye homepage pe scratch page dikh raha tha bina Header/Footer/hero section ke.
+
+Fix:
+- Deleted `src/app/page.tsx` (the 894-line scratch verification page).
+- Now Next.js automatically falls back to `src/app/(main)/page.tsx` for the `/` route, which uses the `(main)` layout (with MainLayout shell: Header/Footer/CartDrawer/MobileBottomNav) AND renders the real GrowPlants homepage sections (HeroSection, QuickCategoryGrid, BestSellersSection, ServicesSection, WhyChooseUsSection, ProvidersSection, TestimonialsSection, BlogPreviewSection, FAQSection, NewsletterSection).
+
+Verification:
+- `GET /` returns HTTP 200
+- Page title: "GrowPlants — Plants, Planters & Gardening Services in Sonipat"
+- No "Project Foundation", "Verification Scratch", or "Phase 1" / "Phase 2" text in the HTML
+- Real content visible: "Sonipat", "gardening services", "Free delivery"
+- Dev server compiles cleanly (200 in ~50-350ms)

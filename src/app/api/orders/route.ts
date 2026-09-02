@@ -113,40 +113,40 @@ interface CreateOrderRequestBody {
 }
 
 export async function POST(req: NextRequest) {
-  // Dynamically import to avoid build-time evaluation
-  const { db } = await import("@/lib/db");
-  const { extractBearerToken, verifyFirebaseIdToken } = await import("@/lib/auth");
-  
-
-  // 1. Verify Firebase ID token
-  const authHeader = req.headers.get("authorization");
-  const idToken = extractBearerToken(authHeader);
-  if (!idToken) {
-    return NextResponse.json(
-      { success: false, error: "Missing Authorization header" },
-      { status: 401 }
-    );
-  }
-
-  const decoded = await verifyFirebaseIdToken(idToken);
-  if (!decoded) {
-    return NextResponse.json(
-      { success: false, error: "Invalid or expired token" },
-      { status: 401 }
-    );
-  }
-
-  // 2. Parse body
-  let body: CreateOrderRequestBody;
   try {
-    body = (await req.json()) as CreateOrderRequestBody;
-  } catch {
-    return NextResponse.json(
-      { success: false, error: "Invalid JSON body" },
-      { status: 400 }
-    );
-  }
+    // Dynamically import to avoid build-time evaluation
+    const { db } = await import("@/lib/db");
+    const { extractBearerToken, verifyFirebaseIdToken } = await import("@/lib/auth");
 
+
+    // 1. Verify Firebase ID token
+    const authHeader = req.headers.get("authorization");
+    const idToken = extractBearerToken(authHeader);
+    if (!idToken) {
+      return NextResponse.json(
+        { success: false, error: "Missing Authorization header" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyFirebaseIdToken(idToken);
+    if (!decoded) {
+      return NextResponse.json(
+        { success: false, error: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Parse body
+    let body: CreateOrderRequestBody;
+    try {
+      body = (await req.json()) as CreateOrderRequestBody;
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
+        { status: 400 }
+      );
+    }
   // 3. Validate
   const firebaseUid = body.firebaseUid || decoded.uid;
   if (!firebaseUid || firebaseUid !== decoded.uid) {
@@ -294,6 +294,11 @@ export async function POST(req: NextRequest) {
           pincode: body.address!.pincode ?? "",
           latitude: body.address!.latitude ?? null,
           longitude: body.address!.longitude ?? null,
+          // ─── Location verification fields (mandatory since the API requires
+          // lat/lng above, so we know the location was confirmed) ───
+          locationVerified: true,
+          locationSource: "gps",
+          locationAccuracy: null,
           isDefault: false,
         },
       });
@@ -435,6 +440,26 @@ export async function POST(req: NextRequest) {
         _mock: true,
       },
     });
+  }
+  } catch (err) {
+    // ─── Top-level safety net ───
+    // ANY uncaught error (auth verify throw, prisma crash, validation bug, etc.)
+    // MUST return a JSON response so the client doesn't see "Unexpected end of JSON input".
+    console.error("[api/orders POST] Uncaught top-level error:", err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === "string"
+        ? err
+        : "Unknown server error during order creation.";
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      {
+        success: false,
+        error: isProd ? "Order creation failed. Please try again." : `[TOP] ${message}`,
+      },
+      { status: 500 }
+    );
   }
 }
 

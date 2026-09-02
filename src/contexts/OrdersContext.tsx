@@ -400,7 +400,28 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
           }),
         });
 
-        apiResponse = await res.json();
+        // ─── Defensive JSON parsing ───
+        // If the API returns an empty body (e.g. 500 error, gateway timeout,
+        // or HTML error page), `res.json()` throws "Unexpected end of JSON input".
+        // Parse safely so we can show a useful error message instead.
+        const responseText = await res.text();
+        if (!responseText || responseText.trim() === "") {
+          throw new Error(
+            `Order creation failed — server returned an empty response (HTTP ${res.status}). Please try again.`
+          );
+        }
+        try {
+          apiResponse = JSON.parse(responseText);
+        } catch (parseErr) {
+          // Server returned non-JSON (likely an HTML error page)
+          console.error(
+            `[Orders] API returned non-JSON response (HTTP ${res.status}):`,
+            responseText.slice(0, 200)
+          );
+          throw new Error(
+            `Order creation failed — server returned an invalid response (HTTP ${res.status}). Please try again.`
+          );
+        }
 
         if (!res.ok || !apiResponse.success || !apiResponse.order) {
           // API returned an error — throw with the server's error message

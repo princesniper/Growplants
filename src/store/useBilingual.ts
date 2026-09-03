@@ -181,7 +181,7 @@ export const translations = {
     "cart.subtotal": "Subtotal",
     "cart.shipping": "Shipping",
     "cart.discount": "Discount",
-    "cart.tax": "Tax (incl. GST)",
+    "cart.tax": "Tax",
     "cart.total": "Total",
     "cart.freeShipping": "FREE",
     "cart.freeShipping.progress":
@@ -488,7 +488,7 @@ export const translations = {
     "cart.subtotal": "उप-योग",
     "cart.shipping": "शिपिंग",
     "cart.discount": "छूट",
-    "cart.tax": "कर (जीएसटी सहित)",
+    "cart.tax": "कर",
     "cart.total": "कुल",
     "cart.freeShipping": "मुफ़्त",
     "cart.freeShipping.progress": "मुफ़्त शिपिंग के लिए ₹{remaining} और जोड़ें!",

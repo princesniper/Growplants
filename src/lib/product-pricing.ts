@@ -130,7 +130,9 @@ export function validateLineItem(
  * Compute the full order totals server-side from validated line items.
  * The client's totals are IGNORED — this is the authoritative calculation.
  *
- * Pricing model: tax-exclusive (GST 18% added on top)
+ * Pricing model: GST removed — prices shown are the final prices.
+ * Old orders with `tax > 0` are still displayed with their GST breakdown
+ * in order detail pages (backward compat). New orders always have `tax = 0`.
  */
 export function computeOrderTotals(
   lineItems: Array<{ unitPrice: number; quantity: number }>,
@@ -148,7 +150,7 @@ export function computeOrderTotals(
   const subtotal = lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const discount = Math.min(options.discount ?? 0, subtotal); // can't discount more than subtotal
   const taxableAmount = Math.max(0, subtotal - discount);
-  const tax = Math.round(taxableAmount * 0.18); // GST 18%
+  const tax = 0; // GST removed — prices are inclusive
   const shippingFee = options.shippingFee ?? 0;
   const total = taxableAmount + shippingFee + tax;
 

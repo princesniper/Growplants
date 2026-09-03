@@ -28,7 +28,7 @@ export default function CartPage() {
   const [couponDiscount, setCouponDiscount] = useState(0);
 
   const shipping = subtotal >= 499 ? 0 : 49;
-  const tax = Math.round(subtotal * 0.18); // 18% GST (included in price, shown for transparency)
+  const tax = 0; // GST removed — prices are inclusive
   const total = subtotal - couponDiscount + shipping;
 
   const handleApplyCoupon = () => {
@@ -228,10 +228,7 @@ export default function CartPage() {
                     {shipping === 0 ? "FREE" : formatINR(shipping)}
                   </span>
                 </div>
-                <div className="flex justify-between text-xs text-slate-400">
-                  <span>GST (18%, incl. in price)</span>
-                  <span className="tabular-nums">{formatINR(tax)}</span>
-                </div>
+                {/* GST removed — prices are inclusive */}
               </div>
               <Separator />
               <div className="flex justify-between items-baseline">

@@ -87,7 +87,7 @@ function CheckoutContent() {
   }, [mode, router]);
 
   // ─── Compute totals based on mode ───
-  // Order mode: subtotal + shipping + tax (GST 18%)
+  // Order mode: subtotal + shipping (GST removed — prices are inclusive)
   // Booking mode: only the service price (no shipping/tax for services)
   const isBookingMode = mode === "booking" && bookingService && pendingBooking;
 
@@ -99,9 +99,7 @@ function CheckoutContent() {
     ? 0  // services have no delivery fee
     : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49);
 
-  const orderTax = isBookingMode
-    ? 0  // services don't include GST separately (already in price)
-    : Math.round(Math.max(0, subtotal - 0) * 0.18);
+  const orderTax = 0; // GST removed — prices are inclusive
 
   const total = isBookingMode
     ? orderSubtotal
@@ -776,7 +774,7 @@ function CheckoutContent() {
                 <div className="flex justify-between"><span className="text-slate-600">Subtotal ({itemCount} items)</span><span className="font-medium text-slate-800 tabular-nums">{formatINR(subtotal)}</span></div>
                 {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span className="font-medium tabular-nums">-{formatINR(couponDiscount)}</span></div>}
                 <div className="flex justify-between"><span className="text-slate-600">Delivery</span><span className="font-medium text-slate-800 tabular-nums">{shipping === 0 ? "FREE" : formatINR(shipping)}</span></div>
-                <div className="flex justify-between text-xs text-slate-400"><span>GST (18%)</span><span className="tabular-nums">{formatINR(tax)}</span></div>
+                {/* GST removed — prices are inclusive. Old orders with tax>0 still show in order detail pages. */}
               </div>
             )}
 

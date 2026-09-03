@@ -71,7 +71,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
 
     try {
       sessionStorage.setItem(PENDING_BOOKING_KEY, JSON.stringify(pending));
-      router.push("/bookings/checkout");
+      router.push("/checkout?mode=booking");
     } catch (err) {
       appToast.error(
         "Could not proceed",

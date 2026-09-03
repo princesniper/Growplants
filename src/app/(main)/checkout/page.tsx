@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2, ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle, Map as MapIcon } from "lucide-react";
+import {
+  ChevronRight, Check, Truck, CreditCard, Banknote, MapPin, Loader2,
+  ShoppingCart, Plus, Home, Navigation, ShieldCheck, AlertCircle,
+  Map as MapIcon, Calendar, Clock, ArrowRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -13,23 +17,97 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useOrders, type OrderAddress, type PaymentMethod } from "@/contexts/OrdersContext";
+import { useBookings } from "@/contexts/BookingsContext";
 import { useAddresses } from "@/contexts/AddressContext";
-import { formatINR, isValidPincode } from "@/lib/utils";
+import { formatINR, isValidPincode, isValidIndianPhone } from "@/lib/utils";
 import { appToast } from "@/lib/toast";
 import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { MapLocationPicker } from "@/components/common/MapLocationPicker";
+import { getServiceBySlug, PROVIDERS } from "@/data/services-data";
+
+const PENDING_BOOKING_KEY = "growplants-pending-booking";
+
+interface PendingBooking {
+  serviceSlug: string;
+  date: string;
+  timeSlot: string;
+  providerId: string | null;
+  notes: string;
+}
 
 const STEPS = ["Address", "Review", "Payment"] as const;
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ─── Mode detection: "order" (default) or "booking" ───
+  const mode = (searchParams.get("mode") as "order" | "booking") ?? "order";
+
   const { items, subtotal, itemCount, clearCart } = useCart();
   const { createOrder } = useOrders();
+  const { createBooking } = useBookings();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const { addresses, isLoading: addressesLoading, addAddress } = useAddresses();
 
+  // ─── Booking mode state ───
+  const [pendingBooking, setPendingBooking] = useState<PendingBooking | null>(null);
+  const [bookingService, setBookingService] = useState<ReturnType<typeof getServiceBySlug> | null>(null);
+  const [bookingProvider, setBookingProvider] = useState<typeof PROVIDERS[0] | null>(null);
+
+  useEffect(() => {
+    if (mode !== "booking") return;
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(PENDING_BOOKING_KEY);
+      if (!raw) {
+        appToast.error("No pending booking", "Please select a service and time slot first.");
+        router.push("/services");
+        return;
+      }
+      const parsed = JSON.parse(raw) as PendingBooking;
+      setPendingBooking(parsed);
+      const svc = getServiceBySlug(parsed.serviceSlug);
+      if (!svc) {
+        appToast.error("Service not found", "The service you selected is no longer available.");
+        router.push("/services");
+        return;
+      }
+      setBookingService(svc);
+      if (parsed.providerId) {
+        const p = PROVIDERS.find((p) => p.id === parsed.providerId);
+        if (p) setBookingProvider(p);
+      }
+    } catch (err) {
+      appToast.error("Invalid booking data", "Please try selecting your service again.");
+      router.push("/services");
+    }
+  }, [mode, router]);
+
+  // ─── Compute totals based on mode ───
+  // Order mode: subtotal + shipping + tax (GST 18%)
+  // Booking mode: only the service price (no shipping/tax for services)
+  const isBookingMode = mode === "booking" && bookingService && pendingBooking;
+
+  const orderSubtotal = isBookingMode
+    ? (bookingService!.pricingType === "quote_based" ? 0 : bookingService!.priceFrom)
+    : subtotal;
+
+  const orderShipping = isBookingMode
+    ? 0  // services have no delivery fee
+    : (subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49);
+
+  const orderTax = isBookingMode
+    ? 0  // services don't include GST separately (already in price)
+    : Math.round(Math.max(0, subtotal - 0) * 0.18);
+
+  const total = isBookingMode
+    ? orderSubtotal
+    : Math.max(0, subtotal - 0) + orderShipping + orderTax;
+
+  // ─── UI state ───
   const [step, setStep] = useState(0);
   const [isPlacing, setIsPlacing] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -51,33 +129,25 @@ export default function CheckoutPage() {
 
   // Payment
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("razorpay");
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(() => isBookingMode ? (pendingBooking?.notes ?? "") : "");
   // D1: couponDiscount is 0 until coupon feature is implemented
   const [couponDiscount] = useState(0);
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 49;
-  // GST 18% on (subtotal - discount). Tax-exclusive model.
-  const taxableAmount = Math.max(0, subtotal - couponDiscount);
-  const tax = Math.round(taxableAmount * 0.18);
-  // Total MUST include tax — previously tax was dropped (18% revenue loss)
-  const total = taxableAmount + shipping + tax;
+  const shipping = orderShipping;
+  const tax = orderTax;
 
   // Auto-select default address on mount
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddressId) {
       const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0];
-      // FIX: Only auto-select if the address has GPS coordinates AND verification
-      // (either the new `locationVerified` or the legacy `gpsVerified` flag).
       const isVerified =
         Boolean(defaultAddr.locationVerified) || Boolean(defaultAddr.gpsVerified);
       const hasCoords =
         defaultAddr.latitude != null && defaultAddr.longitude != null;
       if (!isVerified || !hasCoords) {
-        // Don't auto-pick an unverified address — let the user pick manually
         return;
       }
       setSelectedAddressId(defaultAddr.id);
-      // Populate the address form with the default address (including GPS coords)
       setAddress({
         fullName: defaultAddr.fullName,
         phone: defaultAddr.phone,
@@ -90,7 +160,6 @@ export default function CheckoutPage() {
         latitude: defaultAddr.latitude,
         longitude: defaultAddr.longitude,
       });
-      // Mark GPS as verified so the checkout flow doesn't re-prompt
       setGpsCoords({
         lat: defaultAddr.latitude!,
         lng: defaultAddr.longitude!,
@@ -102,11 +171,10 @@ export default function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addresses.length]);
 
-  // Handle selecting a saved address — BYPASS FIX: only allow GPS-verified addresses
+  // Handle selecting a saved address
   const handleSelectAddress = (addrId: string) => {
     const addr = addresses.find((a) => a.id === addrId);
     if (!addr) return;
-    // FIX: Accept either the new `locationVerified` or legacy `gpsVerified` flag
     const isVerified =
       Boolean(addr.locationVerified) || Boolean(addr.gpsVerified);
     const hasCoords = addr.latitude != null && addr.longitude != null;
@@ -128,8 +196,8 @@ export default function CheckoutPage() {
       city: addr.city,
       state: addr.state,
       pincode: addr.pincode,
-      latitude: addr.latitude,     // FIX Bug #3: copy GPS coordinates
-      longitude: addr.longitude,   // FIX Bug #3: copy GPS coordinates
+      latitude: addr.latitude,
+      longitude: addr.longitude,
     });
     setGpsCoords({
       lat: addr.latitude!,
@@ -154,133 +222,20 @@ export default function CheckoutPage() {
     setGpsError("");
   };
 
-  // GPS verification handler for checkout new address
-  const handleGPS = async () => {
-    setGpsState("detecting");
-    setGpsError("");
-    try {
-      if (!navigator.geolocation) {
-        setGpsState("failed");
-        setGpsError("GPS not supported on this device");
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude, accuracy } = pos.coords;
-          if (accuracy > 100) {
-            setGpsState("failed");
-            setGpsError(`GPS accuracy too low (${Math.round(accuracy)}m). Need within 100m.`);
-            return;
-          }
-          setGpsState("fetching");
-          try {
-            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`;
-            const res = await fetch(url, {
-              headers: { "Accept-Language": "en", "User-Agent": "GrowPlants/1.0 (hello@growplants.in)" },
-            });
-            if (!res.ok) throw new Error("Reverse geocoding failed");
-            const data = await res.json();
-            const addr = data.address || {};
-            setAddress((prev) => ({
-              ...prev,
-              city: addr.city || addr.town || addr.village || addr.county || prev.city,
-              state: addr.state || prev.state,
-              pincode: addr.postcode || prev.pincode,
-            }));
-            setGpsState("verified");
-            appToast.success("Location verified!", `Accuracy: ${Math.round(accuracy)}m`);
-          } catch (geoErr) {
-            setGpsState("failed");
-            setGpsError("Could not fetch address from GPS. Please enter manually.");
-          }
-        },
-        (err) => {
-          setGpsState("failed");
-          if (err.code === 1) setGpsError("Location permission denied. Please allow location access.");
-          else if (err.code === 2) setGpsError("Location unavailable. Check your GPS settings.");
-          else if (err.code === 3) setGpsError("Location request timed out. Try again.");
-          else setGpsError("Failed to get location.");
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
-    } catch (err) {
-      setGpsState("failed");
-      setGpsError(err instanceof Error ? err.message : "GPS verification failed");
-    }
-  };
-
-  // Reset GPS when switching to a saved address
-  useEffect(() => {
-    if (selectedAddressId) {
-      setGpsState("idle");
-      setGpsError("");
-      setGpsCoords(null);
-    }
-  }, [selectedAddressId]);
-
-  // BYPASS FIX: Track GPS-verified values — if user edits city/state/pincode after GPS verify, reset
-  const gpsVerifiedRef = useRef<{ city: string; state: string; pincode: string } | null>(null);
-  useEffect(() => {
-    if (gpsState === "verified") {
-      gpsVerifiedRef.current = { city: address.city, state: address.state, pincode: address.pincode };
-    }
-  }, [gpsState]); // intentionally not depending on address to avoid re-trigger
-
-  useEffect(() => {
-    // If GPS was verified and user changes city/state/pincode, reset GPS
-    if (gpsState === "verified" && gpsVerifiedRef.current) {
-      if (
-        gpsVerifiedRef.current.city !== address.city ||
-        gpsVerifiedRef.current.state !== address.state ||
-        gpsVerifiedRef.current.pincode !== address.pincode
-      ) {
-        setGpsState("idle");
-        gpsVerifiedRef.current = null;
-      }
-    }
-  }, [address.city, address.state, address.pincode, gpsState]);
-
-  // C3 FIX: Auth guard — redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.replace("/login?redirect=/checkout");
-    }
-  }, [authLoading, isAuthenticated, router]);
-
-  // C2 FIX: COD max amount enforcement
-  const codExceedsLimit = paymentMethod === "cod" && total > COD_MAX_AMOUNT;
-
-  // Empty cart guard
-  if (itemCount === 0 && !isPlacing) {
-    return (
-      <Container className="py-16">
-        <div className="text-center space-y-4">
-          <div className="size-16 rounded-full bg-[#F3F8F1] flex items-center justify-center mx-auto">
-            <ShoppingCart className="size-8 text-[#1A6B3C]" aria-hidden="true" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">Your cart is empty</h1>
-          <p className="text-sm text-slate-500">Add some products before checking out.</p>
-          <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"><Link href="/shop">Browse Shop</Link></Button>
-        </div>
-      </Container>
-    );
-  }
+  const codExceedsLimit = total > COD_MAX_AMOUNT;
 
   const validateAddress = () => {
     const errs: Record<string, string> = {};
     if (!address.fullName.trim()) errs.fullName = "Name is required";
-    if (!address.phone.trim() || !/^[6-9]\d{9}$/.test(address.phone.replace(/\D/g, ""))) errs.phone = "Enter a valid 10-digit phone number";
+    if (!address.phone.trim() || !isValidIndianPhone(address.phone))
+      errs.phone = "Enter a valid 10-digit phone number";
     if (!address.addressLine1.trim()) errs.addressLine1 = "Address is required";
     if (!address.city.trim()) errs.city = "City is required";
     if (!address.state.trim()) errs.state = "State is required";
     if (!isValidPincode(address.pincode)) errs.pincode = "Enter a valid 6-digit pincode";
-    // BYPASS FIX: Require GPS verification for new addresses (not for saved addresses)
     if (showNewAddressForm && !selectedAddressId && !gpsVerified) {
       errs.gps = "GPS verification is required for new addresses";
     }
-    // FIX: Defensive check — even for saved addresses, lat/lng must be present
-    // because the API enforces them at /api/orders. Without this, the user
-    // could proceed past the address step and get a cryptic 400 at order time.
     if (
       address.latitude === null || address.latitude === undefined ||
       address.longitude === null || address.longitude === undefined
@@ -298,16 +253,57 @@ export default function CheckoutPage() {
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
 
+  // ─── Place Order OR Confirm Booking (mode-aware) ───
   const handlePlaceOrder = async () => {
-    // C2 FIX: Enforce COD max amount
     if (paymentMethod === "cod" && total > COD_MAX_AMOUNT) {
       appToast.error("COD limit exceeded", `Cash on Delivery is only available for orders up to ₹${COD_MAX_AMOUNT}. Please choose online payment.`);
       return;
     }
 
-    // ─── Defensive: filter out cart items with missing productId ───
-    // Stale carts (from old app versions or Firestore docs) might have items
-    // where `productId` is undefined. Send only valid items to the API.
+    // ─── Booking mode ───
+    if (isBookingMode && bookingService && pendingBooking) {
+      setIsPlacing(true);
+      try {
+        await new Promise((r) => setTimeout(r, 500)); // simulate async
+        const booking = createBooking({
+          service: {
+            serviceId: bookingService.id,
+            serviceName: bookingService.name,
+            serviceSlug: bookingService.slug,
+            providerId: pendingBooking.providerId,
+            providerName: bookingProvider?.name ?? null,
+            priceFrom: bookingService.priceFrom,
+            pricingType: bookingService.pricingType,
+            priceUnit: bookingService.priceUnit,
+            image: bookingService.image,
+          },
+          address: {
+            fullName: address.fullName,
+            phone: address.phone,
+            addressLine1: address.addressLine1,
+            city: address.city,
+            state: address.state,
+            pincode: address.pincode,
+          },
+          date: pendingBooking.date,
+          timeSlot: pendingBooking.timeSlot,
+          notes: notes.trim() || undefined,
+          // Cast: orders' PaymentMethod is wider; bookings only accept "razorpay" | "cod"
+          paymentMethod: (paymentMethod === "cod" ? "cod" : "razorpay") as import("@/contexts/BookingsContext").PaymentMethod,
+        });
+        sessionStorage.removeItem(PENDING_BOOKING_KEY);
+        appToast.success("Booking confirmed!", `Booking ${booking.bookingNumber} placed`);
+        router.push(`/account/bookings/${booking.id}`);
+      } catch (err) {
+        console.error("[checkout] createBooking failed:", err);
+        const message = err instanceof Error ? err.message : "Could not place your booking. Please try again.";
+        appToast.error("Booking failed", message);
+        setIsPlacing(false);
+      }
+      return;
+    }
+
+    // ─── Order mode (existing logic) ───
     const validItems = items.filter((i) => typeof i.productId === "string" && i.productId.trim() !== "");
     if (validItems.length === 0) {
       appToast.error(
@@ -317,7 +313,6 @@ export default function CheckoutPage() {
       return;
     }
     if (validItems.length !== items.length) {
-      // Soft-warn but proceed with valid items only
       console.warn(
         `[checkout] Filtered out ${items.length - validItems.length} invalid cart item(s) before sending to API.`
       );
@@ -330,24 +325,93 @@ export default function CheckoutPage() {
         subtotal, shipping, discount: couponDiscount, tax, total,
         address, paymentMethod, notes: notes.trim() || undefined,
       });
-
-      // Only clear cart + redirect on genuine success (createOrder throws on failure)
       clearCart();
       appToast.success("Order placed!", `Order ${order.orderNumber} confirmed`);
       router.push(`/order-confirmation/${order.id}`);
-      // D3: isPlacing is NOT reset — page navigates away, so it's fine
-      // (the next page mount will have a fresh state)
     } catch (err) {
       console.error("[checkout] createOrder failed:", err);
-      // A7 FIX: Show the actual error message from the API; cart is NOT cleared
       const message = err instanceof Error ? err.message : "Could not place your order. Please try again.";
       appToast.error("Order failed", message);
       setIsPlacing(false);
     }
   };
 
+  // ─── Empty-cart guard for order mode ───
+  if (mode === "order" && itemCount === 0 && !authLoading) {
+    return (
+      <Container className="py-16 text-center">
+        <div className="size-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+          <ShoppingCart className="size-8 text-slate-400" />
+        </div>
+        <h1 className="text-xl font-bold text-slate-800 mb-2">Your cart is empty</h1>
+        <p className="text-sm text-slate-500 mb-6">Add some plants to your cart before checking out.</p>
+        <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+          <Link href="/shop">Browse Shop</Link>
+        </Button>
+      </Container>
+    );
+  }
+
+  // ─── Loading state for booking mode (waiting for sessionStorage) ───
+  if (mode === "booking" && !bookingService) {
+    return (
+      <Container className="py-16 text-center">
+        <Loader2 className="size-8 animate-spin text-[#1A6B3C] mx-auto" />
+        <p className="text-sm text-slate-500 mt-3">Loading booking details…</p>
+      </Container>
+    );
+  }
+
+  // ─── Auth guard ───
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <Container className="py-16 text-center">
+        <h1 className="text-xl font-bold text-slate-800 mb-2">Please log in to continue</h1>
+        <p className="text-sm text-slate-500 mb-6">You need an account to place an order.</p>
+        <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+          <Link href="/login?redirect=/checkout">Log In</Link>
+        </Button>
+      </Container>
+    );
+  }
+
+  // ─── Compute display labels ───
+  const pageTitle = isBookingMode ? "Booking Checkout" : "Checkout";
+  const summaryTitle = isBookingMode ? "Booking Summary" : "Order Summary";
+  const placeButtonLabel = isBookingMode
+    ? "Confirm Booking"
+    : `Place Order · ${formatINR(total)}`;
+  const placeButtonLoading = isBookingMode ? "Confirming…" : "Placing Order...";
+
+  // Booking price label
+  const bookingPriceLabel = bookingService
+    ? bookingService.pricingType === "quote_based"
+      ? "Custom Quote"
+      : formatINR(bookingService.priceFrom) + (bookingService.priceUnit ? ` / ${bookingService.priceUnit}` : "")
+    : "";
+
   return (
     <Container className="py-6 md:py-10">
+      {/* Breadcrumb for booking mode */}
+      {isBookingMode && bookingService && (
+        <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
+          <Link href="/" className="hover:text-[#1A6B3C]">Home</Link>
+          <ChevronRight className="size-3" />
+          <Link href="/services" className="hover:text-[#1A6B3C]">Services</Link>
+          <ChevronRight className="size-3" />
+          <Link href={`/services/${bookingService.slug}`} className="hover:text-[#1A6B3C] truncate max-w-[120px]">{bookingService.name}</Link>
+          <ChevronRight className="size-3" />
+          <span className="text-slate-800 font-semibold">Checkout</span>
+        </nav>
+      )}
+
+      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-1">{pageTitle}</h1>
+      <p className="text-sm text-slate-500 mb-6">
+        {isBookingMode
+          ? "Confirm your address and payment method to complete the booking."
+          : "Confirm your address and payment method to place your order."}
+      </p>
+
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2 mb-8">
         {STEPS.map((label, i) => (
@@ -364,6 +428,52 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left: Step content */}
         <div className="lg:col-span-2 space-y-4">
+
+          {/* ─── Booking mode: Service Summary card (always visible at top) ─── */}
+          {isBookingMode && bookingService && pendingBooking && (
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <h2 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <Calendar className="size-4 text-[#1A6B3C]" />
+                Service Summary
+              </h2>
+              <div className="flex gap-3">
+                <div className="relative size-16 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                  <Image src={bookingService.image} alt={bookingService.name} fill sizes="64px" className="object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">{bookingService.name}</p>
+                  <p className="text-xs text-slate-500">{bookingService.category} · {bookingService.duration}</p>
+                  <div className="flex items-center gap-3 mt-1 text-xs text-slate-600 flex-wrap">
+                    <span className="flex items-center gap-1"><Calendar className="size-3" />{pendingBooking.date}</span>
+                    <span className="flex items-center gap-1"><Clock className="size-3" />{pendingBooking.timeSlot}</span>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-[#1A6B3C]">{bookingPriceLabel}</p>
+                </div>
+              </div>
+              {bookingProvider && (
+                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
+                  <div className="relative size-8 rounded-full overflow-hidden bg-slate-100 shrink-0">
+                    <Image src={bookingProvider.avatarImage} alt={bookingProvider.name} fill sizes="32px" className="object-cover" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-700">{bookingProvider.name}</p>
+                    <p className="text-[10px] text-slate-500">{bookingProvider.rating.toFixed(1)}★ · {bookingProvider.experienceYears} yrs exp</p>
+                  </div>
+                </div>
+              )}
+              <div className="mt-3">
+                <Link
+                  href={`/services/${bookingService.slug}`}
+                  className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+                >
+                  <ChevronRight className="size-3 rotate-180" /> Change service details
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Step 1: Address */}
           {step === 0 && (
             <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
@@ -375,54 +485,57 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-slate-700">Saved Addresses</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {addresses.map((addr) => (
-                      <button
-                        key={addr.id}
-                        type="button"
-                        onClick={() => handleSelectAddress(addr.id)}
-                        className={cn(
-                          "text-left p-4 rounded-xl border-2 transition-all relative",
-                          selectedAddressId === addr.id
-                            ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
-                            : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white",
-                          !addr.gpsVerified && "opacity-60 cursor-not-allowed hover:border-slate-200"
-                        )}
-                      >
-                        {selectedAddressId === addr.id && (
-                          <div className="absolute top-3 right-3 size-5 rounded-full bg-[#1A6B3C] flex items-center justify-center">
-                            <Check className="size-3 text-white" strokeWidth={3} />
+                    {addresses.map((addr) => {
+                      const isVerified = Boolean(addr.locationVerified || addr.gpsVerified);
+                      return (
+                        <button
+                          key={addr.id}
+                          type="button"
+                          onClick={() => handleSelectAddress(addr.id)}
+                          className={cn(
+                            "text-left p-4 rounded-xl border-2 transition-all relative",
+                            selectedAddressId === addr.id
+                              ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
+                              : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white",
+                            !isVerified && "opacity-60 cursor-not-allowed hover:border-slate-200"
+                          )}
+                        >
+                          {selectedAddressId === addr.id && (
+                            <div className="absolute top-3 right-3 size-5 rounded-full bg-[#1A6B3C] flex items-center justify-center">
+                              <Check className="size-3 text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                          <div className="flex items-start gap-2 mb-2">
+                            <div className="size-8 rounded-lg bg-[#1A6B3C]/10 flex items-center justify-center shrink-0">
+                              <Home className="size-4 text-[#1A6B3C]" />
+                            </div>
+                            <div className="min-w-0 flex-1 pr-6">
+                              <p className="text-sm font-bold text-slate-800 truncate">
+                                {addr.fullName}
+                                {addr.isDefault && (
+                                  <span className="ml-2 text-[10px] font-semibold text-[#1A6B3C] bg-[#1A6B3C]/10 px-1.5 py-0.5 rounded-full">
+                                    Default
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-slate-500">{addr.label} · {addr.phone}</p>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex items-start gap-2 mb-2">
-                          <div className="size-8 rounded-lg bg-[#1A6B3C]/10 flex items-center justify-center shrink-0">
-                            <Home className="size-4 text-[#1A6B3C]" />
-                          </div>
-                          <div className="min-w-0 flex-1 pr-6">
-                            <p className="text-sm font-bold text-slate-800 truncate">
-                              {addr.fullName}
-                              {addr.isDefault && (
-                                <span className="ml-2 text-[10px] font-semibold text-[#1A6B3C] bg-[#1A6B3C]/10 px-1.5 py-0.5 rounded-full">
-                                  Default
-                                </span>
-                              )}
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            {addr.houseNo}, {addr.locality}, {addr.city}, {addr.state} - {addr.pincode}
+                          </p>
+                          {isVerified ? (
+                            <p className="text-[10px] text-green-600 mt-1.5 flex items-center gap-1">
+                              <ShieldCheck className="size-2.5" /> Verified
                             </p>
-                            <p className="text-xs text-slate-500">{addr.label} · {addr.phone}</p>
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          {addr.houseNo}, {addr.locality}, {addr.city}, {addr.state} - {addr.pincode}
-                        </p>
-                        {addr.gpsVerified ? (
-                          <p className="text-[10px] text-green-600 mt-1.5 flex items-center gap-1">
-                            <ShieldCheck className="size-2.5" /> GPS Verified
-                          </p>
-                        ) : (
-                          <p className="text-[10px] text-red-500 mt-1.5 flex items-center gap-1">
-                            <AlertCircle className="size-2.5" /> Not GPS Verified — tap to fix
-                          </p>
-                        )}
-                      </button>
-                    ))}
+                          ) : (
+                            <p className="text-[10px] text-red-500 mt-1.5 flex items-center gap-1">
+                              <AlertCircle className="size-2.5" /> Not Verified — tap to fix
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
 
                     {/* Add New Address Card */}
                     <button
@@ -469,6 +582,19 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+              {/* Selected address display */}
+              {selectedAddressId && (
+                <div className="p-3 bg-[#F3F8F1] rounded-lg flex items-start gap-3">
+                  <Check className="size-5 text-[#1A6B3C] shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-800">{address.fullName} · {address.phone}</p>
+                    <p className="text-xs text-slate-600 mt-0.5">
+                      {address.addressLine1}{address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city}, {address.state} - {address.pincode}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Link to manage addresses */}
               {addresses.length > 0 && (
                 <div className="pt-2">
@@ -483,7 +609,9 @@ export default function CheckoutPage() {
           {/* Step 2: Review */}
           {step === 1 && (
             <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-              <h2 className="text-base font-bold text-[#1A6B3C]">Review Your Order</h2>
+              <h2 className="text-base font-bold text-[#1A6B3C]">
+                {isBookingMode ? "Review Your Booking" : "Review Your Order"}
+              </h2>
               <Separator />
               {/* Delivery address summary */}
               <div className="p-3 bg-[#F3F8F1] rounded-lg">
@@ -491,26 +619,55 @@ export default function CheckoutPage() {
                 <p className="text-sm font-medium text-slate-800">{address.fullName} · {address.phone}</p>
                 <p className="text-sm text-slate-600">{address.addressLine1}{address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city}, {address.state} - {address.pincode}</p>
               </div>
-              {/* Items */}
-              <div className="space-y-3">
-                {items.map((item) => (
-                  <div key={item.id} className="flex gap-3 items-center">
+
+              {/* Items / Service */}
+              {isBookingMode && bookingService ? (
+                <div className="space-y-3">
+                  <div className="flex gap-3 items-center">
                     <div className="relative size-14 rounded-lg overflow-hidden bg-slate-50 shrink-0">
-                      {item.image && <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />}
+                      <Image src={bookingService.image} alt={bookingService.name} fill sizes="56px" className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 line-clamp-1">{item.name}</p>
-                      <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatINR(item.price)}</p>
+                      <p className="text-sm font-medium text-slate-800 line-clamp-1">{bookingService.name}</p>
+                      <p className="text-xs text-slate-500">
+                        {pendingBooking?.date} · {pendingBooking?.timeSlot}
+                      </p>
+                      {bookingProvider && (
+                        <p className="text-[11px] text-slate-400 mt-0.5">Gardener: {bookingProvider.name}</p>
+                      )}
                     </div>
-                    <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(item.price * item.quantity)}</p>
+                    <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{bookingPriceLabel}</p>
                   </div>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex gap-3 items-center">
+                      <div className="relative size-14 rounded-lg overflow-hidden bg-slate-50 shrink-0">
+                        {item.image && <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800 line-clamp-1">{item.name}</p>
+                        <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatINR(item.price)}</p>
+                      </div>
+                      <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(item.price * item.quantity)}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
               <Separator />
               {/* Notes */}
               <div className="space-y-1.5">
-                <Label htmlFor="notes" className="text-sm">Special Instructions (optional)</Label>
-                <Textarea id="notes" rows={2} placeholder="Any delivery preferences..." value={notes} onChange={(e) => setNotes(e.target.value)} />
+                <Label htmlFor="notes" className="text-sm">
+                  {isBookingMode ? "Notes for Gardener (optional)" : "Special Instructions (optional)"}
+                </Label>
+                <Textarea
+                  id="notes"
+                  rows={2}
+                  placeholder={isBookingMode ? "Any specific instructions for the gardener…" : "Any delivery preferences..."}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
               </div>
             </div>
           )}
@@ -527,7 +684,7 @@ export default function CheckoutPage() {
                   <div className="flex-1"><p className="text-sm font-semibold text-slate-800">Pay Online</p><p className="text-xs text-slate-500">UPI, Cards, Net Banking, Wallets via Razorpay</p></div>
                   <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "razorpay" && <Check className="size-3 text-white" />}</div>
                 </button>
-                {/* COD — C2 FIX: disabled when total exceeds COD_MAX_AMOUNT */}
+                {/* COD */}
                 <button
                   onClick={() => !codExceedsLimit && setPaymentMethod("cod")}
                   disabled={total > COD_MAX_AMOUNT}
@@ -543,6 +700,8 @@ export default function CheckoutPage() {
                     <p className="text-xs text-slate-500">
                       {total > COD_MAX_AMOUNT
                         ? `Not available for orders above ₹${COD_MAX_AMOUNT.toLocaleString()}`
+                        : isBookingMode
+                        ? "Pay in cash when the gardener arrives."
                         : "Pay in cash when your order arrives. Available for orders up to ₹5,000."}
                     </p>
                   </div>
@@ -555,7 +714,11 @@ export default function CheckoutPage() {
                 </div>
               )}
               {paymentMethod === "cod" && (
-                <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-700">Please keep exact change ready. COD orders may take an extra day for delivery confirmation.</div>
+                <div className="p-3 bg-amber-50 rounded-lg text-xs text-amber-700">
+                  {isBookingMode
+                    ? "Please keep exact change ready when the gardener arrives."
+                    : "Please keep exact change ready. COD orders may take an extra day for delivery confirmation."}
+                </div>
               )}
             </div>
           )}
@@ -567,26 +730,74 @@ export default function CheckoutPage() {
               <Button onClick={handleNext} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">Continue <ChevronRight className="size-4" /></Button>
             ) : (
               <Button onClick={handlePlaceOrder} disabled={isPlacing} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">
-                {isPlacing ? <><Loader2 className="size-4 animate-spin" />Placing Order...</> : <>Place Order · {formatINR(total)}</>}
+                {isPlacing ? <><Loader2 className="size-4 animate-spin" />{placeButtonLoading}</> : <>{placeButtonLabel}</>}
               </Button>
             )}
           </div>
         </div>
 
-        {/* Right: Order summary (sticky) */}
+        {/* Right: Order/Booking summary (sticky) */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-            <h3 className="text-base font-bold text-[#1A6B3C]">Order Summary</h3>
+            <h3 className="text-base font-bold text-[#1A6B3C]">{summaryTitle}</h3>
             <Separator />
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-slate-600">Subtotal ({itemCount} items)</span><span className="font-medium text-slate-800 tabular-nums">{formatINR(subtotal)}</span></div>
-              {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span className="font-medium tabular-nums">-{formatINR(couponDiscount)}</span></div>}
-              <div className="flex justify-between"><span className="text-slate-600">Delivery</span><span className="font-medium text-slate-800 tabular-nums">{shipping === 0 ? "FREE" : formatINR(shipping)}</span></div>
-              <div className="flex justify-between text-xs text-slate-400"><span>GST (18%)</span><span className="tabular-nums">{formatINR(tax)}</span></div>
+
+            {isBookingMode && bookingService ? (
+              /* ─── Booking summary ─── */
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Service</span>
+                  <span className="font-medium text-slate-800 text-right">{bookingService.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Date</span>
+                  <span className="font-medium text-slate-800">{pendingBooking?.date}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Time Slot</span>
+                  <span className="font-medium text-slate-800">{pendingBooking?.timeSlot}</span>
+                </div>
+                {bookingProvider && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Gardener</span>
+                    <span className="font-medium text-slate-800 text-right">{bookingProvider.name}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Payment</span>
+                  <span className="font-medium text-slate-800">
+                    {paymentMethod === "cod" ? "Cash on Delivery" : "Online"}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              /* ─── Order summary ─── */
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between"><span className="text-slate-600">Subtotal ({itemCount} items)</span><span className="font-medium text-slate-800 tabular-nums">{formatINR(subtotal)}</span></div>
+                {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span className="font-medium tabular-nums">-{formatINR(couponDiscount)}</span></div>}
+                <div className="flex justify-between"><span className="text-slate-600">Delivery</span><span className="font-medium text-slate-800 tabular-nums">{shipping === 0 ? "FREE" : formatINR(shipping)}</span></div>
+                <div className="flex justify-between text-xs text-slate-400"><span>GST (18%)</span><span className="tabular-nums">{formatINR(tax)}</span></div>
+              </div>
+            )}
+
+            <Separator />
+            <div className="flex justify-between items-baseline">
+              <span className="text-base font-bold text-slate-800">Total</span>
+              <span className="text-xl font-bold text-[#1A6B3C] tabular-nums">
+                {isBookingMode ? bookingPriceLabel : formatINR(total)}
+              </span>
             </div>
-            <Separator />
-            <div className="flex justify-between items-baseline"><span className="text-base font-bold text-slate-800">Total</span><span className="text-xl font-bold text-[#1A6B3C] tabular-nums">{formatINR(total)}</span></div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 pt-2"><Truck className="size-3.5 text-[#1A6B3C]" />{shipping === 0 ? "Free delivery applied!" : `Add ${formatINR(FREE_SHIPPING_THRESHOLD - subtotal)} more for free delivery`}</div>
+            {!isBookingMode && (
+              <div className="flex items-center gap-2 text-xs text-slate-500 pt-2">
+                <Truck className="size-3.5 text-[#1A6B3C]" />
+                {shipping === 0 ? "Free delivery applied!" : `Add ${formatINR(FREE_SHIPPING_THRESHOLD - subtotal)} more for free delivery`}
+              </div>
+            )}
+            {isBookingMode && (
+              <p className="text-[10px] text-slate-400 text-center pt-1">
+                Free cancellation up to 24h before the scheduled time.
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -622,7 +833,7 @@ export default function CheckoutPage() {
               console.warn("[checkout] Failed to save address to book:", err);
             }
           }
-          // Set as selected address for this order
+          // Set as selected address for this order/booking
           setAddress({
             fullName: data.fullName,
             phone: data.phone,
@@ -643,5 +854,20 @@ export default function CheckoutPage() {
         }}
       />
     </Container>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <Container className="py-16 text-center">
+          <Loader2 className="size-8 animate-spin text-[#1A6B3C] mx-auto" />
+          <p className="text-sm text-slate-500 mt-3">Loading checkout…</p>
+        </Container>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

@@ -1268,3 +1268,102 @@ Why sessionStorage (not URL params or React state):
 - Existing bookings in localStorage still display correctly
 - Booking detail page (`/account/bookings/[id]`) unchanged
 - Provider bookings page (`/provider/bookings`) unchanged
+
+---
+Task ID: unified-checkout-booking-support
+Agent: main
+Task: User feedback — "Booking checkout ko bhi checkout page me hi rakho. New booking checkout nhi create krna tha. Bs professionally add krna tha." → merge service booking flow INTO the existing /checkout page (no separate /bookings/checkout page).
+
+## What I Did Wrong Previously
+Created a separate `/bookings/checkout` page that duplicated the entire checkout UX. User correctly pointed out this was unnecessary — the existing `/checkout` page already handles address + payment properly, so I just needed to extend it to ALSO handle bookings.
+
+## Cleanup Done
+- DELETED: `src/app/(main)/bookings/checkout/page.tsx` (the separate booking checkout page I created earlier)
+- DELETED: empty `src/app/(main)/bookings/` directory
+- MODIFIED: `src/app/(main)/checkout/page.tsx` — extended to handle both modes
+- MODIFIED: `src/app/(main)/services/[slug]/page.tsx` — redirect changed from `/bookings/checkout` to `/checkout?mode=booking`
+
+## Architecture — One Checkout Page, Two Modes
+
+The `/checkout` page now detects its mode from the URL:
+- `/checkout` (default) → "order" mode → cart-based product order
+- `/checkout?mode=booking` → "booking" mode → service-based gardener booking
+
+### Mode Detection
+```ts
+const mode = (searchParams.get("mode") as "order" | "booking") ?? "order";
+const isBookingMode = mode === "booking" && bookingService && pendingBooking;
+```
+
+### Booking data transfer
+Still uses `sessionStorage` (key: `growplants-pending-booking`) — set by the service detail page before redirecting to `/checkout?mode=booking`. Read on mount by the checkout page. Auto-cleared on booking confirmation.
+
+### Branching in the checkout page
+| Aspect | Order mode (default) | Booking mode |
+|---|---|---|
+| Items source | Cart (`useCart().items`) | `bookingService` + `pendingBooking` |
+| Subtotal | Sum of cart items × qty | Service `priceFrom` (or 0 if quote-based) |
+| Shipping | ₹0 if ≥₹499 else ₹49 | ₹0 (services have no delivery fee) |
+| Tax (GST) | 18% on (subtotal − discount) | ₹0 (already included in service price) |
+| Total | subtotal + shipping + tax | service price |
+| Right panel title | "Order Summary" | "Booking Summary" |
+| Step 2 review | Cart items list | Service summary with date/time/provider |
+| Step 3 COD text | "Pay in cash when your order arrives." | "Pay in cash when the gardener arrives." |
+| Place button label | `Place Order · ₹XXX` | `Confirm Booking` |
+| Place action | `createOrder()` → `/order-confirmation/[id]` | `createBooking()` → `/account/bookings/[id]` |
+
+### Service Summary Card (booking mode only)
+A new card rendered ABOVE the address step (always visible) showing:
+- Service image, name, category, duration
+- Date + time slot
+- Provider (gardener) avatar + rating + experience
+- Price label
+- "Change service details" link back to `/services/[slug]`
+
+### Reuses ALL existing infrastructure
+- Same `MapLocationPicker` modal for adding new verified addresses
+- Same `useAddresses()` hook for saved addresses (Firestore-backed)
+- Same `useAuth()` for login gate
+- Same saved-address auto-select logic (default verified address)
+- Same GPS verification requirements
+- Same payment method selector (Razorpay / COD)
+- Same stepper UI (Address → Review → Payment)
+- Same sticky order summary panel on the right
+
+### Backward compatibility
+- All existing product order flow unchanged
+- BookingsContext API unchanged
+- OrdersContext API unchanged
+- AddressContext API unchanged
+- No new dependencies
+
+## Verification
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/checkout` → 200 (product order mode works as before)
+- `/checkout?mode=booking` → 200 (booking mode works)
+- `/services/balcony-garden-setup` → 200 (still renders, "Proceed to Checkout" button now redirects to `/checkout?mode=booking`)
+- Dev server compiles cleanly
+
+## Full Flow (booking mode)
+1. Visit `/services/balcony-garden-setup` → select date + time + provider → "Proceed to Checkout"
+2. sessionStorage is populated with `{serviceSlug, date, timeSlot, providerId, notes}`
+3. Redirect to `/checkout?mode=booking`
+4. Checkout page detects mode=booking, loads pendingBooking from sessionStorage
+5. Service Summary card visible at top with date/time/provider/price
+6. Address step: pick saved verified address OR open MapLocationPicker
+7. Review step: see service summary + address + add notes
+8. Payment step: choose Online or COD
+9. Click "Confirm Booking" → `createBooking()` → redirect to `/account/bookings/[id]`
+10. sessionStorage cleared
+
+## Full Flow (order mode) — unchanged
+1. Visit `/shop` → add products to cart → go to `/cart` → "Checkout"
+2. `/checkout` loads → cart items shown in summary
+3. Address → Review → Payment → Place Order → `/order-confirmation/[id]`
+
+Stage Summary:
+- Single checkout page now handles both products and services
+- No code duplication
+- Same professional UX (stepper, sticky summary, GPS verification, saved addresses, payment methods)
+- Booking mode uses sessionStorage for state transfer from service detail page
+- All existing infrastructure (MapLocationPicker, useAddresses, useAuth) reused

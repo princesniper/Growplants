@@ -1160,3 +1160,111 @@ Verification:
 - No "Project Foundation", "Verification Scratch", or "Phase 1" / "Phase 2" text in the HTML
 - Real content visible: "Sonipat", "gardening services", "Free delivery"
 - Dev server compiles cleanly (200 in ~50-350ms)
+
+---
+Task ID: service-booking-checkout-flow
+Agent: main
+Task: Service order karne par address aur payment dono checkout page pe hone chahiye (like product checkout). Currently service detail page pe hi sab kuch inline tha.
+
+## Problem Analysis
+
+Before this fix, the service detail page (`/services/[slug]`) had EVERYTHING inline on the right sidebar:
+- Date picker
+- Time slot selector
+- Provider selector
+- Address form (full name, phone, address, city, pincode)
+- Notes textarea
+- Payment method (Online / COD)
+- "Book Now" button → directly created booking → redirect to booking detail
+
+This was bad UX because:
+1. Address collection was minimal (no GPS verification, no saved addresses, no pincode auto-fill)
+2. Payment was just a 2-button toggle with no real flow
+3. Users had no chance to review before confirming
+4. Inconsistent with product checkout flow (which has dedicated /checkout page)
+
+## Architecture Fix
+
+Split the service booking into TWO pages:
+
+### Page 1: Service Detail (`/services/[slug]`) — SIMPLIFIED
+- Removed: address form, payment method selector, "Book Now" button
+- Kept: Date picker, time slot selector, provider selector, notes textarea
+- New: "Proceed to Checkout" button → saves pending booking to `sessionStorage` and redirects to `/bookings/checkout`
+- Added info hint: "You'll enter your delivery address and choose a payment method on the next step."
+
+### Page 2: Booking Checkout (`/bookings/checkout`) — NEW
+- Reads pending booking from `sessionStorage` (key: `growplants-pending-booking`)
+- If no pending booking → redirects to `/services` with toast
+- Layout: two-column (like product checkout)
+  - LEFT: Service Summary card (image, name, price, date, time, provider, notes) + Address section + Payment section
+  - RIGHT: Sticky Booking Summary with "Confirm Booking" button
+
+**Address section:**
+- Shows saved addresses from `useAddresses()` (Firestore-backed) — user can pick a verified saved address with one click
+- Auto-selects default verified address on mount
+- "Enter new address manually" option (dashed border button) for users who want to type a fresh address
+- Manual form has full validation (name, phone with +91 prefix, address line, city, state, 6-digit pincode)
+- Shows warning that manual addresses should be verified later via Address Book
+
+**Payment section:**
+- Two cards: "Pay Online" (Razorpay UPI/Cards/Wallets) and "Cash on Delivery"
+- Selected card highlighted with green border + light green background
+- Helper text about Razorpay security
+
+**Confirm Booking flow:**
+- Validates address
+- Calls `createBooking()` from BookingsContext
+- Clears sessionStorage
+- Shows success toast
+- Redirects to `/account/bookings/[id]`
+
+## Files Changed
+
+1. **NEW: `src/app/(main)/bookings/checkout/page.tsx`** — Full booking checkout page with address + payment sections
+2. **MODIFIED: `src/app/(main)/services/[slug]/page.tsx`** — Simplified, removed address/payment, added "Proceed to Checkout" button
+
+## State Transfer Between Pages
+
+Used `sessionStorage` (key: `growplants-pending-booking`) to pass the pending booking from service detail → checkout page:
+```ts
+interface PendingBooking {
+  serviceSlug: string;
+  date: string;
+  timeSlot: string;
+  providerId: string | null;
+  notes: string;
+}
+```
+
+Why sessionStorage (not URL params or React state):
+- Persists across page navigation (React state would be lost)
+- Cleaner URL than query params (no sensitive data in URL)
+- Auto-cleared on tab close (no stale data)
+- Explicitly cleared after booking is confirmed
+
+## Verification
+
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/services` returns 200
+- `/services/balcony-garden-setup` returns 200
+- `/bookings/checkout` returns 200
+- Dev server compiles cleanly
+
+## Full Flow Test (manual)
+
+1. Visit `/services/balcony-garden-setup` → see service info + simplified booking panel (date/time/notes only)
+2. Select date + time slot + provider → click "Proceed to Checkout"
+3. Lands on `/bookings/checkout` → sees Service Summary + Address section + Payment section
+4. (If logged in with saved addresses) Auto-selects default verified address
+5. (Or) Enter new address manually with full validation
+6. Choose payment method (Online / COD)
+7. Click "Confirm Booking" → booking created → redirected to `/account/bookings/[id]`
+8. Booking appears in `/account/bookings` list
+
+## Backward Compatibility
+
+- BookingsContext API unchanged — `createBooking()` still takes the same shape
+- Existing bookings in localStorage still display correctly
+- Booking detail page (`/account/bookings/[id]`) unchanged
+- Provider bookings page (`/provider/bookings`) unchanged

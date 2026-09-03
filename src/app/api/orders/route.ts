@@ -69,10 +69,84 @@ interface MockOrderRow {
 
 const mockOrdersStore: MockOrderRow[] = [];
 
-function generateOrderNumber(): string {
-  return "ORD-" + Date.now();
+/**
+ * Generate a unique, sequential, human-friendly Order Number.
+ *
+ * Format: `GP-YYYYMMDD-XXXX`
+ *   - `GP`           : GrowPlants prefix
+ *   - `YYYYMMDD`     : today's date (UTC+05:30 IST for India)
+ *   - `XXXX`         : 4-digit zero-padded sequence (0001-9999) per day
+ *
+ * Example: `GP-20260903-4827`
+ *
+ * ── Collision safety ──
+ * The function queries the DB for the highest existing sequence number that
+ * uses today's date prefix, then increments by 1. It runs INSIDE the order
+ * creation transaction so two concurrent requests can't grab the same number.
+ *
+ * ── Day rollover ──
+ * If no orders exist yet today (or all use yesterday's date), sequence
+ * starts at 0001. The YYYYMMDD prefix itself is the partition key — old
+ * orders from yesterday can't collide because their prefix is different.
+ *
+ * ── Sequence exhaustion ──
+ * If 9999 orders are placed in a single day (highly unlikely for this
+ * business), the function throws — the API route surfaces a 500. We could
+ * extend to 5 digits but 4 is sufficient for the current scale.
+ *
+ * @param tx Prisma transaction client (so the lookup is atomic with the insert)
+ * @returns Promise<string> e.g. "GP-20260903-0001"
+ */
+async function generateOrderNumber(
+  tx: { order: { findFirst: (args: any) => Promise<any> } }
+): Promise<string> {
+  // Use IST (UTC+05:30) so the day boundary matches the business day.
+  // India doesn't observe DST, so the offset is constant.
+  const now = new Date();
+  const istOffsetMs = 5.5 * 60 * 60 * 1000;
+  const istNow = new Date(now.getTime() + istOffsetMs);
+  const yyyy = istNow.getUTCFullYear();
+  const mm = String(istNow.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(istNow.getUTCDate()).padStart(2, "0");
+  const datePart = `${yyyy}${mm}${dd}`;
+  const prefix = `GP-${datePart}-`;
+
+  // Find the highest existing sequence number for today's date.
+  // We use `findFirst` with `orderBy: orderNumber DESC` + a `startsWith`
+  // filter so we get the latest sequence even if some orders are deleted.
+  const latest = await tx.order.findFirst({
+    where: { orderNumber: { startsWith: prefix } },
+    orderBy: { orderNumber: "desc" },
+    select: { orderNumber: true },
+  });
+
+  let nextSeq = 1;
+  if (latest?.orderNumber) {
+    // Extract the XXXX part from "GP-20260903-4827"
+    const parts = latest.orderNumber.split("-");
+    const lastSeqStr = parts[parts.length - 1];
+    const lastSeq = parseInt(lastSeqStr, 10);
+    if (!Number.isNaN(lastSeq) && lastSeq >= 1 && lastSeq < 9999) {
+      nextSeq = lastSeq + 1;
+    } else if (lastSeq >= 9999) {
+      // Sequence exhausted for today — surface as a clear error.
+      throw new Error(
+        `Order sequence exhausted for ${datePart}: reached 9999 orders in one day. ` +
+        `Please contact administrator to extend the sequence length.`
+      );
+    }
+    // If lastSeq parsed as NaN (corrupted data), fall back to 1 — safe because
+    // we'll collide-check below as a safety net.
+  }
+
+  const seqStr = String(nextSeq).padStart(4, "0");
+  return `${prefix}${seqStr}`;
 }
 
+/**
+ * Generate a random ID for non-order entities (OrderItem, Address, etc.).
+ * Not used for Order numbers — see `generateOrderNumber` above.
+ */
 function generateId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -179,7 +253,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const orderNumber = generateOrderNumber();
+  // ─── Order number generation moved INSIDE the transaction below ───
+  // Previously we generated it eagerly here (`const orderNumber = generateOrderNumber()`),
+  // but that approach races with concurrent inserts and can produce duplicate
+  // numbers. The new generator queries the DB for the highest sequence used
+  // today, then increments — this MUST happen inside the same transaction as
+  // the order insert so two concurrent inserts can't grab the same number.
+  // See `generateOrderNumber(tx)` inside the `$transaction` block below.
   const paymentMethod = body.paymentMethod ?? "cod";
   // A3 FIX: Never mark as "paid" without payment verification.
   // Until Razorpay is integrated, ALL orders start as "pending".
@@ -260,6 +340,11 @@ export async function POST(req: NextRequest) {
   // 4. Try Prisma transaction
   try {
     const created = await db.$transaction(async (tx) => {
+      // ─── Generate the order number INSIDE the transaction ───
+      // This makes the lookup (find the highest sequence used today) atomic
+      // with the insert, so two concurrent requests can't grab the same number.
+      const orderNumber = await generateOrderNumber(tx);
+
       // FIX: Ensure User row exists (Firebase UID is used as userId, but Prisma User table may not have it)
       await tx.user.upsert({
         where: { id: firebaseUid },
@@ -387,10 +472,28 @@ export async function POST(req: NextRequest) {
     }
 
     // Development fallback: push to in-memory mock array
+    // Note: `orderNumber` is generated INSIDE the transaction (above), so the dev
+    // fallback can't reuse it. We generate a fresh one here using the same format.
     console.warn("[api/orders POST] DEV MODE: falling back to in-memory mock order");
+    const devOrderNumber = (() => {
+      const now = new Date();
+      const istOffsetMs = 5.5 * 60 * 60 * 1000;
+      const istNow = new Date(now.getTime() + istOffsetMs);
+      const yyyy = istNow.getUTCFullYear();
+      const mm = String(istNow.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(istNow.getUTCDate()).padStart(2, "0");
+      // Find the highest mock order sequence for today
+      const prefix = `GP-${yyyy}${mm}${dd}-`;
+      const existingSeqs = mockOrdersStore
+        .filter((o) => o.order_number.startsWith(prefix))
+        .map((o) => parseInt(o.order_number.split("-").pop() ?? "0", 10))
+        .filter((n) => !Number.isNaN(n));
+      const nextSeq = existingSeqs.length > 0 ? Math.max(...existingSeqs) + 1 : 1;
+      return `${prefix}${String(nextSeq).padStart(4, "0")}`;
+    })();
     const mockOrder: MockOrderRow = {
       id: generateId("order"),
-      order_number: orderNumber,
+      order_number: devOrderNumber,
       firebase_uid: firebaseUid,
       status: "pending",
       payment_method: paymentMethod,

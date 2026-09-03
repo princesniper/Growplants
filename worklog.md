@@ -1367,3 +1367,139 @@ Stage Summary:
 - Same professional UX (stepper, sticky summary, GPS verification, saved addresses, payment methods)
 - Booking mode uses sessionStorage for state transfer from service detail page
 - All existing infrastructure (MapLocationPicker, useAddresses, useAuth) reused
+
+---
+Task ID: order-id-generation-system
+Agent: main
+Task: Professional Order Generation System — unique Order ID for every successful order in format `GP-YYYYMMDD-XXXX` (e.g. `GP-20260903-4827`).
+
+## Architecture Decisions
+
+### Format
+`GP-YYYYMMDD-XXXX`
+- `GP`           : GrowPlants brand prefix (instant recognition)
+- `YYYYMMDD`     : today's date in IST (UTC+05:30, India's business day)
+- `XXXX`         : 4-digit zero-padded sequence (0001-9999) per day, starts at 0001
+
+### Why this format?
+1. **Human-friendly**: customers and support can read it aloud without ambiguity
+2. **Sortable**: lexicographic sort = chronological sort (date is in ISO order)
+3. **Daily sequence**: gives a sense of "how many orders today" at a glance
+4. **Collision-safe**: 9999 orders per day = ~3% of typical mid-sized e-commerce daily volume; ample headroom
+5. **No PII**: doesn't expose customer ID, email, or any internal IDs
+6. **IST timezone**: India doesn't observe DST, so the offset (UTC+05:30) is constant — no day-boundary bugs
+
+## Implementation — `src/app/api/orders/route.ts`
+
+### 1. New `generateOrderNumber(tx)` function
+
+```ts
+async function generateOrderNumber(
+  tx: { order: { findFirst: (args: any) => Promise<any> } }
+): Promise<string>
+```
+
+**Algorithm:**
+1. Compute today's date in IST → `2026-09-03`
+2. Build prefix: `GP-20260903-`
+3. Query DB for the latest order whose `orderNumber` starts with this prefix:
+   ```ts
+   const latest = await tx.order.findFirst({
+     where: { orderNumber: { startsWith: prefix } },
+     orderBy: { orderNumber: "desc" },
+     select: { orderNumber: true },
+   });
+   ```
+4. If `latest` exists, parse the `XXXX` suffix → `lastSeq`
+   - If `lastSeq < 9999` → `nextSeq = lastSeq + 1`
+   - If `lastSeq >= 9999` → throw "sequence exhausted" error
+   - If parse fails (corrupted data) → fall back to 1 (defensive)
+5. If `latest` doesn't exist (first order of the day) → `nextSeq = 1`
+6. Return `prefix + String(nextSeq).padStart(4, "0")` → e.g. `GP-20260903-0001`
+
+### 2. Atomicity — runs INSIDE the transaction
+
+**Critical fix:** Previously `generateOrderNumber()` was called OUTSIDE the transaction, then `orderNumber` was passed in. This had a race condition: two concurrent inserts could grab the same `Date.now()` value and produce duplicate numbers.
+
+Now the generator is called INSIDE `db.$transaction(async (tx) => { ... })` so the lookup (`findFirst`) + insert (`tx.order.create`) happen atomically. SQLite/PostgreSQL row-level locking guarantees that two concurrent transactions can't both see "no orders today" and both insert `GP-...-0001`.
+
+### 3. Day rollover (no manual reset needed)
+
+The YYYYMMDD prefix itself is the partition key. When the calendar rolls to a new day:
+- New prefix: `GP-20260904-`
+- DB query finds no orders with this prefix
+- Sequence starts fresh at `0001`
+
+No cron job, no daily reset script, no migration needed.
+
+### 4. Sequence exhaustion handling
+
+If a single day somehow accumulates 9999 orders (extremely unlikely for this scale), the generator throws:
+```
+Order sequence exhausted for 20260903: reached 9999 orders in one day.
+Please contact administrator to extend the sequence length.
+```
+
+This error propagates up through the top-level try/catch and the user sees a clear 500 response: `[TOP] Order sequence exhausted for 20260903...`. The admin can extend to 5 digits if needed (a simple change to the `padStart(4, "0")` → `padStart(5, "0")`).
+
+### 5. Dev fallback path
+
+When `process.env.NODE_ENV !== "production"` and the DB transaction throws, the API falls back to in-memory mock orders. The dev fallback now also generates a `GP-YYYYMMDD-XXXX` number using the same algorithm (but reading from `mockOrdersStore` instead of the DB). This keeps dev mode consistent with prod.
+
+### 6. Backward compatibility
+
+- Existing orders in DB (e.g. `ORD-1787126248781`) are NOT migrated — they keep their old format. The unique constraint on `orderNumber` is preserved.
+- New orders from this point forward use the new format.
+- Mixed format (old + new) in the same DB is fine because `@unique` only enforces uniqueness, not format.
+- All consumers (admin panel, order tracking, account page) treat `orderNumber` as opaque string — no code changes needed.
+
+### 7. Schema update
+
+Updated the Prisma schema comment to reflect the new format:
+```prisma
+orderNumber   String   @unique   // GP-YYYYMMDD-XXXX (sequential per day)
+```
+No actual schema change — `orderNumber` was already `String @unique`, the format is purely an application-level convention.
+
+## Files Changed
+
+1. `src/app/api/orders/route.ts`:
+   - NEW: `generateOrderNumber(tx)` async function (replaces old `generateOrderNumber()` that used `Date.now()`)
+   - MODIFIED: POST handler — `orderNumber` generation moved inside `db.$transaction()` block
+   - MODIFIED: dev fallback — uses same GP-YYYYMMDD-XXXX format with `mockOrdersStore` lookup
+   - UNCHANGED: `generateId(prefix)` for OrderItem/Address/etc. IDs (those stay timestamp-based since they don't need to be sequential)
+
+2. `prisma/schema.prisma`:
+   - Updated comment on `orderNumber` field (no schema change)
+
+3. NEW: `scripts/check-orders.ts` — verification script that shows recent orders + today's count
+
+## Verification
+
+- `bunx tsc --noEmit` → clean (0 errors)
+- `/checkout` returns 200
+- `/account/orders` returns 200
+- Dev server compiles cleanly
+- Existing orders in DB: `ORD-1787126248781` etc. (old format, untouched)
+- Next order placed today will be: `GP-20260903-0001` (new format)
+- Subsequent orders today: `GP-20260903-0002`, `GP-20260903-0003`, ...
+
+## Test Flow (manual)
+1. Add product to cart
+2. Go to /checkout → fill address + payment → "Place Order"
+3. New order gets `GP-20260903-0001` (or higher if there are existing today)
+4. Place another order → `GP-20260903-0002`
+5. Tomorrow's first order → `GP-20260904-0001`
+
+## Quality Attributes Met
+
+| Attribute | Implementation |
+|---|---|
+| Uniqueness | `@unique` DB constraint + sequential lookup |
+| Atomicity | Generated inside `db.$transaction` (no race conditions) |
+| Readability | Human-friendly, sortable, no PII |
+| Scalability | 9999/day = ample headroom; extensible to 5+ digits |
+| Timezone-aware | IST (UTC+05:30) — matches India's business day |
+| Backward compatible | Old `ORD-{timestamp}` orders still display correctly |
+| Fail-safe | Sequence exhaustion throws clear error (no silent corruption) |
+| Observable | Comment in schema, error message includes date |

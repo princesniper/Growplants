@@ -38,7 +38,7 @@ model Post {
 /// Top-level order record. Mirrored to Firestore orders/{orderId} for real-time.
 model Order {
   id            String   @id @default(cuid())
-  orderNumber   String   @unique                 // ORD-{timestamp}
+  orderNumber   String   @unique                 // GP-YYYYMMDD-XXXX (sequential per day)
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   addressId     String?

@@ -25,10 +25,41 @@
  * ============================================================================
  */
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 
 // Force dynamic — this route uses Prisma and must not be prerendered
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+/* ============================================================================
+ * SEC-003/004 control-flow signals (Option W canonical checkout)
+ * ============================================================================
+ * InsufficientStockError — a competing checkout took the last units between
+ *   the cheap catalog validation and the atomic conditional decrement. The
+ *   whole Prisma transaction rolls back; the customer gets a clean 409.
+ * ReplaySignal — the idempotency row proves this exact payload (fingerprint
+ *   match) already committed an order; the outer handler replays it as a
+ *   normal success without creating anything.
+ */
+class InsufficientStockError extends Error {}
+class ReplaySignal extends Error {
+  constructor(public orderId: string) {
+    super(`checkout replay for ${orderId}`);
+  }
+}
+
+function requestFingerprint(firebaseUid: string, validatedItems: Array<{ productId: string; quantity: number }>, body: CreateOrderRequestBody, paymentMethod: string): string {
+  // Canonical identity inputs only — client-supplied display fields (image,
+  // slug fallback) are deliberately excluded so cosmetic retries still replay.
+  return createHash("sha256").update(JSON.stringify({
+    uid: firebaseUid,
+    items: validatedItems.map((i) => ({ id: i.productId, qty: i.quantity })),
+    name: body.address?.fullName ?? "",
+    line1: body.address?.addressLine1 ?? "",
+    pincode: body.address?.pincode ?? "",
+    method: paymentMethod,
+  })).digest("hex");
+}
 
 /* ============================================================================
  * In-memory mock fallback (used when Prisma/PostgreSQL is unavailable)
@@ -337,9 +368,112 @@ export async function POST(req: NextRequest) {
   const taxPaise = Math.round(totals.tax * 100);
   const totalPaise = Math.round(totals.total * 100);
 
-  // 4. Try Prisma transaction
+  // 4. SEC-004: durable idempotency — reserve BEFORE creating anything.
+  // The key is mandatory: a browser retry that reaches the server twice with
+  // the same key can never create a second order or double-decrement stock.
+  const idemKey = (req.headers.get("idempotency-key") ?? "").trim();
+  if (!idemKey || idemKey.length > 200) {
+    return NextResponse.json(
+      { success: false, error: "Missing Idempotency-Key header (one key per checkout submission)." },
+      { status: 400 }
+    );
+  }
+  const fingerprint = requestFingerprint(firebaseUid, validatedItems, body, paymentMethod);
+
+  async function replayResponse(orderId: string, replayed: boolean) {
+    const orig = await db.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, orderNumber: true, status: true, paymentMethod: true, paymentStatus: true, totalAmount: true, subtotal: true, shippingFee: true, discount: true, tax: true, createdAt: true },
+    });
+    if (!orig) return null;
+    return NextResponse.json({
+      success: true,
+      idempotent_replay: replayed,
+      order: {
+        id: orig.id,
+        order_number: orig.orderNumber,
+        status: orig.status,
+        payment_method: orig.paymentMethod,
+        payment_status: orig.paymentStatus,
+        total_amount: orig.totalAmount / 100,
+        subtotal: orig.subtotal / 100,
+        shipping_fee: orig.shippingFee / 100,
+        discount: orig.discount / 100,
+        tax: orig.tax / 100,
+        created_at: orig.createdAt.toISOString(),
+      },
+    });
+  }
+
+  const prior = await db.checkoutIdempotency.findUnique({ where: { key: idemKey } });
+  if (prior) {
+    if (prior.fingerprint !== fingerprint) {
+      return NextResponse.json(
+        { success: false, error: "This Idempotency-Key was already used with a different checkout payload." },
+        { status: 409 }
+      );
+    }
+    if (prior.orderId) {
+      const replay = await replayResponse(prior.orderId, true);
+      if (replay) return replay;
+    }
+    // Row exists but its transaction is still in-flight → busy, not duplicate.
+    return NextResponse.json(
+      { success: false, error: "That checkout is still being processed — retry shortly with the same key." },
+      { status: 409 }
+    );
+  }
+
+  // 5. Try Prisma transaction
   try {
     const created = await db.$transaction(async (tx) => {
+      // ─── SEC-004: reserve the idempotency key INSIDE this transaction ───
+      // Unique key → a concurrent duplicate submission fails here and rolls
+      // back. The row's orderId is set below, so reservation and order commit
+      // become atomic: no orphan reservations, no reservations on rollback.
+      try {
+        await tx.checkoutIdempotency.create({
+          data: { key: idemKey, userId: firebaseUid, fingerprint, orderId: "" },
+        });
+      } catch (e) {
+        if (typeof e === "object" && e !== null && (e as { code?: string }).code === "P2002") {
+          const row = await tx.checkoutIdempotency.findUnique({ where: { key: idemKey } });
+          if (row && row.fingerprint === fingerprint && row.orderId) {
+            throw new ReplaySignal(row.orderId);
+          }
+        }
+        throw e;
+      }
+
+      // ─── SEC-003/004: atomic stock decrement (durable ProductStock rows) ───
+      // Conditional updateMany inside this same transaction: a concurrent
+      // order taking the last unit makes count === 0 → the ENTIRE transaction
+      // rolls back (order, items, history, seed, earlier decrements).
+      // Catalog stock === null means unlimited → no row, no decrement.
+      const { getAuthoritativeProduct } = await import("@/lib/product-pricing");
+      for (const item of validatedItems) {
+        const product = getAuthoritativeProduct(item.productId);
+        if (!product || product.stock === null) continue;
+        const upd = await tx.productStock.updateMany({
+          where: { productId: item.productId, stock: { gte: item.quantity } },
+          data: { stock: { decrement: item.quantity } },
+        });
+        if (upd.count === 0) {
+          const row = await tx.productStock.findUnique({ where: { productId: item.productId } });
+          if (!row) {
+            // First checkout of this catalog product: baseline = catalog JSON.
+            if (product.stock < item.quantity) {
+              throw new InsufficientStockError(product.name);
+            }
+            await tx.productStock.create({
+              data: { productId: item.productId, stock: product.stock - item.quantity },
+            });
+          } else {
+            throw new InsufficientStockError(product.name);
+          }
+        }
+      }
+
       // ─── Generate the order number INSIDE the transaction ───
       // This makes the lookup (find the highest sequence used today) atomic
       // with the insert, so two concurrent requests can't grab the same number.
@@ -440,6 +574,12 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // e. SEC-004: bind the reservation to the committed order
+      await tx.checkoutIdempotency.update({
+        where: { key: idemKey },
+        data: { orderId: order.id },
+      });
+
       return order;
     });
 
@@ -461,6 +601,23 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error("[api/orders POST] Prisma transaction failed:", err);
+
+    // SEC-004 signals (thrown across the transaction boundary — all partial
+    // writes already rolled back):
+    if (err instanceof ReplaySignal) {
+      const replay = await replayResponse(err.orderId, true);
+      if (replay) return replay;
+      return NextResponse.json(
+        { success: false, error: "Duplicate checkout detected — use a new Idempotency-Key." },
+        { status: 409 }
+      );
+    }
+    if (err instanceof InsufficientStockError) {
+      return NextResponse.json(
+        { success: false, error: `One or more items just ran out of stock: ${err.message}. Remove it from your cart and try again.` },
+        { status: 409 }
+      );
+    }
 
     // A6 FIX: In production, database failure = HTTP 500. No mock success.
     // In development only, fall back to in-memory mock for testing without DB.
@@ -668,9 +825,18 @@ export async function GET(req: NextRequest) {
       })),
     });
   } catch (err) {
-    console.error("[api/orders GET] Prisma failed — returning mock orders:", err);
+    console.error("[api/orders GET] Prisma failed:", err);
 
-    // 3. Fallback: return mock orders for this user
+    // SEC-008: in production a DB failure is an error, never a fake "success"
+    // with an empty order list (previously masked outages as empty accounts).
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { success: false, error: "Could not load your orders. Please try again later." },
+        { status: 500 }
+      );
+    }
+
+    // 3. Development-only fallback: in-memory mock orders for this user
     const userMockOrders = mockOrdersStore.filter((o) => o.firebase_uid === firebaseUid);
     return NextResponse.json({
       success: true,

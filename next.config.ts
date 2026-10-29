@@ -40,6 +40,25 @@ const REMOTE_IMAGE_DOMAINS = [
 const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true, // D19: enabled for better dev experience
+  // SEC-007 (P2): baseline security headers on every response. Matches the
+  // Admin Panel's middleware set. CSP is deliberately NOT enforced yet —
+  // it needs a verified source inventory (Firebase endpoints, inline Next.js
+  // hydration scripts, image CDNs); enforcing blind would break customer flows.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // HTTPS is presumed in production (Vercel/Caddy fronteds). Ignored on localhost.
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+        ],
+      },
+    ];
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },

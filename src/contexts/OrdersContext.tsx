@@ -360,12 +360,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       let apiResponse: { success: boolean; order?: any; error?: string };
 
+      // SEC-004: one durable idempotency key per checkout submission. A network
+      // retry or duplicated request carrying this key can never create a second
+      // order or double-decrement stock — the server replays the original result.
+      const idempotencyKey =
+        globalThis.crypto?.randomUUID?.() ??
+        `co-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+
       try {
         const res = await fetch("/api/orders", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
+            "Idempotency-Key": idempotencyKey,
           },
           body: JSON.stringify({
             firebaseUid: user?.id,
@@ -530,9 +538,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         : null;
 
       if (idToken) {
-        // Call the admin status update API to set status to "cancelled"
-        const res = await fetch(`/api/admin/orders/${id}/status`, {
-          method: "PATCH",
+        // SEC-001: owner-authorized cancel API (status administration lives in the Admin Panel only)
+        const res = await fetch(`/api/orders/${id}/cancel`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,

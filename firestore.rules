@@ -3,20 +3,89 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // =========================================================================
     // USERS COLLECTION
-    // Users can read/write their own document (which contains addresses, cart, wishlist, orders as arrays)
+    // =========================================================================
+    // Users can read ONLY their own document. No unauthenticated access.
+    // No cross-user reads or writes. Update/delete restricted to owner-only.
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Authentication required — no anonymous access.
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Write: owner may create their own document on initial write;
+      // update/delete are strictly owner-only. No admin write path through
+      // client SDK — admin SDK operations are server-side only and bypass
+      // these rules, but the client must never write another user's record.
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // =========================================================================
     // ORDERS COLLECTION
-    // Users can create their own orders (client-side write for reliability).
-    // Reads allowed only for the owning user.
-    // Admin SDK (server-side) bypasses these rules entirely.
+    // =========================================================================
+    // Orders are created ONLY by the authenticated website checkout flow
+    // (POST /api/orders with valid Firebase ID token). No public create.
+    // Reads restricted to the owning user. No client updates or deletes —
+    // only the Admin Panel via server-side Admin SDK (bypasses rules).
     match /orders/{orderId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      allow update, delete: if false; // Only Admin SDK can modify/delete
+      // Authentication required + ownership check.
+      allow read: if request.auth != null
+                  && request.auth.uid == resource.data.userId;
+
+      // NO public create — orders originate from the website's authenticated
+      // checkout endpoint, not from direct client SDK writes.
+      allow create: if false;
+
+      // No client updates or deletes. Admin Panel modifies orders via
+      // server-side Admin SDK which bypasses these rules.
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // =========================================================================
+    // ADMIN DATA COLLECTION
+    // =========================================================================
+    // adminData is protected behind verified administrator authorization.
+    // Admin access is verified by checking the admin/{uid} document in
+    // Firestore — the user must have an admin document with role: "admin".
+    // Writes are exclusively via the Admin Panel's server-side Admin SDK.
+    match /adminData/{doc} {
+      // Read: only authenticated users with a verified admin/{uid} document
+      // containing role: "admin" may read adminData. No unauthenticated
+      // access, no cross-user reads, no client-promoted administrator.
+      allow read: if request.auth != null
+                  && exists(/databases/$(database)/documents/admin/$(request.auth.uid))
+                  && get(/databases/$(database)/documents/admin/$(request.auth.uid)).data.role == 'admin';
+
+      // Write: absolutely no client writes to adminData. All admin writes
+      // happen through the server-side Admin Panel (Admin SDK bypasses rules).
+      allow write: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // =========================================================================
+    // ADMIN COLLECTION
+    // =========================================================================
+    // Admin documents are protected behind verified administrator authorization.
+    // Read access only for the authenticated user whose UID matches the
+    // admin document ID, and whose document has role: "admin".
+    // No unauthenticated access, no cross-user reads, no client-promoted
+    // administrator.
+    match /admin/{adminId} {
+      // Read: authenticated UID must match the admin document ID, AND
+      // the document must have role: "admin". This prevents unauthenticated
+      // access and cross-user reads.
+      allow read: if request.auth != null
+                  && request.auth.uid == adminId
+                  && resource.data.role == 'admin';
+
+      // No client writes to admin records. All admin writes happen through
+      // the server-side Admin Panel (Admin SDK bypasses these rules).
+      allow write: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }

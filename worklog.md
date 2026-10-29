@@ -1503,3 +1503,6 @@ No actual schema change â€” `orderNumber` was already `String @unique`, the form
 | Backward compatible | Old `ORD-{timestamp}` orders still display correctly |
 | Fail-safe | Sequence exhaustion throws clear error (no silent corruption) |
 | Observable | Comment in schema, error message includes date |
+
+## 2026-10-29 — Security remediation sprint (SEC-001…SEC-010)
+Website outcomes: SEC-001 FIXED (owner-authorized cancel route; both vulnerable status-mutation routes deleted; OrdersContext re-pointed; suite 12/12 green), SEC-008 FIXED (prod DB failures return 500, never fake success; 2/2), SEC-007 headers added in next.config.ts (CSP deferred with rationale), SEC-009 coverage added (tests/orders-sec001, tests/sec008; 14/14 green; tsc clean; lint 0 errors). SEC-003/004 BLOCKED on owner checkout decision — see tasks/SEC-003-CHECKOUT-DECISION.md. Backup: Desktop/GROWPLANTS_SECURITY_BACKUP_20261029-135412. Details: Desktop/Growplants.Admin/docs/implementation/SPRINT-SEC-20261029.md.

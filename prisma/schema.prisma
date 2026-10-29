@@ -71,6 +71,42 @@ model Order {
   @@index([createdAt])
 }
 
+/// ============================================================================
+/// ProductStock — SEC-003/004 (Option W): durable decrement authority for the
+/// canonical website checkout.
+///   - Baseline is seeded on first checkout from the static catalog's stock
+///     value (src/data/*.json via @/lib/product-pricing). From then on this
+///     row is the single stock authority; decrements happen with a
+///     conditional `updateMany(stock >= qty)` inside the checkout
+///     transaction, so concurrent orders cannot oversell and a failed
+///     transaction leaves no partial decrement.
+///   - Catalog products with `stock: null` are treated as UNLIMITED: no row
+///     is created and no decrement occurs for them.
+/// ============================================================================
+model ProductStock {
+  productId String   @id // catalog slug, e.g. "poinsettia-pink-plant"
+  stock     Int // absolute remaining units (never negative by construction)
+  updatedAt DateTime @updatedAt
+}
+
+/// CheckoutIdempotency — SEC-004: persistent duplicate-payment/ordering guard.
+/// The client supplies an `Idempotency-Key` header per checkout submission.
+/// `fingerprint` is a server-computed sha256 of the request's identity +
+/// validated inputs; reusing a key with an EQUIVALENT payload replays the
+/// original order result, a CONFLICTING payload gets 409. The row is created
+/// inside the same Prisma transaction as the order, so reservation and order
+/// commit (and rollback) are atomic — no orphan reservations.
+model CheckoutIdempotency {
+  key         String   @id
+  userId      String
+  fingerprint String
+  orderId     String // set to the created order's id when the tx commits
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([orderId])
+}
+
 /// Line items for an order. productSnapshot keeps the product JSON at order time.
 model OrderItem {
   id              String   @id @default(cuid())

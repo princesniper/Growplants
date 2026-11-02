@@ -2,16 +2,37 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Leaf, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { Leaf, MapPin, Phone, Mail, MessageCircle, ShieldCheck, Truck, Lock } from "lucide-react";
 
 /**
- * Footer — dark green footer matching user's uploaded Footer.tsx exactly.
- * Background: #0F2419, accent color: #E8930A (orange), text: rgba(255,255,255,0.6/0.65)
+ * Footer — pine-deep footer: trust mini-strip + link columns + bottom bar.
+ * The provider marketplace stays live but parked: reachable via the single
+ * "Become a Service Partner" footer link (blueprint C1), not primary nav.
  */
 export function Footer() {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="w-full" style={{ backgroundColor: "#0F2419", color: "#fff" }}>
+    <footer className="w-full" style={{ backgroundColor: "#0F2A20", color: "#fff" }}>
+      {/* Trust mini-strip above footer (blueprint C4) */}
+      <div className="border-b border-white/10">
+        <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            { icon: ShieldCheck, title: "30-Day Replacement Promise", sub: "Photo within 48h → free replacement" },
+            { icon: Lock, title: "Secure Payments", sub: "UPI · Cards · NetBanking · COD" },
+            { icon: Truck, title: "Sonipat Delivery", sub: "Nursery-fresh in 1–2 business days" },
+          ].map((t) => (
+            <div key={t.title} className="flex items-center gap-3">
+              <span className="size-10 rounded-full bg-[#C6A15B]/15 flex items-center justify-center shrink-0">
+                <t.icon className="size-5" style={{ color: "#C6A15B" }} aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-white">{t.title}</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>{t.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* Main footer */}
       <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
         {/* Brand column */}
@@ -33,15 +54,15 @@ export function Footer() {
           {/* Contact details */}
           <div className="flex flex-col gap-2.5 text-sm mb-6" style={{ color: "rgba(255,255,255,0.65)" }}>
             <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#E8930A" }} />
+              <MapPin className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#C6A15B" }} />
               <span>Sonipat, Haryana 131001, India</span>
             </div>
             <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 shrink-0" style={{ color: "#E8930A" }} />
+              <Phone className="h-4 w-4 shrink-0" style={{ color: "#C6A15B" }} />
               <a href="tel:+919812345678" className="hover:text-white transition-colors">+91 98123 45678</a>
             </div>
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 shrink-0" style={{ color: "#E8930A" }} />
+              <Mail className="h-4 w-4 shrink-0" style={{ color: "#C6A15B" }} />
               <a href="mailto:hello@growplants.in" className="hover:text-white transition-colors">hello@growplants.in</a>
             </div>
             <div className="flex items-center gap-2">
@@ -74,17 +95,17 @@ export function Footer() {
 
         {/* Shop column */}
         <div>
-          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#E8930A" }}>Shop</h4>
+          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#C6A15B" }}>Shop</h4>
           <ul className="flex flex-col gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
             {[
-              ["Indoor Plants", "/shop?category=indoor-plants"],
-              ["Outdoor Plants", "/shop?category=outdoor-plants"],
-              ["Flowering Plants", "/shop?category=flowering-plants"],
-              ["Succulents", "/shop?category=succulents"],
-              ["Planters", "/shop?category=planters"],
-              ["Seeds & Bulbs", "/shop?category=seeds-bulbs"],
-              ["New Arrivals", "/shop?filter=new"],
-              ["Best Sellers", "/shop?filter=bestseller"],
+              ["Indoor Plants", "/shop?category=indoor"],
+              ["Outdoor Plants", "/shop?category=outdoor"],
+              ["Air-Purifying Plants", "/shop?category=air-purifying"],
+              ["Succulents", "/shop?category=succulent"],
+              ["Ceramic Planters", "/shop?category=ceramic-planters"],
+              ["Terracotta Planters", "/shop?category=terracotta-planters"],
+              ["Pet-Safe Plants", "/shop?pet_safe=true"],
+              ["Beginner Plants", "/shop?difficulty=Easy"],
             ].map(([label, href]) => (
               <li key={href}>
                 <Link href={href} className="hover:text-white transition-colors">{label}</Link>
@@ -95,7 +116,7 @@ export function Footer() {
 
         {/* Services column */}
         <div>
-          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#E8930A" }}>Services</h4>
+          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#C6A15B" }}>Services</h4>
           <ul className="flex flex-col gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
             {[
               ["Gardener Hiring", "/services/gardener-hiring"],
@@ -114,7 +135,7 @@ export function Footer() {
 
         {/* Company + Legal column */}
         <div>
-          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#E8930A" }}>Company</h4>
+          <h4 className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: "#C6A15B" }}>Company</h4>
           <ul className="flex flex-col gap-2.5 text-sm mb-6" style={{ color: "rgba(255,255,255,0.65)" }}>
             {[
               ["About Us", "/about"],
@@ -122,11 +143,12 @@ export function Footer() {
               ["Contact Us", "/contact"],
               ["Track Order", "/account/orders"],
               ["FAQs", "/faq"],
+              ["Become a Service Partner", "/become-provider"],
             ].map(([label, href]) => (
               <li key={href}><Link href={href} className="hover:text-white transition-colors">{label}</Link></li>
             ))}
           </ul>
-          <h4 className="font-semibold text-sm uppercase tracking-widest mb-3" style={{ color: "#E8930A" }}>Legal</h4>
+          <h4 className="font-semibold text-sm uppercase tracking-widest mb-3" style={{ color: "#C6A15B" }}>Legal</h4>
           <ul className="flex flex-col gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
             {[
               ["Privacy Policy", "/privacy-policy"],
@@ -144,7 +166,7 @@ export function Footer() {
         <div className="max-w-[1280px] mx-auto px-4 lg:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
           <p className="flex items-center gap-1">
             © {currentYear} GrowPlants. All rights reserved. Made with
-            <Leaf className="h-3.5 w-3.5" style={{ color: "#1A6B3C" }} aria-hidden="true" />
+            <Leaf className="h-3.5 w-3.5" style={{ color: "#16382B" }} aria-hidden="true" />
             in Sonipat, Haryana.
           </p>
           <div className="flex items-center gap-4 text-xs">

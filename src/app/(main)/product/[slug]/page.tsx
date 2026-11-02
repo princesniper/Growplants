@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, Star, Truck, RotateCcw, Shield } from "lucide-react";
+import { ChevronRight, Star, Truck, RotateCcw, ShieldCheck, MapPin } from "lucide-react";
 import { fetchProduct, getAllProductSlugs, type ProductData } from "@/lib/product-data";
 import { ImageGallery } from "@/components/product/ImageGallery";
-import { ProductPricingPanel } from "@/components/product/ProductPricingPanel";
+import { BuyPanelBridge } from "@/components/product/BuyPanelBridge";
+import { BundleCard } from "@/components/product/BundleCard";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
-import { StickyMobileBuyBar } from "@/components/product/StickyMobileBuyBar";
 import { RecentlyViewed } from "@/components/product/RecentlyViewed";
+import { CareBadgeRow } from "@/components/products/CareBadgeRow";
+import { GuaranteeCallout } from "@/components/common/GuaranteeCallout";
+import type { PotOption } from "@/components/product/PotPairingSelector";
+import potsData from "@/data/pots-data.json";
 import {
   Sun, Droplets, Thermometer, Wind, Leaf, Ruler, Tag as TagIcon,
-  Wrench, Sprout, Scissors, // D17: Lucide icons for services (replacing emoji)
+  Wrench, Sprout, Scissors,
 } from "lucide-react";
 
 interface ProductPageProps {
@@ -37,34 +41,45 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
+/* ---------- Pot-pairing options (cheapest 6 pots; prices displayed as-is) ---------- */
+function getPotPairingOptions(): PotOption[] {
+  const options: PotOption[] = [];
+  for (const [slug, raw] of Object.entries(potsData) as [string, any][]) {
+    const entries = Object.entries((raw.prices ?? {}) as Record<string, number>);
+    if (entries.length === 0) continue;
+    const [sizeLabel, price] = entries.reduce((a, b) => (a[1] <= b[1] ? a : b));
+    const images: string[] = raw.image ?? [];
+    options.push({ slug, name: raw.name ?? slug, image: images[0] ?? "", sizeLabel, price });
+  }
+  return options.sort((a, b) => a.price - b.price).slice(0, 6);
+}
+
 /* ---------- Markdown renderer for `about` field ---------- */
 function renderAboutSection(about: string) {
   const lines = about.split("\n").filter(Boolean);
   return lines.map((line, i) => {
     const hMatch = line.match(/^##\s+(.+)/);
-    if (hMatch) return <h3 key={i} className="text-lg font-bold text-gray-900 mt-6 mb-2">{hMatch[1]}</h3>;
+    if (hMatch) return <h3 key={i} className="font-display text-xl text-pine mt-6 mb-2">{hMatch[1]}</h3>;
 
     const bulletMatch = line.match(/^[-•]\s+(.+)/);
     if (bulletMatch) {
-      // Render bold inside bullets
       const parts = bulletMatch[1].split(/\*\*(.+?)\*\*/g);
       return (
-        <li key={i} className="ml-5 list-disc text-gray-700">
-          {parts.map((p, j) => j % 2 === 1 ? <strong key={j} className="font-semibold text-gray-900">{p}</strong> : p)}
+        <li key={i} className="ml-5 list-disc text-charcoal/80">
+          {parts.map((p, j) => j % 2 === 1 ? <strong key={j} className="font-semibold text-pine">{p}</strong> : p)}
         </li>
       );
     }
 
-    // Regular paragraph — render **bold** as <strong>
     const parts = line.split(/\*\*(.+?)\*\*/g);
     if (parts.some((p, j) => j % 2 === 1)) {
       return (
-        <p key={i} className="mb-3 text-gray-700">
-          {parts.map((p, j) => j % 2 === 1 ? <strong key={j} className="font-semibold text-gray-900">{p}</strong> : p)}
+        <p key={i} className="mb-3 text-charcoal/80">
+          {parts.map((p, j) => j % 2 === 1 ? <strong key={j} className="font-semibold text-pine">{p}</strong> : p)}
         </p>
       );
     }
-    return <p key={i} className="mb-3 text-gray-700">{line}</p>;
+    return <p key={i} className="mb-3 text-charcoal/80">{line}</p>;
   });
 }
 
@@ -78,7 +93,6 @@ function QuickSpecs({ data }: { data: ProductData }) {
   if (data.size) specs.push({ icon: Ruler, label: "Size", value: data.size });
   if (data.height) specs.push({ icon: Ruler, label: "Height", value: data.height });
 
-  // For pots, show pot features as specs if available
   if (data.productType === "pot" && data.potFeatures.length > 0) {
     data.potFeatures.slice(0, 4).forEach((f) => specs.push({ icon: TagIcon, label: f, value: "" }));
   }
@@ -88,12 +102,12 @@ function QuickSpecs({ data }: { data: ProductData }) {
   return (
     <div className="flex flex-wrap gap-2">
       {specs.map((spec, i) => (
-        <div key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3F8F1] border border-slate-100 text-xs">
-          <spec.icon className="size-3.5 text-[#E8930A] shrink-0" aria-hidden="true" />
+        <div key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sage-wash border border-line text-xs">
+          <spec.icon className="size-3.5 text-brass-deep shrink-0" aria-hidden="true" />
           {spec.value ? (
-            <span className="text-slate-700"><strong className="text-slate-900">{spec.label}:</strong> {spec.value}</span>
+            <span className="text-charcoal/80"><strong className="text-pine">{spec.label}:</strong> {spec.value}</span>
           ) : (
-            <span className="text-slate-700 font-medium">{spec.label}</span>
+            <span className="text-charcoal/80 font-medium">{spec.label}</span>
           )}
         </div>
       ))}
@@ -118,16 +132,25 @@ function SpecificationsGrid({ data }: { data: ProductData }) {
   if (specs.length === 0) return null;
 
   return (
-    <div className="mt-12 border-t border-gray-200 pt-8">
-      <h2 className="text-xl font-bold text-gray-900 mb-5">Specifications</h2>
+    <div className="mt-10 border-t border-line pt-8">
+      <h2 className="font-display text-2xl text-pine mb-5">Specifications</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {specs.map((spec, i) => (
-          <div key={i} className="bg-white rounded-lg border border-slate-100 p-4">
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{spec.label}</p>
-            <p className="text-sm font-medium text-gray-900 mt-1">{spec.value}</p>
+          <div key={i} className="bg-paper rounded-2xl border border-line p-4">
+            <p className="text-[10px] font-bold text-ink-soft uppercase tracking-[0.12em]">{spec.label}</p>
+            <p className="text-sm font-medium text-pine mt-1">{spec.value}</p>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-5">
+      <span className="block h-1 w-10 rounded-full bg-brass mb-3" aria-hidden="true" />
+      <h2 className="font-display text-2xl md:text-3xl text-pine">{children}</h2>
     </div>
   );
 }
@@ -137,70 +160,77 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const data = fetchProduct(slug);
   if (!data) notFound();
 
+  const potOptions = data.productType === "plant" ? getPotPairingOptions() : [];
+
   return (
     <>
-      {/* Recently viewed tracker (inline script — localStorage) */}
+      {/* Recently viewed tracker (inline script — localStorage; values are JSON-encoded, XSS-safe) */}
       <script
         dangerouslySetInnerHTML={{
           __html: `(function(){try{var k='growplants-recently-viewed';var r=localStorage.getItem(k);var a=r?JSON.parse(r):[];var n={slug:'${data.slug}',name:${JSON.stringify(data.name)},image:${JSON.stringify(data.images[0]?.url ?? "")},price:${data.price},rating:${data.rating ?? 4.5}};a=[n].concat(a.filter(function(i){return i.slug!=='${data.slug}';})).slice(0,10);localStorage.setItem(k,JSON.stringify(a));}catch(e){}})();`,
         }}
       />
 
-      <StickyMobileBuyBar
-        price={data.price} salePrice={data.oldPrice && data.oldPrice > data.price ? data.price : null}
-        inStock={data.inStock} productId={data.id} productName={data.name} productSlug={data.slug}
-        image={data.images[0]?.url || ""} categoryName={data.category?.name ?? ""} categorySlug={data.category?.slug ?? ""}
-      />
-
-      <div className="min-h-screen bg-[#FAFAF6] pb-40 lg:pb-16">
+      <div className="min-h-screen bg-ivory pb-40 lg:pb-16">
         {/* 1. Breadcrumb */}
-        <div className="bg-white border-b border-gray-100">
+        <div className="bg-paper border-b border-line">
           <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
-            <nav className="flex items-center gap-1.5 text-xs font-medium text-gray-500" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-[#1A6B3C]">Home</Link>
-              <ChevronRight className="w-3 h-3 text-gray-300" />
-              <Link href="/shop" className="hover:text-[#1A6B3C]">Shop</Link>
+            <nav className="flex items-center gap-1.5 text-xs font-medium text-ink-soft" aria-label="Breadcrumb">
+              <Link href="/" className="hover:text-pine">Home</Link>
+              <ChevronRight className="w-3 h-3 text-line" />
+              <Link href="/shop" className="hover:text-pine">Shop</Link>
               {data.category && (
                 <>
-                  <ChevronRight className="w-3 h-3 text-gray-300" />
-                  <Link href={`/shop?category=${data.category.slug}`} className="hover:text-[#1A6B3C]">{data.category.name}</Link>
+                  <ChevronRight className="w-3 h-3 text-line" />
+                  <Link href={`/shop?category=${data.category.slug}`} className="hover:text-pine">{data.category.name}</Link>
                 </>
               )}
-              <ChevronRight className="w-3 h-3 text-gray-300" />
-              <span className="text-gray-900 font-semibold truncate max-w-[200px]">{data.name}</span>
+              <ChevronRight className="w-3 h-3 text-line" />
+              <span className="text-pine font-semibold truncate max-w-[200px]">{data.name}</span>
             </nav>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* 2+3+4+5+6+7+8+9: Top section — Gallery + Product Info */}
+          {/* 2+3. Gallery + buy panel (sticky buy bar + panel share variant state) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 py-6 lg:py-10">
-            {/* Gallery (sticky on desktop) */}
-            <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="lg:sticky lg:top-32 lg:self-start">
               <ImageGallery images={data.images} productName={data.name} discountPercent={data.discountPercent} />
+              <p className="mt-2 text-xs text-ink-soft text-center">Actual plant may vary slightly — har plant thoda unique hota hai.</p>
             </div>
 
-            {/* Product Info */}
             <div className="space-y-5">
-              {/* 3. Header — category tag + badges + name + short description */}
+              {/* Header */}
               <div>
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="flex items-center gap-2 mb-3 flex-wrap">
                   {data.category && (
-                    <Link href={`/shop?category=${data.category.slug}`} className="text-[11px] font-bold text-[#1A6B3C] uppercase tracking-wider bg-[#F0FAF4] px-2.5 py-1 rounded-full border border-[#BBF7D0] hover:bg-[#E0F5E8] transition-colors">
+                    <Link href={`/shop?category=${data.category.slug}`} className="text-[11px] font-bold text-pine uppercase tracking-[0.12em] bg-sage-wash px-3 py-1.5 rounded-full border border-line hover:border-pine transition-colors">
                       {data.category.name}
                     </Link>
                   )}
                   {data.badge && (
-                    <span className="text-[11px] font-bold text-[#E8930A] bg-[#FFF8E8] px-2.5 py-1 rounded-full border border-[#FFE0A8]">
+                    <span className="text-[11px] font-bold text-pine-ink bg-brass px-3 py-1.5 rounded-full uppercase tracking-[0.12em]">
                       {data.badge}
                     </span>
                   )}
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-moss">
+                    <MapPin className="size-3" aria-hidden="true" /> COD available
+                  </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight tracking-tight">{data.name}</h1>
-                {data.description && <p className="text-gray-500 mt-2 text-sm sm:text-base">{data.description}</p>}
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-[2.75rem] text-pine leading-tight">{data.name}</h1>
+                {data.description && <p className="text-ink-soft mt-2 text-sm sm:text-base leading-relaxed">{data.description}</p>}
+
+                {/* Care badges at a glance */}
+                {data.care && (
+                  <CareBadgeRow
+                    sunInfo={data.care.light?.split(".")[0].split(",")[0].substring(0, 28) ?? null}
+                    waterInfo={data.care.water?.split(".")[0].split(",")[0].substring(0, 28) ?? null}
+                    className="mt-3"
+                  />
+                )}
               </div>
 
-              {/* 4. Trust signals — rating + reviews + sold in one line */}
+              {/* Rating row */}
               {(data.rating !== null || data.totalSold !== null) && (
                 <div className="flex items-center gap-3 flex-wrap">
                   {data.rating !== null && (
@@ -208,30 +238,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       <div className="flex items-center gap-1">
                         <div className="flex gap-0.5">
                           {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} className={`w-4 h-4 ${s <= Math.round(data.rating!) ? "fill-[#E8930A] text-[#E8930A]" : "text-gray-200"}`} />
+                            <Star key={s} className={`w-4 h-4 ${s <= Math.round(data.rating!) ? "fill-brass text-brass" : "text-line"}`} />
                           ))}
                         </div>
-                        <span className="text-sm font-semibold text-gray-900">{data.rating.toFixed(1)}</span>
+                        <span className="text-sm font-semibold text-pine tabular-nums">{data.rating.toFixed(1)}</span>
                       </div>
                       {data.reviewCount !== null && (
-                        <span className="text-sm text-gray-500">({data.reviewCount} reviews)</span>
+                        <a href="#reviews" className="text-sm text-ink-soft hover:text-pine underline decoration-brass/50 underline-offset-4">({data.reviewCount} reviews)</a>
                       )}
                     </>
                   )}
                   {data.totalSold !== null && data.totalSold > 0 && (
-                    <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{data.totalSold}+ sold</span>
+                    <span className="text-xs font-semibold text-moss bg-moss/10 px-2.5 py-1 rounded-full">{data.totalSold}+ sold</span>
                   )}
                   {!data.inStock && (
-                    <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Out of Stock</span>
+                    <span className="text-xs font-semibold text-ivory bg-terracotta px-2.5 py-1 rounded-full">Out of Stock</span>
                   )}
                   {data.inStock && data.stock !== null && data.stock <= 5 && data.stock > 0 && (
-                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Only {data.stock} left</span>
+                    <span className="text-xs font-semibold text-brass-deep bg-gold-tint px-2.5 py-1 rounded-full">Only {data.stock} left</span>
                   )}
                 </div>
               )}
 
-              {/* 5+6+7. Price + Stock + CTA + Secondary actions (all in ProductPricingPanel) */}
-              <ProductPricingPanel
+              {/* Buy panel + synced sticky mobile bar */}
+              <BuyPanelBridge
                 price={data.oldPrice ?? data.price}
                 salePrice={data.oldPrice && data.oldPrice > data.price ? data.price : null}
                 discount={data.discountPercent}
@@ -247,57 +277,58 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 stockQuantity={data.stock ?? 0}
                 prices={data.prices}
                 productType={data.productType}
+                pots={potOptions}
               />
 
-              {/* 8. Quick specs row (shown ONCE) */}
-              <div className="pt-2">
+              {/* Quick specs */}
+              <div className="pt-1">
                 <QuickSpecs data={data} />
               </div>
 
-              {/* 9. Delivery/trust badges compact row */}
-              <div className="flex flex-wrap gap-4 pt-3 border-t border-gray-100">
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <Truck className="w-4 h-4 text-[#1A6B3C]" /> Free delivery above ₹499
+              {/* Delivery/trust badges */}
+              <div className="flex flex-wrap gap-x-5 gap-y-2 pt-3 border-t border-line">
+                <div className="flex items-center gap-1.5 text-xs text-charcoal/70">
+                  <Truck className="w-4 h-4 text-pine" /> Free delivery above ₹499
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <RotateCcw className="w-4 h-4 text-[#1A6B3C]" /> 24h damage replacement
+                <div className="flex items-center gap-1.5 text-xs text-charcoal/70">
+                  <RotateCcw className="w-4 h-4 text-pine" /> 30-day replacement promise
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <Shield className="w-4 h-4 text-[#1A6B3C]" /> Secure packaging
+                <div className="flex items-center gap-1.5 text-xs text-charcoal/70">
+                  <ShieldCheck className="w-4 h-4 text-pine" /> Secure packaging
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 10. Detailed description (scannable subsections from `about`) */}
+          {/* About */}
           {data.about && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">About This Product</h2>
-              <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed space-y-2">
+            <div className="mt-8 border-t border-line pt-8">
+              <SectionTitle>About This Product</SectionTitle>
+              <div className="max-w-none leading-relaxed space-y-2 text-[15px]">
                 {renderAboutSection(data.about)}
               </div>
             </div>
           )}
 
-          {/* Special features (only if data exists) */}
+          {/* Special features */}
           {data.specialFeatures.length > 0 && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Special Features</h2>
-              <ul className="space-y-2">
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>Special Features</SectionTitle>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {data.specialFeatures.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-slate-100">
-                    <span className="w-6 h-6 rounded-full bg-[#1A6B3C] text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
-                    <span className="text-sm text-gray-700 leading-relaxed">{feature}</span>
+                  <li key={i} className="flex items-start gap-3 p-4 bg-paper rounded-2xl border border-line">
+                    <span className="size-6 rounded-full bg-pine text-ivory text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 tabular-nums">{i + 1}</span>
+                    <span className="text-sm text-charcoal/80 leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {/* Care instructions (only for plants — pots have no care data) */}
+          {/* Care instructions (plants only — pots have no care data) */}
           {data.care && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Care Instructions</h2>
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>How easy is it to care?</SectionTitle>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
                   { icon: Sun, label: "Sunlight", value: data.care.light },
@@ -306,53 +337,49 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   { icon: Wind, label: "Humidity", value: data.care.humidity },
                   { icon: Leaf, label: "Fertilizer", value: data.care.fertilizer },
                 ].filter((item) => item.value).map((item, i) => (
-                  <div key={i} className="bg-white rounded-lg border border-slate-100 p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="size-8 rounded-lg flex items-center justify-center" style={{ background: "#E8930A15" }}>
-                        <item.icon className="size-4" style={{ color: "#E8930A" }} aria-hidden="true" />
+                  <div key={i} className="bg-paper rounded-2xl border border-line p-5">
+                    <div className="flex items-center gap-2.5 mb-2.5">
+                      <div className="size-9 rounded-full bg-gold-tint flex items-center justify-center">
+                        <item.icon className="size-4 text-brass-deep" aria-hidden="true" />
                       </div>
-                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
+                      <p className="text-[11px] font-bold text-ink-soft uppercase tracking-[0.12em]">{item.label}</p>
                     </div>
-                    <p className="text-xs text-gray-700 leading-relaxed">{item.value}</p>
+                    <p className="text-sm text-charcoal/80 leading-relaxed">{item.value}</p>
                   </div>
                 ))}
               </div>
+              <p className="mt-4 text-sm text-ink-soft italic">Indian summers mein afternoon shade se leaf scorch bachta hai.</p>
             </div>
           )}
 
-          {/* 11. Full specifications grid (only real attributes) */}
+          {/* Specifications */}
           <SpecificationsGrid data={data} />
 
-          {/* 12. Shipping & returns compact cards */}
-          <div className="mt-8 border-t border-gray-200 pt-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Shipping &amp; Returns</h2>
+          {/* Packaging story mini-module */}
+          <div className="mt-10 border-t border-line pt-8">
+            <SectionTitle>How it travels</SectionTitle>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="flex items-start gap-2 bg-white rounded-lg border border-slate-100 p-4">
-                <Truck className="w-5 h-5 text-[#1A6B3C] shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Free Delivery</p>
-                  <p className="text-xs text-gray-500 mt-0.5">On orders over ₹499 in Sonipat{data.deliveryTime ? `. ${data.deliveryTime}` : ""}</p>
+              {[
+                { icon: Leaf, title: "Nursery-fresh pick", desc: "Order ke baad hand-picked, health check ke saath." },
+                { icon: ShieldCheck, title: "Moisture-locked wrap", desc: "Breathable packaging — mitti gili, patte surakshit." },
+                { icon: Truck, title: "1–2 days in Sonipat", desc: "Same-week dispatch, damage claim 48h photo par." },
+              ].map((s) => (
+                <div key={s.title} className="flex items-start gap-3 p-4 bg-sage-wash/60 rounded-2xl border border-line">
+                  <span className="size-10 rounded-full bg-pine text-brass flex items-center justify-center shrink-0">
+                    <s.icon className="size-4.5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-pine">{s.title}</p>
+                    <p className="text-xs text-ink-soft mt-1 leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-2 bg-white rounded-lg border border-slate-100 p-4">
-                <RotateCcw className="w-5 h-5 text-[#1A6B3C] shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">24h Damage Guarantee</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Damaged plants replaced within 24 hours with photo proof.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 bg-white rounded-lg border border-slate-100 p-4">
-                <Shield className="w-5 h-5 text-[#1A6B3C] shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Secure Packaging</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Eco-friendly packaging ensures your plant arrives healthy.</p>
-                </div>
-              </div>
+              ))}
             </div>
+            <GuaranteeCallout variant="compact" className="mt-4" />
           </div>
 
-          {/* 13. Customer reviews (honest "no reviews yet" state) */}
-          <div className="mt-8 border-t border-gray-200 pt-8">
+          {/* Reviews */}
+          <div className="mt-10 border-t border-line pt-8" id="reviews">
             <ReviewsSection
               rating={data.rating}
               reviewCount={data.reviewCount}
@@ -361,50 +388,50 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
           </div>
 
-          {/* 14. FAQ (only for plants with care data — auto-generated from real care info) */}
+          {/* FAQ (plants with care data) */}
           {data.care && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-              <div className="space-y-2">
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>Frequently Asked Questions</SectionTitle>
+              <div className="space-y-2.5">
                 {[
                   { q: `How much sunlight does the ${data.name} need?`, a: data.care.light },
                   { q: `How often should I water the ${data.name}?`, a: data.care.water },
                   { q: `What temperature is ideal for the ${data.name}?`, a: data.care.temperature },
                   { q: `Does the ${data.name} need special humidity?`, a: data.care.humidity },
                 ].filter((faq) => faq.a).map((faq, i) => (
-                  <details key={i} className="group bg-white rounded-lg border border-slate-100 overflow-hidden">
-                    <summary className="flex items-center justify-between gap-3 p-4 cursor-pointer text-sm font-medium text-gray-800 hover:bg-slate-50 list-none">
+                  <details key={i} className="group bg-paper rounded-2xl border border-line overflow-hidden">
+                    <summary className="flex items-center justify-between gap-3 p-4 cursor-pointer text-sm font-medium text-pine hover:bg-sage-wash/40 list-none">
                       {faq.q}
-                      <ChevronRight className="size-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
+                      <ChevronRight className="size-4 text-brass-deep group-open:rotate-90 transition-transform shrink-0" />
                     </summary>
-                    <div className="px-4 pb-4 text-sm text-gray-600 leading-relaxed">{faq.a}</div>
+                    <div className="px-4 pb-4 text-sm text-charcoal/75 leading-relaxed">{faq.a}</div>
                   </details>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 15. Related products (only real data from same category) */}
+          {/* Related products */}
           {data.relatedProducts.length > 0 && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-5">You May Also Like</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>You May Also Like</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
                 {data.relatedProducts.map((prod) => (
-                  <Link key={prod.id} href={`/product/${prod.slug}`} className="group bg-white border border-slate-100 rounded-lg overflow-hidden hover:shadow-md transition-all">
-                    <div className="aspect-square overflow-hidden bg-gray-50 relative">
-                      <img src={prod.image || ""} alt={prod.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                      {prod.badge && <span className="absolute top-2 left-2 bg-[#1A6B3C] text-white text-[9px] font-bold px-2 py-0.5 rounded">{prod.badge}</span>}
+                  <Link key={prod.id} href={`/product/${prod.slug}`} className="group bg-paper border border-line rounded-[18px] overflow-hidden hover:shadow-[0_16px_40px_rgba(22,56,43,0.14)] transition-all">
+                    <div className="aspect-square overflow-hidden bg-sand relative">
+                      <img src={prod.image || ""} alt={prod.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                      {prod.badge && <span className="absolute top-2 left-2 bg-brass text-pine-ink text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">{prod.badge}</span>}
                     </div>
                     <div className="p-3">
-                      <p className="text-xs font-semibold text-gray-900 line-clamp-1">{prod.name}</p>
+                      <p className="font-display text-[15px] text-pine line-clamp-1">{prod.name}</p>
                       <div className="flex items-baseline gap-1.5 mt-1">
-                        <span className="text-sm font-bold text-[#1A6B3C]">₹{prod.price}</span>
-                        {prod.oldPrice && <span className="text-[11px] text-gray-400 line-through">₹{prod.oldPrice}</span>}
+                        <span className="text-sm font-bold text-pine tabular-nums">₹{prod.price}</span>
+                        {prod.oldPrice && <span className="text-[11px] text-ink-soft line-through tabular-nums">₹{prod.oldPrice}</span>}
                       </div>
                       {prod.rating !== null && (
                         <div className="flex items-center gap-1 mt-1">
-                          <Star className="w-3 h-3 fill-[#E8930A] text-[#E8930A]" />
-                          <span className="text-[11px] text-gray-500">{prod.rating.toFixed(1)}{prod.reviewCount !== null ? ` (${prod.reviewCount})` : ""}</span>
+                          <Star className="w-3 h-3 fill-brass text-brass" />
+                          <span className="text-[11px] text-ink-soft tabular-nums">{prod.rating.toFixed(1)}{prod.reviewCount !== null ? ` (${prod.reviewCount})` : ""}</span>
                         </div>
                       )}
                     </div>
@@ -414,23 +441,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           )}
 
-          {/* Bundles */}
+          {/* Bundles — button now wired to the real cart */}
           {data.bundles.length > 0 && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-5">Frequently Bought Together</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>Frequently Bought Together</SectionTitle>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {data.bundles.map((bundle, i) => (
-                  <div key={i} className="bg-white border border-slate-100 rounded-lg overflow-hidden hover:shadow-md transition-all group">
-                    <div className="aspect-[4/3] bg-gray-50 relative overflow-hidden">
-                      <img src={bundle.image} alt={bundle.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                    <div className="p-4">
-                      <p className="font-semibold text-gray-900 text-sm">{bundle.name}</p>
-                      <p className="text-xs text-gray-500 mt-1">{bundle.desc}</p>
-                      <p className="text-sm font-bold text-[#1A6B3C] mt-2">₹{bundle.price}</p>
-                      <button className="mt-3 w-full text-xs font-bold text-[#1A6B3C] border border-[#1A6B3C] rounded-lg py-2.5 hover:bg-[#F0FAF4] transition-colors">Add Bundle to Cart</button>
-                    </div>
-                  </div>
+                  <BundleCard
+                    key={i}
+                    index={i}
+                    name={bundle.name}
+                    desc={bundle.desc}
+                    price={bundle.price}
+                    image={bundle.image}
+                    productSlug={data.slug}
+                  />
                 ))}
               </div>
             </div>
@@ -438,19 +463,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Professional Services */}
           {data.services.length > 0 && (
-            <div className="mt-8 border-t border-gray-200 pt-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Professional Services</h2>
-              <p className="text-gray-500 text-sm mb-5">Let our verified experts help you care for your plants</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="mt-10 border-t border-line pt-8">
+              <SectionTitle>Professional Services</SectionTitle>
+              <p className="text-ink-soft text-sm mb-5 -mt-2">Let our verified experts help you care for your plants</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {data.services.map((service, i) => (
-                  <Link key={i} href="/services" className="bg-white border border-slate-100 rounded-lg p-5 hover:shadow-md transition-all hover:-translate-y-0.5">
-                    {/* D17: Lucide icon instead of emoji */}
-                    <div className="size-10 rounded-lg bg-[#F3F8F1] flex items-center justify-center">
-                      {i === 0 ? <Wrench className="size-5 text-[#1A6B3C]" /> : i === 1 ? <Sprout className="size-5 text-[#1A6B3C]" /> : <Scissors className="size-5 text-[#1A6B3C]" />}
+                  <Link key={i} href="/services" className="bg-paper border border-line rounded-[18px] p-5 hover:shadow-[0_16px_40px_rgba(22,56,43,0.14)] transition-all hover:-translate-y-0.5">
+                    <div className="size-11 rounded-2xl bg-sage-wash flex items-center justify-center">
+                      {i === 0 ? <Wrench className="size-5 text-pine" /> : i === 1 ? <Sprout className="size-5 text-pine" /> : <Scissors className="size-5 text-pine" />}
                     </div>
-                    <p className="font-semibold text-gray-900 text-sm mt-3">{service.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{service.desc}</p>
-                    <p className="text-sm font-bold text-[#1A6B3C] mt-2">{service.price}</p>
+                    <p className="font-display text-lg text-pine mt-3">{service.name}</p>
+                    <p className="text-xs text-ink-soft mt-1">{service.desc}</p>
+                    <p className="text-sm font-bold text-pine mt-2 tabular-nums">{service.price}</p>
                   </Link>
                 ))}
               </div>
@@ -458,7 +482,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           )}
 
           {/* Recently viewed */}
-          <div className="mt-8 border-t border-gray-200 pt-8">
+          <div className="mt-10 border-t border-line pt-8">
             <RecentlyViewed currentSlug={slug} />
           </div>
         </div>

@@ -21,8 +21,8 @@ export function ProductHighlights({
     <div className="grid grid-cols-2 gap-3">
       {highlights.map((h) => (
         <div key={h.label} className="flex items-start gap-2 p-3 rounded-lg bg-[#F3F8F1] border border-slate-100">
-          <div className="size-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#E8930A15" }}>
-            <h.icon className="size-4" style={{ color: "#E8930A" }} aria-hidden="true" />
+          <div className="size-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#C6A15B15" }}>
+            <h.icon className="size-4" style={{ color: "#C6A15B" }} aria-hidden="true" />
           </div>
           <div className="min-w-0">
             <p className="text-xs font-semibold text-slate-500 uppercase">{h.label}</p>

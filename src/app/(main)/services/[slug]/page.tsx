@@ -33,7 +33,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
     return (
       <Container className="py-16 text-center">
         <h1 className="text-xl font-bold text-gray-900">Service not found</h1>
-        <Button asChild className="mt-4 bg-[#1A6B3C] hover:bg-[#16A34A]">
+        <Button asChild className="mt-4 bg-[#16382B] hover:bg-[#A8843F]">
           <Link href="/services">← All Services</Link>
         </Button>
       </Container>
@@ -89,9 +89,9 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
     <Container className="py-6 md:py-10">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
-        <Link href="/" className="hover:text-[#1A6B3C]">Home</Link>
+        <Link href="/" className="hover:text-[#16382B]">Home</Link>
         <ChevronRight className="size-3" />
-        <Link href="/services" className="hover:text-[#1A6B3C]">Services</Link>
+        <Link href="/services" className="hover:text-[#16382B]">Services</Link>
         <ChevronRight className="size-3" />
         <span className="text-slate-800 font-semibold truncate">{service.name}</span>
       </nav>
@@ -113,7 +113,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
 
           {/* Title + rating */}
           <div>
-            <span className="text-[11px] font-bold text-[#1A6B3C] uppercase tracking-wider bg-[#F0FAF4] px-2.5 py-1 rounded-full border border-[#BBF7D0]">
+            <span className="text-[11px] font-bold text-[#16382B] uppercase tracking-wider bg-[#F0FAF4] px-2.5 py-1 rounded-full border border-[#BBF7D0]">
               {service.category}
             </span>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mt-2">{service.name}</h1>
@@ -125,7 +125,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
                       key={s}
                       className={cn(
                         "size-4",
-                        s <= Math.round(service.rating) ? "fill-[#E8930A] text-[#E8930A]" : "text-gray-200"
+                        s <= Math.round(service.rating) ? "fill-[#C6A15B] text-[#C6A15B]" : "text-gray-200"
                       )}
                     />
                   ))}
@@ -182,7 +182,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
                     className={cn(
                       "flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left",
                       selectedProvider === p.id
-                        ? "border-[#1A6B3C] bg-[#F3F8F1]"
+                        ? "border-[#16382B] bg-[#F3F8F1]"
                         : "border-slate-200 hover:border-slate-300"
                     )}
                   >
@@ -223,10 +223,10 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
           <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
             <div>
               <p className="text-xs text-slate-500">Price starts at</p>
-              <p className="text-2xl font-bold text-[#1A6B3C] tabular-nums">{priceLabel}</p>
+              <p className="text-2xl font-bold text-[#16382B] tabular-nums">{priceLabel}</p>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-600">
-              <Clock className="size-4 text-[#1A6B3C]" />
+              <Clock className="size-4 text-[#16382B]" />
               {service.duration}
             </div>
             <Separator />
@@ -256,7 +256,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
                     className={cn(
                       "px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all",
                       selectedSlot === slot
-                        ? "border-[#1A6B3C] bg-[#F3F8F1] text-[#1A6B3C]"
+                        ? "border-[#16382B] bg-[#F3F8F1] text-[#16382B]"
                         : "border-slate-200 text-slate-600 hover:border-slate-300"
                     )}
                   >
@@ -283,14 +283,14 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ slug: 
             {/* Proceed to Checkout */}
             <Button
               onClick={handleProceedToCheckout}
-              className="w-full bg-[#1A6B3C] hover:bg-[#16A34A] gap-2 h-12"
+              className="w-full bg-[#16382B] hover:bg-[#A8843F] gap-2 h-12"
             >
               Proceed to Checkout <ArrowRight className="size-4" />
             </Button>
 
             {/* Hint about what's next */}
             <div className="rounded-md bg-[#F3F8F1] border border-[#BBF7D0] p-2.5 flex items-start gap-1.5">
-              <AlertCircle className="size-3.5 text-[#1A6B3C] shrink-0 mt-0.5" />
+              <AlertCircle className="size-3.5 text-[#16382B] shrink-0 mt-0.5" />
               <p className="text-[11px] text-slate-600">
                 You&apos;ll enter your delivery address and choose a payment method on the next step.
               </p>

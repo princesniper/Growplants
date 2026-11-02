@@ -94,7 +94,7 @@ export function DeliveryProgressCard({
             {/* Gradient definition */}
             <defs>
               <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1A6B3C" />
+                <stop offset="0%" stopColor="#16382B" />
                 <stop offset="100%" stopColor="#43A047" />
               </linearGradient>
             </defs>
@@ -103,7 +103,7 @@ export function DeliveryProgressCard({
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className={cn(
               "text-xl font-bold tabular-nums",
-              isCancelled ? "text-red-500" : "text-[#1A6B3C]",
+              isCancelled ? "text-red-500" : "text-[#16382B]",
             )}>
               {animatedProgress}%
             </span>
@@ -144,7 +144,7 @@ export function DeliveryProgressCard({
       {!isCancelled && (estimatedDeliveryDate || isDelivered) && (
         <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2">
-            <Calendar className="size-4 text-[#1A6B3C] shrink-0" />
+            <Calendar className="size-4 text-[#16382B] shrink-0" />
             <div className="min-w-0">
               <p className="text-[9px] text-slate-400 uppercase tracking-wide font-semibold">
                 {isDelivered ? "Delivered On" : "Est. Delivery"}
@@ -161,7 +161,7 @@ export function DeliveryProgressCard({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="size-4 text-[#1A6B3C] shrink-0" />
+            <Clock className="size-4 text-[#16382B] shrink-0" />
             <div className="min-w-0">
               <p className="text-[9px] text-slate-400 uppercase tracking-wide font-semibold">
                 {isDelivered ? "Delivery Time" : "Time Window"}

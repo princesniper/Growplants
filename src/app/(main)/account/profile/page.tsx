@@ -110,11 +110,11 @@ export default function ProfilePage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Profile</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Profile</h1>
       <div className="max-w-2xl">
         {/* Avatar */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="relative size-20 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-2xl font-bold overflow-hidden border-2 border-white shadow-md">
+          <div className="relative size-20 rounded-full bg-[#16382B] text-white flex items-center justify-center text-2xl font-bold overflow-hidden border-2 border-white shadow-md">
             {profileImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -144,7 +144,7 @@ export default function ProfilePage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[#1A6B3C] text-[#1A6B3C] gap-2"
+                className="border-[#16382B] text-[#16382B] gap-2"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
               >
@@ -180,7 +180,7 @@ export default function ProfilePage() {
             <div className="space-y-1.5"><Label className="text-sm">Gender</Label><select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="w-full h-11 border border-slate-200 rounded-md px-3 text-sm"><option value="prefer_not">Prefer not to say</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
             <div className="space-y-1.5"><Label className="text-sm">Preferred Language</Label><select value={form.preferredLanguage} onChange={(e) => setForm({ ...form, preferredLanguage: e.target.value })} className="w-full h-11 border border-slate-200 rounded-md px-3 text-sm"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
           </div>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">{isSaving ? <><Loader2 className="size-4 animate-spin" />Saving...</> : "Save Changes"}</Button>
+          <Button onClick={handleSave} disabled={isSaving} className="bg-[#16382B] hover:bg-[#A8843F] gap-2">{isSaving ? <><Loader2 className="size-4 animate-spin" />Saving...</> : "Save Changes"}</Button>
         </div>
       </div>
     </Container>

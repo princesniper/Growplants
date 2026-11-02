@@ -166,7 +166,7 @@ export function OrderTimeline({
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm transition-all duration-300 hover:shadow-md">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <span className="size-2 rounded-full bg-[#1A6B3C] animate-pulse" />
+              <span className="size-2 rounded-full bg-[#16382B] animate-pulse" />
               Order Journey
             </h3>
             <span className="text-[10px] text-slate-400 font-medium">

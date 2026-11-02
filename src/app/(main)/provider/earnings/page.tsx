@@ -37,7 +37,7 @@ export default function ProviderEarningsPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">Earnings & Payouts</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">Earnings & Payouts</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
@@ -51,9 +51,9 @@ export default function ProviderEarningsPage() {
       </div>
 
       {/* Request payout */}
-      <div className="bg-gradient-to-r from-[#1A6B3C] to-[#16A34A] text-white rounded-xl p-5 mb-6 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-[#16382B] to-[#A8843F] text-white rounded-xl p-5 mb-6 flex items-center justify-between">
         <div><p className="text-sm text-white/80">Available for Payout</p><p className="text-2xl font-bold tabular-nums">{formatINR(pendingEarnings)}</p></div>
-        <Button onClick={() => appToast.success("Payout requested", "We'll process your payout within 3-5 business days")} className="bg-white text-[#1A6B3C] hover:bg-white/90">Request Payout</Button>
+        <Button onClick={() => appToast.success("Payout requested", "We'll process your payout within 3-5 business days")} className="bg-white text-[#16382B] hover:bg-white/90">Request Payout</Button>
       </div>
 
       {/* Earnings table */}
@@ -69,7 +69,7 @@ export default function ProviderEarningsPage() {
                   <td className="py-2 px-2 text-slate-600">{formatDate(e.date)}</td>
                   <td className="py-2 px-2 text-right text-slate-600 tabular-nums">{formatINR(e.grossAmount)}</td>
                   <td className="py-2 px-2 text-right text-red-500 tabular-nums">-{formatINR(e.commissionAmount)}</td>
-                  <td className="py-2 px-2 text-right font-bold text-[#1A6B3C] tabular-nums">{formatINR(e.netAmount)}</td>
+                  <td className="py-2 px-2 text-right font-bold text-[#16382B] tabular-nums">{formatINR(e.netAmount)}</td>
                   <td className="py-2 px-2 text-center"><span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", e.status === "pending" ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700")}>{e.status === "pending" ? "Pending" : "Paid"}</span></td>
                 </tr>
               ))}

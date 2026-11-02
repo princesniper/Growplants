@@ -43,11 +43,11 @@ export default function OrdersPage() {
 
   return (
     <Container className="py-8 md:py-10">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Orders</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Orders</h1>
 
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
         {FILTERS.map((f) => (
-          <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#1A6B3C] text-white" : "bg-white text-slate-700 border border-slate-200 hover:border-[#1A6B3C]/30")}>{f.label}</button>
+          <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#16382B] text-white" : "bg-white text-slate-700 border border-slate-200 hover:border-[#16382B]/30")}>{f.label}</button>
         ))}
       </div>
 
@@ -56,7 +56,7 @@ export default function OrdersPage() {
           <p className="text-sm text-slate-500 text-center py-8">No {filter} orders found.</p>
         ) : (
           filtered.map((order) => (
-            <Link key={order.id} href={`/account/orders/${order.id}`} className="block bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-[#1A6B3C]/20 transition-all">
+            <Link key={order.id} href={`/account/orders/${order.id}`} className="block bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-[#16382B]/20 transition-all">
               <div className="flex items-center justify-between gap-3 mb-2">
                 <div>
                   <p className="text-sm font-bold text-slate-800">#{order.orderNumber}</p>
@@ -75,7 +75,7 @@ export default function OrdersPage() {
                 ))}
                 {order.items.length > 3 && <span className="text-xs text-slate-500">+{order.items.length - 3} more</span>}
                 <div className="flex-1" />
-                <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(order.total)}</p>
+                <p className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(order.total)}</p>
               </div>
 
               <div className="flex items-center justify-between text-xs text-slate-500">
@@ -85,7 +85,7 @@ export default function OrdersPage() {
                     {PAYMENT_STATUS_LABELS[order.paymentStatus]}
                   </span>
                 </span>
-                <span className="flex items-center gap-0.5 text-[#1A6B3C] font-medium">View Details <ChevronRight className="size-3" /></span>
+                <span className="flex items-center gap-0.5 text-[#16382B] font-medium">View Details <ChevronRight className="size-3" /></span>
               </div>
             </Link>
           ))

@@ -57,7 +57,7 @@ export function TimelineDisplayFields({
                   href={field.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#1A6B3C] hover:underline"
+                  className="text-[#16382B] hover:underline"
                 >
                   {field.value}
                 </Link>

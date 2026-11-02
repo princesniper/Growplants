@@ -248,7 +248,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           <input
             type="checkbox"
             id="register-terms"
-            className="size-4 accent-[#1A6B3C] mt-0.5"
+            className="size-4 accent-[#16382B] mt-0.5"
             aria-invalid={!!errors.acceptTerms}
             aria-describedby={errors.acceptTerms ? "register-terms-error" : undefined}
             {...register("acceptTerms")}

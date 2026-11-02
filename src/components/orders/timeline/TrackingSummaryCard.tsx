@@ -118,7 +118,7 @@ export function TrackingSummaryCard({
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-        <Package className="size-4 text-[#1A6B3C]" />
+        <Package className="size-4 text-[#16382B]" />
         <h3 className="text-sm font-bold text-slate-800">Tracking Summary</h3>
       </div>
 
@@ -170,7 +170,7 @@ export function TrackingSummaryCard({
       {/* Order total */}
       <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
         <span className="text-xs text-slate-500 font-medium">Order Total</span>
-        <span className="text-lg font-bold text-[#1A6B3C] tabular-nums">
+        <span className="text-lg font-bold text-[#16382B] tabular-nums">
           {formatINR(order.total)}
         </span>
       </div>

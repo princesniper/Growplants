@@ -73,7 +73,7 @@ export function ContactForm() {
         <Textarea id="contact-message" rows={5} placeholder="Tell us more about your query..." className="rounded-md" aria-invalid={!!errors.message} aria-describedby={errors.message ? "contact-message-error" : undefined} {...register("message")} />
         {errors.message && <p id="contact-message-error" className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="size-3" aria-hidden="true" />{errors.message.message}</p>}
       </div>
-      <Button type="submit" disabled={isSubmitting} className="w-full h-12 gap-2 bg-[#1A6B3C] hover:bg-[#16A34A]">
+      <Button type="submit" disabled={isSubmitting} className="w-full h-12 gap-2 bg-[#16382B] hover:bg-[#A8843F]">
         {isSubmitting ? (<><Loader2 className="size-4 animate-spin" aria-hidden="true" />Sending...</>) : "Send Message"}
       </Button>
     </form>

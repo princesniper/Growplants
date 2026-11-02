@@ -4,15 +4,8 @@ import { ArrowRight } from "lucide-react";
 
 /**
  * SectionHeader — reusable section title + optional subtitle + optional
- * action link (e.g., "View All"). Used on home, shop, PDP related, account
- * dashboard, and most page-level sections.
- *
- * Layout:
- *   [Title / Subtitle block]                    [Action link →]
- *
- * Accessibility:
- *   - Title is h2 by default (overridable via `as` for nested sections)
- *   - Action link uses arrow icon with descriptive aria-label
+ * action link (e.g., "View All"). Editorial rhythm per blueprint:
+ * serif H2 → one-line subline → single CTA, with a brass rule accent.
  */
 export interface SectionHeaderProps {
   title: string;
@@ -45,17 +38,21 @@ export function SectionHeader({
         className
       )}
     >
-      <div className={cn("flex flex-col gap-1", align === "center" && "items-center")}>
+      <div className={cn("flex flex-col gap-2", align === "center" && "items-center")}>
+        <span
+          className={cn("h-1 w-12 rounded-full bg-brass", align === "center" && "mx-auto")}
+          aria-hidden="true"
+        />
         <div className="flex items-center gap-2">
           {Icon && (
-            <Icon className="size-5 text-primary" aria-hidden="true" />
+            <Icon className="size-5 text-brass-deep" aria-hidden="true" />
           )}
-          <Tag className="text-h2 md:text-h2 text-foreground">
+          <Tag className="font-display text-h2 text-pine">
             {title}
           </Tag>
         </div>
         {subtitle && (
-          <p className="text-body-sm text-muted-foreground max-w-2xl">
+          <p className="text-body-sm text-ink-soft max-w-2xl">
             {subtitle}
           </p>
         )}

@@ -66,7 +66,7 @@ export function OrderActionsBar({
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+        <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
           <Headphones className="size-4 text-white" />
         </div>
         <h3 className="text-base sm:text-lg font-bold text-slate-800">Order Actions</h3>
@@ -78,7 +78,7 @@ export function OrderActionsBar({
         <Button
           variant="outline"
           onClick={onDownloadInvoice}
-          className="border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#F3F8F1] gap-2 text-sm justify-start h-11"
+          className="border-[#16382B] text-[#16382B] hover:bg-[#F3F8F1] gap-2 text-sm justify-start h-11"
           size="sm"
         >
           <Download className="size-4 shrink-0" />
@@ -128,7 +128,7 @@ export function OrderActionsBar({
         {canReorder && onReorder && (
           <Button
             onClick={onReorder}
-            className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2 text-sm justify-start h-11"
+            className="bg-[#16382B] hover:bg-[#A8843F] gap-2 text-sm justify-start h-11"
             size="sm"
           >
             <RotateCcw className="size-4 shrink-0" />
@@ -150,7 +150,7 @@ export function OrderActionsBar({
         {/* Call Support */}
         <a
           href={`tel:${supportPhone}`}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 text-slate-600 hover:border-[#1A6B3C] hover:text-[#1A6B3C] text-sm font-medium transition-colors justify-start h-11"
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-slate-200 text-slate-600 hover:border-[#16382B] hover:text-[#16382B] text-sm font-medium transition-colors justify-start h-11"
         >
           <Phone className="size-4 shrink-0" />
           <span className="truncate">Call Us</span>
@@ -158,11 +158,11 @@ export function OrderActionsBar({
       </div>
 
       {/* Help text card */}
-      <div className="mt-4 p-3.5 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#1A6B3C]/10">
+      <div className="mt-4 p-3.5 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#16382B]/10">
         <p className="text-xs text-slate-600 leading-relaxed">
           <span className="font-bold text-slate-800">Need help?</span> Our support team is available{" "}
-          <span className="font-bold text-[#1A6B3C]">9 AM – 9 PM</span>, all days.
-          Average response time: <span className="font-bold text-[#1A6B3C]">under 10 minutes</span> on WhatsApp.
+          <span className="font-bold text-[#16382B]">9 AM – 9 PM</span>, all days.
+          Average response time: <span className="font-bold text-[#16382B]">under 10 minutes</span> on WhatsApp.
         </p>
       </div>
 

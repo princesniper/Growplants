@@ -57,20 +57,20 @@ export function OrderHeaderCard({ order, className }: OrderHeaderCardProps) {
       )}
     >
       {/* Botanical decorations */}
-      <Leaf className="absolute -top-6 -right-6 size-40 text-[#1A6B3C]/5 rotate-12" aria-hidden="true" />
-      <Leaf className="absolute -bottom-8 -left-8 size-32 text-[#1A6B3C]/5 -rotate-12" aria-hidden="true" />
+      <Leaf className="absolute -top-6 -right-6 size-40 text-[#16382B]/5 rotate-12" aria-hidden="true" />
+      <Leaf className="absolute -bottom-8 -left-8 size-32 text-[#16382B]/5 -rotate-12" aria-hidden="true" />
 
       <div className="relative p-5 sm:p-7">
         {/* Top row: Order ID + Live indicator */}
         <div className="flex items-start justify-between gap-3 flex-wrap mb-5">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+              <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
                 <Hash className="size-4 text-white" strokeWidth={2.5} />
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Order Number</p>
-                <h1 className="text-lg sm:text-2xl font-bold text-[#1A6B3C] tracking-tight leading-none">
+                <h1 className="text-lg sm:text-2xl font-bold text-[#16382B] tracking-tight leading-none">
                   {order.orderNumber}
                 </h1>
               </div>
@@ -146,7 +146,7 @@ export function OrderHeaderCard({ order, className }: OrderHeaderCardProps) {
               <IndianRupee className="size-3" />
               <span>Total</span>
             </div>
-            <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(order.total)}</p>
+            <p className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(order.total)}</p>
             <p className="text-[10px] text-slate-500">
               {order.shipping === 0 ? "Free delivery" : `+ ${formatINR(order.shipping)} delivery`}
             </p>

@@ -91,8 +91,8 @@ export default function FAQPage() {
                 className={cn(
                   "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
                   activeCategory === cat
-                    ? "bg-[#1A6B3C] text-white"
-                    : "bg-white text-slate-700 border border-slate-200 hover:border-[#1A6B3C]/30"
+                    ? "bg-[#16382B] text-white"
+                    : "bg-white text-slate-700 border border-slate-200 hover:border-[#16382B]/30"
                 )}
               >
                 {cat}
@@ -115,10 +115,10 @@ export default function FAQPage() {
                       className="w-full flex items-center justify-between gap-3 p-4 text-left hover:bg-[#F3F8F1] transition-colors"
                     >
                       <div>
-                        <p className="text-xs font-semibold text-[#E8930A] uppercase tracking-wide mb-1">{item.category}</p>
+                        <p className="text-xs font-semibold text-[#C6A15B] uppercase tracking-wide mb-1">{item.category}</p>
                         <p className="text-sm font-medium text-slate-800">{item.question}</p>
                       </div>
-                      <span className="shrink-0 size-7 rounded-full bg-[#F3F8F1] text-[#1A6B3C] flex items-center justify-center">
+                      <span className="shrink-0 size-7 rounded-full bg-[#F3F8F1] text-[#16382B] flex items-center justify-center">
                         {isOpen ? <Minus className="size-4" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
                       </span>
                     </button>
@@ -141,7 +141,7 @@ export default function FAQPage() {
 
           {/* WhatsApp CTA */}
           <div className="max-w-3xl mx-auto mt-12 rounded-xl bg-[#F3F8F1] border border-slate-100 p-6 text-center space-y-3">
-            <h3 className="text-lg font-bold text-[#1A6B3C]">Still have questions?</h3>
+            <h3 className="text-lg font-bold text-[#16382B]">Still have questions?</h3>
             <p className="text-sm text-slate-600">Chat with us on WhatsApp — quick replies guaranteed.</p>
             <Button asChild className="bg-[#25D366] hover:bg-[#25D366]/90 text-white gap-2">
               <a href="https://wa.me/919812345678" target="_blank" rel="noopener noreferrer">

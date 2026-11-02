@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ShoppingCart, Heart, Share2, Check, Minus, Plus, Bell } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ShoppingCart, Heart, Share2, Check, Minus, Plus, Bell, Leaf, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { appToast } from "@/lib/toast";
 import { formatINR, discountPercent } from "@/lib/utils";
+import { PotPairingSelector, type PotOption } from "@/components/product/PotPairingSelector";
+import { GuaranteeCallout } from "@/components/common/GuaranteeCallout";
+import { PincodeChecker } from "@/components/global/PincodeChecker";
 
 interface ProductPricingPanelProps {
   price: number; salePrice: number | null; discount: number | null; savings: number | null;
@@ -15,54 +18,100 @@ interface ProductPricingPanelProps {
   productId: string; productName: string; productSlug: string; image: string;
   categoryName: string; categorySlug: string; stockQuantity: number;
   prices: Record<string, number> | null; productType: string;
+  /** Pot-pairing options (plants only). When provided, "Plant + Pot" is the default tab. */
+  pots?: PotOption[];
+  /** Notifies the sticky buy bar of the selected variant + price. */
+  onVariantChange?: (variantId: string | null, price: number) => void;
 }
 
+/**
+ * ProductPricingPanel — buy panel. Plant + Pot is the default configuration
+ * (blueprint D3); "Plant only (nursery pot)" is secondary. Pot pairing adds
+ * plant + pot as TWO cart lines via the existing addItem payload — no
+ * data-layer changes. Price authority stays server-side (display only).
+ */
 export function ProductPricingPanel(props: ProductPricingPanelProps) {
-  const { addItem, openDrawer } = useCart();
+  const { addItem } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(
     props.prices ? Object.keys(props.prices)[0] : null
   );
+  const [mode, setMode] = useState<"combo" | "plant-only">(
+    props.pots && props.pots.length > 0 ? "combo" : "plant-only"
+  );
+  const [selectedPot, setSelectedPot] = useState<PotOption | null>(null);
   const [isAdded, setIsAdded] = useState(false);
 
   const displayPrice = props.prices && selectedVariant ? props.prices[selectedVariant] : (props.salePrice ?? props.price);
   const discount = props.discount ?? discountPercent(props.price, displayPrice);
   const wishlisted = isWishlisted(props.productId);
+  const comboActive = mode === "combo" && props.pots && props.pots.length > 0;
 
-  const handleAddToCart = () => {
+  const onVariantChange = props.onVariantChange;
+  useEffect(() => {
+    onVariantChange?.(selectedVariant, displayPrice);
+  }, [selectedVariant, displayPrice, onVariantChange]);
+
+  const plantLineName = `${props.productName}${selectedVariant ? ` (${selectedVariant})` : ""}`;
+
+  const addPlantLine = (qty: number) =>
     addItem({
       productId: props.productId,
       variantId: selectedVariant,
-      name: `${props.productName}${selectedVariant ? ` (${selectedVariant})` : ""}`,
+      name: plantLineName,
       slug: props.productSlug,
       price: displayPrice,
       image: props.image,
-      quantity,
+      quantity: qty,
       inStock: props.inStock,
     });
+
+  const handleAddToCart = () => {
+    if (comboActive && selectedPot) {
+      // Plant + pot = two separate cart lines (existing addItem, no data changes)
+      addPlantLine(quantity);
+      addItem({
+        productId: selectedPot.slug,
+        variantId: selectedPot.sizeLabel,
+        name: `${selectedPot.name} (${selectedPot.sizeLabel})`,
+        slug: selectedPot.slug,
+        price: selectedPot.price,
+        image: selectedPot.image,
+        quantity,
+        inStock: true,
+      });
+      appToast.success("Combo added to cart", `${plantLineName} + ${selectedPot.name}`);
+    } else {
+      addPlantLine(quantity);
+      appToast.success("Added to cart", `${plantLineName} (${formatINR(displayPrice)})`);
+    }
     setIsAdded(true);
-    appToast.success("Added to cart", `${props.productName} (${formatINR(displayPrice)})`);
     setTimeout(() => setIsAdded(false), 1800);
   };
 
   const handleBuyNow = () => {
-    addItem({
-      productId: props.productId,
-      variantId: selectedVariant,
-      name: `${props.productName}${selectedVariant ? ` (${selectedVariant})` : ""}`,
-      slug: props.productSlug,
-      price: displayPrice,
-      image: props.image,
-      quantity,
-      inStock: props.inStock,
-    });
+    if (comboActive && selectedPot) {
+      addPlantLine(quantity);
+      addItem({
+        productId: selectedPot.slug,
+        variantId: selectedPot.sizeLabel,
+        name: `${selectedPot.name} (${selectedPot.sizeLabel})`,
+        slug: selectedPot.slug,
+        price: selectedPot.price,
+        image: selectedPot.image,
+        quantity,
+        inStock: true,
+      });
+    } else {
+      addPlantLine(quantity);
+    }
     window.location.href = "/checkout";
   };
 
   const handleShare = async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: props.productName, url: window.location.href }); } catch (_e) {}
+      try { await navigator.share({ title: props.productName, url: window.location.href }); } catch (_e) { /* dismissed */ }
     } else {
       navigator.clipboard.writeText(window.location.href);
       appToast.success("Link copied!", "Product link copied to clipboard");
@@ -70,35 +119,84 @@ export function ProductPricingPanel(props: ProductPricingPanelProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Mode tabs */}
+      {props.pots && props.pots.length > 0 && (
+        <div className="grid grid-cols-2 gap-1 rounded-full border border-line bg-sand/60 p-1" role="tablist" aria-label="Purchase options">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "combo"}
+            onClick={() => setMode("combo")}
+            className={cn(
+              "flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-semibold transition-all min-h-[44px]",
+              mode === "combo" ? "bg-pine text-ivory shadow" : "text-ink-soft hover:text-pine"
+            )}
+          >
+            <Package className="size-4" aria-hidden="true" />
+            Plant + Pot
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === "plant-only"}
+            onClick={() => setMode("plant-only")}
+            className={cn(
+              "flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-semibold transition-all min-h-[44px]",
+              mode === "plant-only" ? "bg-pine text-ivory shadow" : "text-ink-soft hover:text-pine"
+            )}
+          >
+            <Leaf className="size-4" aria-hidden="true" />
+            Plant only
+          </button>
+        </div>
+      )}
+
       {/* Price */}
       <div className="flex items-baseline gap-3 flex-wrap">
-        <span className="text-3xl font-bold text-[#1A6B3C] tabular-nums">{formatINR(displayPrice)}</span>
+        <span className="font-display text-4xl text-pine tabular-nums">{formatINR(displayPrice)}</span>
         {props.salePrice && (
           <>
-            <span className="text-lg text-slate-400 line-through tabular-nums">{formatINR(props.price)}</span>
-            {discount > 0 && <span className="text-sm font-bold text-green-600">{discount}% OFF</span>}
+            <span className="text-lg text-ink-soft line-through tabular-nums">{formatINR(props.price)}</span>
+            {discount > 0 && (
+              <span className="text-sm font-bold text-ivory bg-terracotta rounded-full px-2.5 py-1">{discount}% OFF</span>
+            )}
           </>
         )}
         {props.savings && (
-          <span className="text-xs text-green-600 font-medium">Save {formatINR(props.savings)}</span>
+          <span className="text-xs text-moss font-semibold">Save {formatINR(props.savings)}</span>
         )}
       </div>
+      <p className="-mt-3 text-xs text-ink-soft">Inclusive of all taxes · COD available</p>
 
-      {/* Variant selector (for pots with multiple sizes) */}
+      {/* Pot pairing (combo mode) */}
+      {comboActive && (
+        <PotPairingSelector
+          plantName={props.productName}
+          options={props.pots ?? []}
+          selectedSlug={selectedPot?.slug ?? null}
+          onSelect={setSelectedPot}
+        />
+      )}
+      {comboActive && !selectedPot && (
+        <p className="text-xs text-ink-soft -mt-2">Ya phir neeche “Plant only” chunein — nursery pot ke saath.</p>
+      )}
+
+      {/* Variant selector (for pots with multiple sizes / plants with size pricing) */}
       {props.prices && Object.keys(props.prices).length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-slate-700">Select Size:</p>
+          <p className="text-sm font-semibold text-pine">Select Size:</p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(props.prices).map(([size, p]) => (
               <button
                 key={size}
                 onClick={() => setSelectedVariant(size)}
+                aria-pressed={selectedVariant === size}
                 className={cn(
-                  "px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all",
+                  "px-4 py-2.5 rounded-full border-2 text-sm font-medium transition-all min-h-[44px]",
                   selectedVariant === size
-                    ? "border-[#1A6B3C] bg-[#F3F8F1] text-[#1A6B3C]"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    ? "border-pine bg-pine text-ivory"
+                    : "border-line text-charcoal hover:border-brass"
                 )}
               >
                 {size} · {formatINR(p)}
@@ -111,23 +209,23 @@ export function ProductPricingPanel(props: ProductPricingPanelProps) {
       {/* Quantity + stock */}
       {props.inStock ? (
         <div className="flex items-center gap-4">
-          <div className="flex items-center border border-slate-200 rounded-lg">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="size-10 flex items-center justify-center text-slate-600 hover:bg-slate-50" aria-label="Decrease quantity">
+          <div className="flex items-center border border-line rounded-full bg-paper">
+            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="size-11 flex items-center justify-center text-pine hover:bg-sage-wash rounded-l-full" aria-label="Decrease quantity">
               <Minus className="size-4" aria-hidden="true" />
             </button>
-            <span className="w-12 text-center text-sm font-semibold tabular-nums">{quantity}</span>
-            <button onClick={() => setQuantity(Math.min(10, quantity + 1))} className="size-10 flex items-center justify-center text-slate-600 hover:bg-slate-50" aria-label="Increase quantity">
+            <span className="w-12 text-center text-sm font-semibold tabular-nums" aria-live="polite">{quantity}</span>
+            <button onClick={() => setQuantity(Math.min(10, quantity + 1))} className="size-11 flex items-center justify-center text-pine hover:bg-sage-wash rounded-r-full" aria-label="Increase quantity">
               <Plus className="size-4" aria-hidden="true" />
             </button>
           </div>
           {props.stockQuantity <= 5 && props.stockQuantity > 0 && (
-            <span className="text-sm text-amber-600 font-medium">Only {props.stockQuantity} left!</span>
+            <span className="text-sm text-brass-deep font-semibold">Only {props.stockQuantity} left!</span>
           )}
         </div>
       ) : (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-600">
-          <Bell className="size-4" aria-hidden="true" />
-          <span className="text-sm font-medium">Out of Stock — Notify me when available</span>
+        <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-terracotta/10 text-terracotta border border-terracotta/30">
+          <Bell className="size-4 shrink-0" aria-hidden="true" />
+          <span className="text-sm font-medium">Out of Stock — WhatsApp par notify-me ke liye message karein</span>
         </div>
       )}
 
@@ -136,30 +234,42 @@ export function ProductPricingPanel(props: ProductPricingPanelProps) {
         <Button
           onClick={handleAddToCart}
           disabled={!props.inStock || isAdded}
-          className={cn("flex-1 h-12 gap-2 bg-[#1A6B3C] hover:bg-[#16A34A]", isAdded && "bg-green-600 hover:bg-green-600")}
+          className={cn(
+            "flex-1 h-13 py-3.5 gap-2 rounded-full text-base font-semibold",
+            isAdded ? "bg-moss hover:bg-moss text-ivory" : "bg-pine hover:bg-brass-deep text-ivory"
+          )}
         >
-          {isAdded ? (<><Check className="size-4" aria-hidden="true" />Added!</>) : (<><ShoppingCart className="size-4" aria-hidden="true" />Add to Cart</>)}
+          {isAdded ? (<><Check className="size-4" aria-hidden="true" />Added!</>) : (<><ShoppingCart className="size-4" aria-hidden="true" />{comboActive && selectedPot ? "Add Plant + Pot" : "Add to Cart"}</>)}
         </Button>
-        <Button onClick={handleBuyNow} disabled={!props.inStock} variant="outline" className="flex-1 h-12 border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#1A6B3C] hover:text-white">
+        <Button onClick={handleBuyNow} disabled={!props.inStock} variant="outline" className="flex-1 h-13 py-3.5 rounded-full text-base font-semibold border-2 border-pine text-pine hover:bg-pine hover:text-ivory">
           Buy Now
         </Button>
       </div>
+      <p className="text-xs text-ink-soft -mt-2">Transit mein 1–2 patte jhadna normal hai — plant adjust ho raha hai.</p>
 
       {/* Wishlist + Share */}
       <div className="flex gap-3">
         <Button
           onClick={() => toggleWishlist(props.productId)}
           variant="outline"
-          className="flex-1 h-10 gap-2"
+          className="flex-1 h-11 gap-2 rounded-full border-line"
         >
-          <Heart className={cn("size-4", wishlisted && "fill-red-500 text-red-500")} aria-hidden="true" />
+          <Heart className={cn("size-4", wishlisted && "fill-terracotta text-terracotta")} aria-hidden="true" />
           {wishlisted ? "Wishlisted" : "Add to Wishlist"}
         </Button>
-        <Button onClick={handleShare} variant="outline" className="flex-1 h-10 gap-2">
+        <Button onClick={handleShare} variant="outline" className="flex-1 h-11 gap-2 rounded-full border-line">
           <Share2 className="size-4" aria-hidden="true" />
           Share
         </Button>
       </div>
+
+      {/* Pincode checker */}
+      <div className="rounded-2xl border border-line bg-paper p-4">
+        <PincodeChecker variant="full" />
+      </div>
+
+      {/* Guarantee callout — within one scroll of the buy button */}
+      <GuaranteeCallout variant="inline" />
     </div>
   );
 }

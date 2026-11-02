@@ -15,7 +15,8 @@ import {
   X,
   Sprout,
   Flower,
-  Wrench,
+  Sun,
+  Leaf,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -46,55 +47,70 @@ interface CategoryGroup {
   labelHi: string;
   icon: LucideIcon;
   href: string;
-  children: { name: string; slug: string }[];
+  children: { name: string; href: string }[];
 }
 
+/* Need-based groups — every href deep-links into /shop's URL-synced filters
+ * (real category slugs from the product data, not invented taxonomy). */
 const CATEGORY_GROUPS: CategoryGroup[] = [
+  {
+    label: "Shop by Light",
+    labelHi: "रोशनी",
+    icon: Sun,
+    href: "/shop",
+    children: [
+      { name: "Low Light", href: "/shop?sunlight=Shade" },
+      { name: "Bright Indirect", href: "/shop?sunlight=Indirect" },
+      { name: "Partial Shade", href: "/shop?sunlight=Partial%20Shade" },
+      { name: "Direct Sun", href: "/shop?sunlight=Full%20Sun" },
+    ],
+  },
+  {
+    label: "Shop by Care",
+    labelHi: "देखभाल",
+    icon: Sprout,
+    href: "/shop?difficulty=Easy",
+    children: [
+      { name: "Beginner Friendly", href: "/shop?difficulty=Easy" },
+      { name: "Moderate Care", href: "/shop?difficulty=Moderate" },
+      { name: "Expert Only", href: "/shop?difficulty=Expert" },
+      { name: "Pet-Safe", href: "/shop?pet_safe=true" },
+    ],
+  },
+  {
+    label: "Shop by Space",
+    labelHi: "जगह",
+    icon: Home,
+    href: "/shop",
+    children: [
+      { name: "Indoor", href: "/shop?suitable_for=Indoor" },
+      { name: "Balcony", href: "/shop?suitable_for=Balcony" },
+      { name: "Outdoor", href: "/shop?suitable_for=Outdoor" },
+      { name: "Office", href: "/shop?suitable_for=Office" },
+    ],
+  },
   {
     label: "Plants",
     labelHi: "पौधे",
-    icon: Sprout,
-    href: "/shop?category=plants",
+    icon: Leaf,
+    href: "/shop?categories=indoor,outdoor,air-purifying,succulent,summer,winter,decorative",
     children: [
-      { name: "Indoor Plants", slug: "indoor-plants" },
-      { name: "Outdoor Plants", slug: "outdoor-plants" },
-      { name: "Flowering Plants", slug: "flowering-plants" },
-      { name: "Succulents", slug: "succulents" },
-      { name: "Bonsai", slug: "bonsai" },
-      { name: "Medicinal Plants", slug: "medicinal-plants" },
-      { name: "Air Purifying Plants", slug: "air-purifying-plants" },
-      { name: "Seasonal Plants", slug: "seasonal-plants" },
+      { name: "Indoor Plants", href: "/shop?category=indoor" },
+      { name: "Outdoor Plants", href: "/shop?category=outdoor" },
+      { name: "Air-Purifying", href: "/shop?category=air-purifying" },
+      { name: "Succulents", href: "/shop?category=succulent" },
     ],
   },
   {
     label: "Planters",
     labelHi: "प्लांटर",
     icon: Flower,
-    href: "/shop?category=planters",
+    href: "/shop?categories=ceramic-planters,decorative-planters,terracotta-planters,plastic-planters,ceramic,plastic",
     children: [
-      { name: "Ceramic Planters", slug: "ceramic-planters" },
-      { name: "Plastic Planters", slug: "plastic-planters" },
-      { name: "Metal Planters", slug: "metal-planters" },
-      { name: "Hanging Planters", slug: "hanging-planters" },
-      { name: "Decorative Planters", slug: "decorative-planters" },
-      { name: "Terracotta Planters", slug: "terracotta-planters" },
-      { name: "Fiber Planters", slug: "fiber-planters" },
-    ],
-  },
-  {
-    label: "Gardening Products",
-    labelHi: "बागवानी उत्पाद",
-    icon: Wrench,
-    href: "/shop?category=gardening-products",
-    children: [
-      { name: "Pots & Containers", slug: "pots-containers" },
-      { name: "Seeds & Bulbs", slug: "seeds-bulbs" },
-      { name: "Fertilizers & Manure", slug: "fertilizers-manure" },
-      { name: "Soil & Cocopeat", slug: "soil-cocopeat" },
-      { name: "Tools & Equipment", slug: "tools-equipment" },
-      { name: "Accessories & Decor", slug: "accessories-decor" },
-      { name: "Pest Control", slug: "pest-control" },
-      { name: "Plant Food & Growth", slug: "plant-food-growth" },
+      { name: "Ceramic Planters", href: "/shop?category=ceramic-planters" },
+      { name: "Terracotta Planters", href: "/shop?category=terracotta-planters" },
+      { name: "Decorative Planters", href: "/shop?category=decorative-planters" },
+      { name: "Plastic Planters", href: "/shop?category=plastic-planters" },
     ],
   },
 ];
@@ -209,9 +225,9 @@ export function MobileDrawerNav({ open, onOpenChange }: MobileDrawerNavProps) {
                   <AccordionContent className="pb-1">
                     <ul className="space-y-0.5 pl-7">
                       {cat.children.map((sub) => (
-                        <li key={sub.slug}>
+                        <li key={sub.href}>
                           <Link
-                            href={`/shop?category=${sub.slug}`}
+                            href={sub.href}
                             onClick={() => onOpenChange(false)}
                             className="block px-2 py-1.5 rounded-md hover:bg-muted text-body-sm text-foreground"
                           >

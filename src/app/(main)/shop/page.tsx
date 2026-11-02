@@ -25,6 +25,7 @@ function toProductCard(p: ShopProduct): Product {
     price: p.price, originalPrice: p.originalPrice, discountPercent: p.discountPercent,
     isBestseller: p.isBestseller, slug: p.slug, availableStock: p.inStock ? 10 : 0,
     isBestseller_bool: p.isBestseller, isNewArrival: p.isNewArrival, isAirPurifying: p.isAirPurifying,
+    isPetSafe: p.isPetSafe, difficulty: p.difficulty,
     tags: [...(p.isBestseller ? ["bestseller"] : []), ...(p.isNewArrival ? ["new"] : []), ...(p.isAirPurifying ? ["air-purifying"] : [])],
   };
 }
@@ -126,16 +127,16 @@ function ShopPageInner() {
       <PageHero
         overline="Shop"
         title="All Plants & Products"
-        subtitle="Browse our curated collection of healthy plants, premium planters, and gardening supplies — delivered fresh to your door in Sonipat."
+        subtitle="Nursery-fresh plants aur perfectly-fitting pots — Sonipat mein 1–2 din mein delivery."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Shop" }]}
       />
 
-      <section className="py-8 md:py-12 bg-white">
+      <section className="py-8 md:py-12 bg-ivory">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Desktop sidebar */}
             <aside className="hidden lg:block lg:col-span-1">
-              <div className="sticky top-24 rounded-lg border border-slate-200 bg-white p-5">
+              <div className="sticky top-32 rounded-[18px] border border-line bg-paper p-5 shadow-[0_8px_24px_rgba(22,56,43,0.06)]">
                 <FilterSidebar filters={filters} onChange={handleFilterChange} onClear={handleClear} />
               </div>
             </aside>
@@ -143,11 +144,12 @@ function ShopPageInner() {
             {/* Main content */}
             <div className="lg:col-span-3 space-y-4">
               <div className="flex items-center justify-between gap-4 flex-wrap">
-                <p className="text-sm text-slate-600">
-                  <span className="font-bold text-[#1A6B3C]">{filteredProducts.length}</span> products found
+                <p className="text-sm text-ink-soft">
+                  <span className="font-display text-lg font-semibold text-pine tabular-nums">{filteredProducts.length}</span>{" "}
+                  {filteredProducts.length === 1 ? "plant" : "plants"} found
                 </p>
                 <div className="flex items-center gap-3">
-                  <Button variant="outline" size="sm" onClick={() => setMobileFiltersOpen(true)} className="lg:hidden gap-2 border-[#1A6B3C] text-[#1A6B3C]">
+                  <Button variant="outline" size="sm" onClick={() => setMobileFiltersOpen(true)} className="lg:hidden gap-2 rounded-full border-pine/30 text-pine">
                     <SlidersHorizontal className="size-4" aria-hidden="true" />Filters
                   </Button>
                   <SortDropdown value={sort} onChange={setSort} />
@@ -157,23 +159,26 @@ function ShopPageInner() {
               <ActiveFilterChips filters={filters} onRemove={handleRemoveChip} onClear={handleClear} />
 
               {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
                 </div>
               ) : paginatedProducts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {paginatedProducts.map((p) => <ProductCard key={p.id} product={toProductCard(p)} />)}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
-                  <div className="size-16 rounded-full bg-[#F3F8F1] flex items-center justify-center">
-                    <SearchX className="size-8 text-[#1A6B3C]" aria-hidden="true" />
+                <div className="py-10 text-center">
+                  <div className="size-16 rounded-full bg-sage-wash flex items-center justify-center mx-auto mb-4">
+                    <SearchX className="size-8 text-pine" aria-hidden="true" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800">No products found</h3>
-                  <p className="text-sm text-slate-500 max-w-md">No products match your current filters. Try adjusting or clearing filters to see more results.</p>
-                  <Button onClick={handleClear} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2 mt-2">
+                  <h3 className="font-display text-2xl text-pine">Is combination mein kuch nahi mila</h3>
+                  <p className="text-sm text-ink-soft max-w-md mx-auto mt-2">Filters thode adjust karke dekhein — ya phir ye popular picks try karein:</p>
+                  <Button onClick={handleClear} className="bg-pine hover:bg-brass-deep text-ivory rounded-full gap-2 mt-4">
                     <PackageSearch className="size-4" aria-hidden="true" />Clear All Filters
                   </Button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mt-8 text-left">
+                    {SHOP_PRODUCTS.slice(0, 3).map((p) => <ProductCard key={p.id} product={toProductCard(p)} />)}
+                  </div>
                 </div>
               )}
 

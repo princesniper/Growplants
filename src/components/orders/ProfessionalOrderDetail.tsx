@@ -93,7 +93,7 @@ function Section({
     >
       <header className="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 bg-gradient-to-r from-[#F3F8F1] to-transparent">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm shrink-0">
+          <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm shrink-0">
             <Icon className="size-4 text-white" strokeWidth={2.2} />
           </div>
           <h2 className="text-base font-bold text-slate-800 truncate">{title}</h2>
@@ -149,19 +149,19 @@ export function ProfessionalOrderDetail({
           !isDelivered && !isCancelled && !isShipped && "bg-gradient-to-br from-amber-50 via-white to-yellow-50 border-amber-200",
         )}
       >
-        <Leaf className="absolute -top-6 -right-6 size-40 text-[#1A6B3C]/5 rotate-12" aria-hidden="true" />
+        <Leaf className="absolute -top-6 -right-6 size-40 text-[#16382B]/5 rotate-12" aria-hidden="true" />
 
         <div className="relative p-5 sm:p-7">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             {/* Left: Order ID + date */}
             <div className="space-y-1.5">
               <div className="flex items-center gap-2.5">
-                <div className="size-10 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+                <div className="size-10 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
                   <Hash className="size-5 text-white" strokeWidth={2.5} />
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Order Number</p>
-                  <h1 className="text-xl sm:text-2xl font-bold text-[#1A6B3C] tracking-tight leading-none">
+                  <h1 className="text-xl sm:text-2xl font-bold text-[#16382B] tracking-tight leading-none">
                     {order.orderNumber}
                   </h1>
                 </div>
@@ -211,7 +211,7 @@ export function ProfessionalOrderDetail({
             </div>
             <div>
               <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-1"><IndianRupee className="size-3" /> Total</p>
-              <p className="text-base font-bold text-[#1A6B3C] tabular-nums">{formatINR(order.total)}</p>
+              <p className="text-base font-bold text-[#16382B] tabular-nums">{formatINR(order.total)}</p>
             </div>
           </div>
         </div>
@@ -263,7 +263,7 @@ export function ProfessionalOrderDetail({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <Link href={`/product/${item.slug}`} className="text-sm sm:text-base font-semibold text-slate-800 hover:text-[#1A6B3C] line-clamp-1 transition-colors">
+                          <Link href={`/product/${item.slug}`} className="text-sm sm:text-base font-semibold text-slate-800 hover:text-[#16382B] line-clamp-1 transition-colors">
                             {item.name}
                           </Link>
                           {item.sku && (
@@ -290,7 +290,7 @@ export function ProfessionalOrderDetail({
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm sm:text-lg font-bold text-[#1A6B3C] tabular-nums">{formatINR(lineTotal)}</p>
+                          <p className="text-sm sm:text-lg font-bold text-[#16382B] tabular-nums">{formatINR(lineTotal)}</p>
                           {item.quantity > 1 && (
                             <p className="text-[10px] sm:text-xs text-slate-400 tabular-nums">{formatINR(item.price)} × {item.quantity}</p>
                           )}
@@ -322,17 +322,17 @@ export function ProfessionalOrderDetail({
             <div className="space-y-4">
               {/* Customer identity */}
               <div className="flex items-start gap-2.5">
-                <div className="size-9 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center shrink-0 text-xs font-bold">
+                <div className="size-9 rounded-full bg-[#16382B] text-white flex items-center justify-center shrink-0 text-xs font-bold">
                   {order.address.fullName.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-slate-800">{order.address.fullName}</p>
                   <div className="flex flex-col gap-0.5 mt-0.5">
-                    <a href={`tel:${order.address.phone}`} className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#1A6B3C] transition-colors">
+                    <a href={`tel:${order.address.phone}`} className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#16382B] transition-colors">
                       <Phone className="size-3" /> {order.address.phone}
                     </a>
                     {order.address.email && (
-                      <a href={`mailto:${order.address.email}`} className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#1A6B3C] transition-colors">
+                      <a href={`mailto:${order.address.email}`} className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#16382B] transition-colors">
                         <Mail className="size-3" /> <span className="truncate">{order.address.email}</span>
                       </a>
                     )}
@@ -407,9 +407,9 @@ export function ProfessionalOrderDetail({
               )}
             </div>
             <Separator className="my-3" />
-            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#1A6B3C]/10">
+            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#16382B]/10">
               <span className="text-sm font-bold text-slate-800">Grand Total</span>
-              <span className="text-xl font-bold text-[#1A6B3C] tabular-nums">{formatINR(order.total)}</span>
+              <span className="text-xl font-bold text-[#16382B] tabular-nums">{formatINR(order.total)}</span>
             </div>
           </Section>
         </div>
@@ -445,14 +445,14 @@ export function ProfessionalOrderDetail({
           </a>
 
           {/* Call */}
-          <a href="tel:+919999999999" className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:border-[#1A6B3C] hover:text-[#1A6B3C] text-sm font-semibold transition-colors h-11">
+          <a href="tel:+919999999999" className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 text-slate-600 hover:border-[#16382B] hover:text-[#16382B] text-sm font-semibold transition-colors h-11">
             <Phone className="size-4" /> Call
           </a>
         </div>
 
-        <div className="mt-4 p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#1A6B3C]/10">
+        <div className="mt-4 p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#16382B]/10">
           <p className="text-xs text-slate-600 leading-relaxed">
-            <span className="font-bold text-slate-800">Need help?</span> Our support team is available <span className="font-bold text-[#1A6B3C]">9 AM – 9 PM</span>, all days. Average response time: <span className="font-bold text-[#1A6B3C]">under 10 minutes</span> on WhatsApp.
+            <span className="font-bold text-slate-800">Need help?</span> Our support team is available <span className="font-bold text-[#16382B]">9 AM – 9 PM</span>, all days. Average response time: <span className="font-bold text-[#16382B]">under 10 minutes</span> on WhatsApp.
           </p>
         </div>
       </Section>

@@ -53,7 +53,7 @@ export function DeliveryAddressCard({
       <div className="flex items-center justify-between p-5 sm:p-6 pb-3">
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-lg bg-[#F3F8F1] flex items-center justify-center">
-            <MapPin className="size-4 text-[#1A6B3C]" />
+            <MapPin className="size-4 text-[#16382B]" />
           </div>
           <h3 className="text-sm sm:text-base font-bold text-slate-800">
             Delivery Address
@@ -73,14 +73,14 @@ export function DeliveryAddressCard({
       <div className="p-5 sm:p-6 pt-4 space-y-3">
         {/* Recipient name */}
         <div className="flex items-start gap-2.5">
-          <div className="size-8 rounded-full bg-[#1A6B3C]/10 flex items-center justify-center shrink-0 mt-0.5">
-            <User className="size-4 text-[#1A6B3C]" />
+          <div className="size-8 rounded-full bg-[#16382B]/10 flex items-center justify-center shrink-0 mt-0.5">
+            <User className="size-4 text-[#16382B]" />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-slate-800">{address.fullName}</p>
             <a
               href={`tel:${address.phone}`}
-              className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-[#1A6B3C] transition-colors mt-0.5"
+              className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-[#16382B] transition-colors mt-0.5"
             >
               <Phone className="size-3" />
               {address.phone}
@@ -90,8 +90,8 @@ export function DeliveryAddressCard({
 
         {/* Address lines */}
         <div className="flex items-start gap-2.5">
-          <div className="size-8 rounded-full bg-[#1A6B3C]/10 flex items-center justify-center shrink-0 mt-0.5">
-            <MapPin className="size-4 text-[#1A6B3C]" />
+          <div className="size-8 rounded-full bg-[#16382B]/10 flex items-center justify-center shrink-0 mt-0.5">
+            <MapPin className="size-4 text-[#16382B]" />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">
@@ -129,8 +129,8 @@ export function DeliveryAddressCard({
         {/* Delivery instructions (from order notes) */}
         {order.notes && (
           <div className="flex items-start gap-2.5">
-            <div className="size-8 rounded-full bg-[#1A6B3C]/10 flex items-center justify-center shrink-0 mt-0.5">
-              <MessageSquare className="size-4 text-[#1A6B3C]" />
+            <div className="size-8 rounded-full bg-[#16382B]/10 flex items-center justify-center shrink-0 mt-0.5">
+              <MessageSquare className="size-4 text-[#16382B]" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs text-slate-400 uppercase tracking-wide font-semibold mb-1">

@@ -26,13 +26,13 @@ export function TrackingEmptyState({ orderNumber, className }: TrackingEmptyStat
     >
       {/* Illustration: sprout in a circle */}
       <div className="relative mb-5">
-        <div className="absolute inset-0 bg-[#1A6B3C]/10 rounded-full blur-xl animate-pulse-soft" />
-        <div className="relative size-20 rounded-full bg-gradient-to-br from-[#1A6B3C] to-[#43A047] flex items-center justify-center shadow-lg">
+        <div className="absolute inset-0 bg-[#16382B]/10 rounded-full blur-xl animate-pulse-soft" />
+        <div className="relative size-20 rounded-full bg-gradient-to-br from-[#16382B] to-[#43A047] flex items-center justify-center shadow-lg">
           <Sprout className="size-10 text-white" strokeWidth={2} />
         </div>
         {/* Decorative leaves */}
-        <Sprout className="absolute -top-1 -right-2 size-5 text-[#1A6B3C]/40 rotate-12" />
-        <Sprout className="absolute -bottom-1 -left-2 size-4 text-[#1A6B3C]/30 -rotate-12" />
+        <Sprout className="absolute -top-1 -right-2 size-5 text-[#16382B]/40 rotate-12" />
+        <Sprout className="absolute -bottom-1 -left-2 size-4 text-[#16382B]/30 -rotate-12" />
       </div>
 
       <h3 className="text-base font-bold text-slate-800 mb-1.5">

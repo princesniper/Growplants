@@ -123,7 +123,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
   if (error && !liveOrder) {
     return (
       <Container className="py-6 md:py-10">
-        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4">
+        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-4">
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
         <TrackingErrorState message={error} onRetry={() => window.location.reload()} />
@@ -134,7 +134,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
   if (notFound || !liveOrder) {
     return (
       <Container className="py-6 md:py-10">
-        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4">
+        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-4">
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
         <TrackingEmptyState orderNumber={orderId} />
@@ -152,7 +152,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
 
   return (
     <Container className="py-6 md:py-10">
-      <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-5 transition-colors">
+      <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-5 transition-colors">
         <ArrowLeft className="size-3.5" /> Back to Orders
       </Link>
 

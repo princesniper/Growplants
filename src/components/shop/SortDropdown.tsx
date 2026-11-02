@@ -20,7 +20,7 @@ export function SortDropdown({ value, onChange, className }: SortDropdownProps) 
         id="sort-select"
         value={value}
         onChange={(e) => onChange(e.target.value as SortValue)}
-        className="appearance-none bg-white border border-slate-200 rounded-md pl-3 pr-9 py-2 text-sm font-medium text-slate-700 hover:border-[#1A6B3C]/30 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1A6B3C]/20"
+        className="appearance-none bg-white border border-slate-200 rounded-md pl-3 pr-9 py-2 text-sm font-medium text-slate-700 hover:border-[#16382B]/30 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#16382B]/20"
         aria-label="Sort products"
       >
         {SORT_OPTIONS.map((opt) => (

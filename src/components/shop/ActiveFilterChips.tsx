@@ -30,12 +30,12 @@ export function ActiveFilterChips({ filters, onRemove, onClear, className }: Act
       {chips.map((chip, i) => (
         <span
           key={`${chip.key}-${chip.value}-${i}`}
-          className="inline-flex items-center gap-1 rounded-full bg-[#1A6B3C]/10 text-[#1A6B3C] border border-[#1A6B3C]/20 text-xs font-medium px-3 py-1"
+          className="inline-flex items-center gap-1 rounded-full bg-[#16382B]/10 text-[#16382B] border border-[#16382B]/20 text-xs font-medium px-3 py-1"
         >
           {chip.label}
           <button
             onClick={() => onRemove(chip.key, chip.value)}
-            className="hover:bg-[#1A6B3C]/20 rounded-full p-0.5 transition-colors"
+            className="hover:bg-[#16382B]/20 rounded-full p-0.5 transition-colors"
             aria-label={`Remove filter: ${chip.label}`}
           >
             <X className="size-3" aria-hidden="true" />
@@ -44,7 +44,7 @@ export function ActiveFilterChips({ filters, onRemove, onClear, className }: Act
       ))}
       <button
         onClick={onClear}
-        className="text-xs font-semibold text-[#E8930A] hover:underline ml-1"
+        className="text-xs font-semibold text-[#C6A15B] hover:underline ml-1"
       >
         Clear All
       </button>

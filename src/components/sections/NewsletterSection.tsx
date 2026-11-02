@@ -30,7 +30,7 @@ export function NewsletterSection() {
   };
 
   return (
-    <section id="newsletter" style={{ backgroundColor: "#0F2419" }} className="text-white scroll-mt-20">
+    <section id="newsletter" style={{ backgroundColor: "#0F2A20" }} className="text-white scroll-mt-20">
       <Container className="py-12 md:py-16">
         <div className="max-w-2xl mx-auto text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium">
@@ -43,11 +43,11 @@ export function NewsletterSection() {
               <label htmlFor="newsletter-email" className="sr-only">Your email address</label>
               <Input id="newsletter-email" type="email" value={email} onChange={(e) => { setEmail(e.target.value); if (status === "error") setStatus("idle"); }} placeholder="Your email address" aria-invalid={status === "error"} aria-describedby={status === "error" ? "newsletter-error" : undefined} required className="bg-white text-slate-800 border-white/20 placeholder:text-slate-400 h-12" />
             </div>
-            <Button type="submit" disabled={status === "loading" || status === "success"} className="gap-2 bg-[#E8930A] hover:bg-[#E8930A]/90 text-white shrink-0 h-12">
+            <Button type="submit" disabled={status === "loading" || status === "success"} className="gap-2 bg-[#C6A15B] hover:bg-[#A8843F] text-[#0E241C] shrink-0 h-12">
               {status === "loading" ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" />Subscribing...</> : status === "success" ? <><Check className="size-4" aria-hidden="true" />Done</> : <>Subscribe</>}
             </Button>
           </form>
-          {status === "error" && <p id="newsletter-error" role="alert" className="text-sm text-[#E8930A]">{errorMessage}</p>}
+          {status === "error" && <p id="newsletter-error" role="alert" className="text-sm text-[#C6A15B]">{errorMessage}</p>}
           <p className="text-xs text-white/50">Unsubscribe anytime. Your information is safe with us.</p>
         </div>
       </Container>

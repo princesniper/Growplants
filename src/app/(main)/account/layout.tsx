@@ -45,7 +45,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
       {/* User card */}
       <div className="p-3 mb-3 rounded-lg bg-[#F3F8F1]">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden border-2 border-white shadow-sm">
+          <div className="size-10 rounded-full bg-[#16382B] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden border-2 border-white shadow-sm">
             {user?.profileImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -76,14 +76,14 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             className={cn(
               "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
-                ? "bg-[#1A6B3C] text-white"
-                : "text-slate-600 hover:bg-[#F3F8F1] hover:text-[#1A6B3C]"
+                ? "bg-[#16382B] text-white"
+                : "text-slate-600 hover:bg-[#F3F8F1] hover:text-[#16382B]"
             )}
           >
             <item.icon className="size-4 shrink-0" />
             <span className="flex-1">{item.label}</span>
             {showBadge > 0 && (
-              <span className={cn("text-xs font-bold px-1.5 py-0.5 rounded-full", isActive(item.href) ? "bg-white/20 text-white" : "bg-[#E8930A] text-white")}>
+              <span className={cn("text-xs font-bold px-1.5 py-0.5 rounded-full", isActive(item.href) ? "bg-white/20 text-white" : "bg-[#C6A15B] text-white")}>
                 {showBadge}
               </span>
             )}
@@ -105,7 +105,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
           <Menu className="size-5" /> Menu
         </button>
-        <span className="text-sm font-bold text-[#1A6B3C]">My Account</span>
+        <span className="text-sm font-bold text-[#16382B]">My Account</span>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -122,7 +122,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setSidebarOpen(false)}>
               <div className="absolute top-0 left-0 h-full w-72 max-w-[80vw] bg-white shadow-xl p-4 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold text-[#1A6B3C]">Account Menu</span>
+                  <span className="text-sm font-bold text-[#16382B]">Account Menu</span>
                   <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-100 rounded"><X className="size-5 text-slate-500" /></button>
                 </div>
                 {sidebar}

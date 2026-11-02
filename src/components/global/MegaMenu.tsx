@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sun, Sprout, Home, Leaf } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,110 +9,79 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Sprout, Flower, Wrench, BellRing } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBilingual } from "@/store/useBilingual";
 import type { LucideIcon } from "lucide-react";
 
 /**
- * MegaMenu — desktop dropdown navigation for the 3 main product pillars.
- * Source: PRD §8.3 (Navigation Structure), §9.1 (Category Management — 2-level hierarchy)
- *
- * Structure:
- *   Plants → [Indoor, Outdoor, Flowering, Succulents, Bonsai, Medicinal, Air-Purifying, Seasonal]
- *   Planters → [Ceramic, Plastic, Metal, Hanging, Decorative, Terracotta, Fiber]
- *   Gardening Products → [Pots & Containers, Seeds & Bulbs, Fertilizers, Soil & Cocopeat, Tools, Accessories, Pest Control, Plant Food]
- *   Services → [Gardener Hiring, Balcony Setup, Terrace Setup, Garden Maintenance, Lawn Care, Landscape Design, Plant Health Check]
+ * MegaMenu — need-based desktop dropdown ("Shop by Need").
+ * Blueprint B3/C3: shoppers self-select by home conditions (light, care level,
+ * pet-safe, room) instead of botanical taxonomy. Every link deep-links into
+ * /shop's existing URL-synced filters — no filter logic changes.
  */
 
-interface SubCategory {
+interface NeedLink {
   name: string;
-  slug: string;
   nameHi?: string;
+  href: string;
 }
 
-interface MegaCategory {
+interface NeedGroup {
   label: string;
   labelHi: string;
   icon: LucideIcon;
-  href: string;
   subtitle: string;
-  subtitleHi: string;
-  children: SubCategory[];
+  links: NeedLink[];
 }
 
-const CATEGORIES: MegaCategory[] = [
+const NEED_GROUPS: NeedGroup[] = [
   {
-    label: "Plants",
-    labelHi: "पौधे",
+    label: "Shop by Light",
+    labelHi: "रोशनी के हिसाब से",
+    icon: Sun,
+    subtitle: "Match your window, not your wishlist",
+    links: [
+      { name: "Low Light", nameHi: "कम रोशनी", href: "/shop?sunlight=Shade" },
+      { name: "Bright Indirect", nameHi: "तेज़ अप्रत्यक्ष", href: "/shop?sunlight=Indirect" },
+      { name: "Partial Shade", nameHi: "आंशिक छाया", href: "/shop?sunlight=Partial%20Shade" },
+      { name: "Direct Sun", nameHi: "सीधी धूप", href: "/shop?sunlight=Full%20Sun" },
+    ],
+  },
+  {
+    label: "Shop by Care",
+    labelHi: "देखभाल के हिसाब से",
     icon: Sprout,
-    href: "/shop?category=plants",
-    subtitle: "Healthy plants for every space",
-    subtitleHi: "हर जगह के लिए स्वस्थ पौधे",
-    children: [
-      { name: "Indoor Plants", slug: "indoor-plants", nameHi: "इंडोर पौधे" },
-      { name: "Outdoor Plants", slug: "outdoor-plants", nameHi: "आउटडोर पौधे" },
-      { name: "Flowering Plants", slug: "flowering-plants", nameHi: "फूलों के पौधे" },
-      { name: "Succulents", slug: "succulents", nameHi: "रसीले पौधे" },
-      { name: "Bonsai", slug: "bonsai", nameHi: "बोंसाई" },
-      { name: "Medicinal Plants", slug: "medicinal-plants", nameHi: "औषधीय पौधे" },
-      { name: "Air Purifying Plants", slug: "air-purifying-plants", nameHi: "वायु शुद्धिकारक पौधे" },
-      { name: "Seasonal Plants", slug: "seasonal-plants", nameHi: "मौसमी पौधे" },
+    subtitle: "Honest about how much attention they need",
+    links: [
+      { name: "Beginner Friendly", nameHi: "शुरुआती", href: "/shop?difficulty=Easy" },
+      { name: "Moderate Care", nameHi: "मध्यम देखभाल", href: "/shop?difficulty=Moderate" },
+      { name: "Expert Only", nameHi: "एक्सपर्ट", href: "/shop?difficulty=Expert" },
+      { name: "Pet-Safe", nameHi: "पेट-सेफ", href: "/shop?pet_safe=true" },
     ],
   },
   {
-    label: "Planters",
-    labelHi: "प्लांटर",
-    icon: Flower,
-    href: "/shop?category=planters",
-    subtitle: "Premium pots & planters",
-    subtitleHi: "प्रीमियम गमले और प्लांटर",
-    children: [
-      { name: "Ceramic Planters", slug: "ceramic-planters", nameHi: "सिरामिक प्लांटर" },
-      { name: "Plastic Planters", slug: "plastic-planters", nameHi: "प्लास्टिक प्लांटर" },
-      { name: "Metal Planters", slug: "metal-planters", nameHi: "धातु प्लांटर" },
-      { name: "Hanging Planters", slug: "hanging-planters", nameHi: "लटकते प्लांटर" },
-      { name: "Decorative Planters", slug: "decorative-planters", nameHi: "सजावटी प्लांटर" },
-      { name: "Terracotta Planters", slug: "terracotta-planters", nameHi: "मिट्टी के प्लांटर" },
-      { name: "Fiber Planters", slug: "fiber-planters", nameHi: "फाइबर प्लांटर" },
+    label: "Shop by Space",
+    labelHi: "जगह के हिसाब से",
+    icon: Home,
+    subtitle: "Right plant for the right corner",
+    links: [
+      { name: "Indoor", nameHi: "इंडोर", href: "/shop?suitable_for=Indoor" },
+      { name: "Balcony", nameHi: "बालकनी", href: "/shop?suitable_for=Balcony" },
+      { name: "Outdoor", nameHi: "आउटडोर", href: "/shop?suitable_for=Outdoor" },
+      { name: "Office", nameHi: "ऑफिस", href: "/shop?suitable_for=Office" },
     ],
   },
   {
-    label: "Gardening Products",
-    labelHi: "बागवानी उत्पाद",
-    icon: Wrench,
-    href: "/shop?category=gardening-products",
-    subtitle: "Everything for your garden",
-    subtitleHi: "आपके बगीचे के लिए सब कुछ",
-    children: [
-      { name: "Pots & Containers", slug: "pots-containers", nameHi: "गमले और कंटेनर" },
-      { name: "Seeds & Bulbs", slug: "seeds-bulbs", nameHi: "बीज और बल्ब" },
-      { name: "Fertilizers & Manure", slug: "fertilizers-manure", nameHi: "खाद और उर्वरक" },
-      { name: "Soil & Cocopeat", slug: "soil-cocopeat", nameHi: "मिट्टी और कोकोपीट" },
-      { name: "Tools & Equipment", slug: "tools-equipment", nameHi: "उपकरण" },
-      { name: "Accessories & Decor", slug: "accessories-decor", nameHi: "सामान और सजावट" },
-      { name: "Pest Control", slug: "pest-control", nameHi: "कीट नियंत्रण" },
-      { name: "Plant Food & Growth", slug: "plant-food-growth", nameHi: "पौधा भोजन" },
-    ],
-  },
-  {
-    label: "Services",
-    labelHi: "सेवाएं",
-    icon: BellRing,
-    href: "/services",
-    subtitle: "Book verified local gardeners",
-    subtitleHi: "सत्यापित स्थानीय माली बुक करें",
-    children: [
-      { name: "Gardener Hiring", slug: "gardener-hiring", nameHi: "माली किराये पर" },
-      { name: "Plant Installation", slug: "plant-installation", nameHi: "पौधा स्थापना" },
-      { name: "Balcony Garden Setup", slug: "balcony-setup", nameHi: "बालकनी गार्डन" },
-      { name: "Terrace Garden Setup", slug: "terrace-setup", nameHi: "छत गार्डन" },
-      { name: "Garden Maintenance", slug: "garden-maintenance", nameHi: "बगीचा रखरखाव" },
-      { name: "Lawn Maintenance", slug: "lawn-maintenance", nameHi: "लॉन रखरखाव" },
-      { name: "Landscape Design", slug: "landscape-design", nameHi: "लैंडस्केप डिज़ाइन" },
-      { name: "Plant Health Inspection", slug: "plant-health", nameHi: "पौधा स्वास्थ्य जांच" },
+    label: "Collections",
+    labelHi: "कलेक्शन",
+    icon: Leaf,
+    subtitle: "Curated for Sonipat homes",
+    links: [
+      { name: "Air-Purifying", nameHi: "एयर-प्यूरिफाइंग", href: "/shop?category=air-purifying" },
+      { name: "Succulents", nameHi: "सक्यूलेंट", href: "/shop?category=succulent" },
+      { name: "Top Rated (4★+)", nameHi: "टॉप रेटेड", href: "/shop?rating=4" },
+      { name: "In Stock Only", nameHi: "स्टॉक में", href: "/shop?in_stock=true" },
     ],
   },
 ];
@@ -124,73 +93,63 @@ export function MegaMenu() {
   return (
     <NavigationMenu className="hidden lg:flex">
       <NavigationMenuList>
-        {CATEGORIES.map((cat) => (
-          <NavigationMenuItem key={cat.href}>
-            <NavigationMenuTrigger className="text-body font-medium">
-              {isHi ? cat.labelHi : cat.label}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div key={cat.href} className="w-[480px] p-4">
-                {/* Header row */}
-                <div className="flex items-start gap-3 p-3 mb-2 rounded-lg bg-muted/50">
-                  <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                    <cat.icon className="size-5" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <p className="text-body font-semibold text-foreground">
-                      {isHi ? cat.labelHi : cat.label}
-                    </p>
-                    <p className="text-caption text-muted-foreground">
-                      {isHi ? cat.subtitleHi : cat.subtitle}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Subcategory grid (2 columns) */}
-                <ul className="grid grid-cols-2 gap-1">
-                  {cat.children.map((sub) => (
-                    <li key={sub.slug}>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          href={`/shop?category=${sub.slug}`}
-                          className={cn(
-                            "block p-2 rounded-md hover:bg-muted transition-colors",
-                            "text-body-sm text-foreground"
-                          )}
-                        >
-                          {isHi ? sub.nameHi ?? sub.name : sub.name}
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* View all footer */}
-                <div className="mt-3 pt-3 border-t border-border">
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href={cat.href}
-                      className={cn(
-                        "block p-2 rounded-md hover:bg-muted transition-colors text-center",
-                        "text-body-sm font-semibold text-primary"
-                      )}
-                    >
-                      View all {isHi ? cat.labelHi : cat.label} →
-                    </Link>
-                  </NavigationMenuLink>
-                </div>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        ))}
-
-        {/* About link (simple, no dropdown) */}
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href="/about" className={navigationMenuTriggerStyle()}>
-              {isHi ? "हमारे बारे में" : "About"}
-            </Link>
-          </NavigationMenuLink>
+          <NavigationMenuTrigger className="text-[11px] font-bold uppercase tracking-wide bg-transparent data-[state=open]:bg-transparent hover:text-pine">
+            {isHi ? "ज़रूरत के हिसाब से" : "Shop by Need"}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="w-[720px] p-5 bg-ivory">
+              <div className="grid grid-cols-4 gap-5">
+                {NEED_GROUPS.map((group) => (
+                  <div key={group.label}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="size-8 rounded-lg bg-pine/10 text-pine flex items-center justify-center shrink-0">
+                        <group.icon className="size-4" aria-hidden="true" />
+                      </span>
+                      <div>
+                        <p className="text-body-sm font-semibold text-pine leading-tight">
+                          {isHi ? group.labelHi : group.label}
+                        </p>
+                        <p className="text-caption text-ink-soft leading-tight">{group.subtitle}</p>
+                      </div>
+                    </div>
+                    <ul className="space-y-0.5">
+                      {group.links.map((link) => (
+                        <li key={link.href}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={link.href}
+                              className={cn(
+                                "block px-2 py-1.5 rounded-md hover:bg-sage-wash transition-colors",
+                                "text-body-sm text-charcoal hover:text-pine"
+                              )}
+                            >
+                              {isHi ? link.nameHi ?? link.name : link.name}
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-line flex items-center justify-between">
+                <p className="text-caption text-ink-soft">
+                  {isHi
+                    ? "Confused hain? 1-minute quiz se apne ghar ke liye plants chunein."
+                    : "Confused which plant to pick? Take the 1-minute quiz."}
+                </p>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/plant-finder"
+                    className="inline-flex items-center gap-1 text-body-sm font-semibold text-brass-deep hover:text-pine transition-colors"
+                  >
+                    Take the quiz <ChevronDown className="size-3.5 -rotate-90" aria-hidden="true" />
+                  </Link>
+                </NavigationMenuLink>
+              </div>
+            </div>
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

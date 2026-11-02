@@ -25,6 +25,7 @@ import { FREE_SHIPPING_THRESHOLD, COD_MAX_AMOUNT } from "@/lib/constants";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { MapLocationPicker } from "@/components/common/MapLocationPicker";
+import { GuaranteeCallout } from "@/components/common/GuaranteeCallout";
 import { getServiceBySlug, PROVIDERS } from "@/data/services-data";
 
 const PENDING_BOOKING_KEY = "growplants-pending-booking";
@@ -342,8 +343,8 @@ function CheckoutContent() {
           <ShoppingCart className="size-8 text-slate-400" />
         </div>
         <h1 className="text-xl font-bold text-slate-800 mb-2">Your cart is empty</h1>
-        <p className="text-sm text-slate-500 mb-6">Add some plants to your cart before checking out.</p>
-        <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+        <p className="text-sm text-ink-soft mb-6">Add some plants to your cart before checking out.</p>
+        <Button asChild className="bg-pine hover:bg-brass-deep text-ivory rounded-full gap-2">
           <Link href="/shop">Browse Shop</Link>
         </Button>
       </Container>
@@ -354,7 +355,7 @@ function CheckoutContent() {
   if (mode === "booking" && !bookingService) {
     return (
       <Container className="py-16 text-center">
-        <Loader2 className="size-8 animate-spin text-[#1A6B3C] mx-auto" />
+        <Loader2 className="size-8 animate-spin text-[#16382B] mx-auto" />
         <p className="text-sm text-slate-500 mt-3">Loading booking details…</p>
       </Container>
     );
@@ -365,8 +366,8 @@ function CheckoutContent() {
     return (
       <Container className="py-16 text-center">
         <h1 className="text-xl font-bold text-slate-800 mb-2">Please log in to continue</h1>
-        <p className="text-sm text-slate-500 mb-6">You need an account to place an order.</p>
-        <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+        <p className="text-sm text-ink-soft mb-6">You need an account to place an order.</p>
+        <Button asChild className="bg-pine hover:bg-brass-deep text-ivory rounded-full gap-2">
           <Link href="/login?redirect=/checkout">Log In</Link>
         </Button>
       </Container>
@@ -393,18 +394,18 @@ function CheckoutContent() {
       {/* Breadcrumb for booking mode */}
       {isBookingMode && bookingService && (
         <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
-          <Link href="/" className="hover:text-[#1A6B3C]">Home</Link>
+          <Link href="/" className="hover:text-[#16382B]">Home</Link>
           <ChevronRight className="size-3" />
-          <Link href="/services" className="hover:text-[#1A6B3C]">Services</Link>
+          <Link href="/services" className="hover:text-[#16382B]">Services</Link>
           <ChevronRight className="size-3" />
-          <Link href={`/services/${bookingService.slug}`} className="hover:text-[#1A6B3C] truncate max-w-[120px]">{bookingService.name}</Link>
+          <Link href={`/services/${bookingService.slug}`} className="hover:text-[#16382B] truncate max-w-[120px]">{bookingService.name}</Link>
           <ChevronRight className="size-3" />
           <span className="text-slate-800 font-semibold">Checkout</span>
         </nav>
       )}
 
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-1">{pageTitle}</h1>
-      <p className="text-sm text-slate-500 mb-6">
+      <h1 className="font-display text-3xl md:text-4xl text-pine mb-1">{pageTitle}</h1>
+      <p className="text-sm text-ink-soft mb-6">
         {isBookingMode
           ? "Confirm your address and payment method to complete the booking."
           : "Confirm your address and payment method to place your order."}
@@ -414,7 +415,7 @@ function CheckoutContent() {
       <div className="flex items-center justify-center gap-2 mb-8">
         {STEPS.map((label, i) => (
           <div key={label} className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: `${i * 80}ms` }}>
-            <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors", i === step ? "bg-[#1A6B3C] text-white" : i < step ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500")}>
+            <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors", i === step ? "bg-pine text-ivory" : i < step ? "bg-moss/15 text-moss" : "bg-sand text-ink-soft")}>
               {i < step ? <Check className="size-3.5" /> : <span className="size-5 rounded-full flex items-center justify-center text-xs">{i + 1}</span>}
               {label}
             </div>
@@ -429,9 +430,9 @@ function CheckoutContent() {
 
           {/* ─── Booking mode: Service Summary card (always visible at top) ─── */}
           {isBookingMode && bookingService && pendingBooking && (
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <div className="bg-paper border border-line rounded-[18px] p-4">
               <h2 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <Calendar className="size-4 text-[#1A6B3C]" />
+                <Calendar className="size-4 text-[#16382B]" />
                 Service Summary
               </h2>
               <div className="flex gap-3">
@@ -447,7 +448,7 @@ function CheckoutContent() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-[#1A6B3C]">{bookingPriceLabel}</p>
+                  <p className="text-sm font-bold text-[#16382B]">{bookingPriceLabel}</p>
                 </div>
               </div>
               {bookingProvider && (
@@ -464,7 +465,7 @@ function CheckoutContent() {
               <div className="mt-3">
                 <Link
                   href={`/services/${bookingService.slug}`}
-                  className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+                  className="text-xs text-[#16382B] hover:underline font-medium flex items-center gap-1"
                 >
                   <ChevronRight className="size-3 rotate-180" /> Change service details
                 </Link>
@@ -474,8 +475,8 @@ function CheckoutContent() {
 
           {/* Step 1: Address */}
           {step === 0 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-              <h2 className="text-base font-bold text-[#1A6B3C] flex items-center gap-2"><MapPin className="size-5" />Delivery Address</h2>
+            <div className="bg-paper border border-line rounded-[18px] p-5 space-y-4">
+              <h2 className="font-display text-xl text-pine flex items-center gap-2"><MapPin className="size-5 text-brass-deep" />Delivery Address</h2>
               <Separator />
 
               {/* Saved Addresses Section */}
@@ -493,25 +494,25 @@ function CheckoutContent() {
                           className={cn(
                             "text-left p-4 rounded-xl border-2 transition-all relative",
                             selectedAddressId === addr.id
-                              ? "border-[#1A6B3C] bg-[#F3F8F1] shadow-sm"
-                              : "border-slate-200 hover:border-[#1A6B3C]/30 bg-white",
+                              ? "border-pine bg-sage-wash/60 shadow-sm"
+                              : "border-line hover:border-pine/40 bg-paper",
                             !isVerified && "opacity-60 cursor-not-allowed hover:border-slate-200"
                           )}
                         >
                           {selectedAddressId === addr.id && (
-                            <div className="absolute top-3 right-3 size-5 rounded-full bg-[#1A6B3C] flex items-center justify-center">
+                            <div className="absolute top-3 right-3 size-5 rounded-full bg-pine flex items-center justify-center">
                               <Check className="size-3 text-white" strokeWidth={3} />
                             </div>
                           )}
                           <div className="flex items-start gap-2 mb-2">
-                            <div className="size-8 rounded-lg bg-[#1A6B3C]/10 flex items-center justify-center shrink-0">
-                              <Home className="size-4 text-[#1A6B3C]" />
+                            <div className="size-8 rounded-lg bg-pine/10 flex items-center justify-center shrink-0">
+                              <Home className="size-4 text-pine" />
                             </div>
                             <div className="min-w-0 flex-1 pr-6">
                               <p className="text-sm font-bold text-slate-800 truncate">
                                 {addr.fullName}
                                 {addr.isDefault && (
-                                  <span className="ml-2 text-[10px] font-semibold text-[#1A6B3C] bg-[#1A6B3C]/10 px-1.5 py-0.5 rounded-full">
+                                  <span className="ml-2 text-[10px] font-semibold text-[#16382B] bg-[#16382B]/10 px-1.5 py-0.5 rounded-full">
                                     Default
                                   </span>
                                 )}
@@ -542,8 +543,8 @@ function CheckoutContent() {
                       className={cn(
                         "p-4 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-2 min-h-[120px]",
                         showNewAddressForm
-                          ? "border-[#1A6B3C] bg-[#F3F8F1]"
-                          : "border-slate-300 hover:border-[#1A6B3C]/50 text-slate-500 hover:text-[#1A6B3C]"
+                          ? "border-[#16382B] bg-[#F3F8F1]"
+                          : "border-slate-300 hover:border-[#16382B]/50 text-slate-500 hover:text-[#16382B]"
                       )}
                     >
                       <Plus className="size-6" />
@@ -563,8 +564,8 @@ function CheckoutContent() {
 
               {/* New Address Form — opens the full MapLocationPicker */}
               {(showNewAddressForm || addresses.length === 0) && (
-                <div className="p-4 rounded-xl border-2 border-dashed border-[#1A6B3C] bg-[#F3F8F1] flex flex-col items-center justify-center gap-3 min-h-[160px] text-center">
-                  <MapPin className="size-8 text-[#1A6B3C]" />
+                <div className="p-4 rounded-xl border-2 border-dashed border-[#16382B] bg-[#F3F8F1] flex flex-col items-center justify-center gap-3 min-h-[160px] text-center">
+                  <MapPin className="size-8 text-pine" />
                   <div>
                     <p className="text-sm font-semibold text-slate-800">Add a new delivery address</p>
                     <p className="text-xs text-slate-500 mt-1">
@@ -573,7 +574,7 @@ function CheckoutContent() {
                   </div>
                   <Button
                     onClick={() => setMapPickerOpen(true)}
-                    className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+                    className="bg-pine hover:bg-brass-deep text-ivory rounded-full gap-2"
                   >
                     <MapPin className="size-4" />Open Location Picker
                   </Button>
@@ -583,7 +584,7 @@ function CheckoutContent() {
               {/* Selected address display */}
               {selectedAddressId && (
                 <div className="p-3 bg-[#F3F8F1] rounded-lg flex items-start gap-3">
-                  <Check className="size-5 text-[#1A6B3C] shrink-0 mt-0.5" />
+                  <Check className="size-5 text-[#16382B] shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-800">{address.fullName} · {address.phone}</p>
                     <p className="text-xs text-slate-600 mt-0.5">
@@ -596,7 +597,7 @@ function CheckoutContent() {
               {/* Link to manage addresses */}
               {addresses.length > 0 && (
                 <div className="pt-2">
-                  <Link href="/account/addresses" className="text-xs text-[#1A6B3C] hover:underline font-medium">
+                  <Link href="/account/addresses" className="text-xs text-[#16382B] hover:underline font-medium">
                     Manage saved addresses →
                   </Link>
                 </div>
@@ -606,8 +607,8 @@ function CheckoutContent() {
 
           {/* Step 2: Review */}
           {step === 1 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-              <h2 className="text-base font-bold text-[#1A6B3C]">
+            <div className="bg-paper border border-line rounded-[18px] p-5 space-y-4">
+              <h2 className="font-display text-xl text-pine">
                 {isBookingMode ? "Review Your Booking" : "Review Your Order"}
               </h2>
               <Separator />
@@ -634,7 +635,7 @@ function CheckoutContent() {
                         <p className="text-[11px] text-slate-400 mt-0.5">Gardener: {bookingProvider.name}</p>
                       )}
                     </div>
-                    <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{bookingPriceLabel}</p>
+                    <p className="text-sm font-bold text-[#16382B] tabular-nums">{bookingPriceLabel}</p>
                   </div>
                 </div>
               ) : (
@@ -648,7 +649,7 @@ function CheckoutContent() {
                         <p className="text-sm font-medium text-slate-800 line-clamp-1">{item.name}</p>
                         <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatINR(item.price)}</p>
                       </div>
-                      <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(item.price * item.quantity)}</p>
+                      <p className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(item.price * item.quantity)}</p>
                     </div>
                   ))}
                 </div>
@@ -672,15 +673,15 @@ function CheckoutContent() {
 
           {/* Step 3: Payment */}
           {step === 2 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-              <h2 className="text-base font-bold text-[#1A6B3C]">Payment Method</h2>
+            <div className="bg-paper border border-line rounded-[18px] p-5 space-y-4">
+              <h2 className="font-display text-xl text-pine">Payment Method</h2>
               <Separator />
               <div className="space-y-3">
                 {/* Razorpay */}
-                <button onClick={() => setPaymentMethod("razorpay")} className={cn("w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300")}>
-                  <CreditCard className="size-5 text-[#1A6B3C]" />
-                  <div className="flex-1"><p className="text-sm font-semibold text-slate-800">Pay Online</p><p className="text-xs text-slate-500">UPI, Cards, Net Banking, Wallets via Razorpay</p></div>
-                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "razorpay" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "razorpay" && <Check className="size-3 text-white" />}</div>
+                <button onClick={() => setPaymentMethod("razorpay")} className={cn("w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left", paymentMethod === "razorpay" ? "border-pine bg-sage-wash/60" : "border-line hover:border-pine/40")}>
+                  <CreditCard className="size-5 text-[#16382B]" />
+                  <div className="flex-1"><p className="text-sm font-semibold text-charcoal">Pay Online <span className="ml-1 text-[10px] font-bold uppercase tracking-wide text-brass-deep bg-gold-tint px-2 py-0.5 rounded-full">Coming soon</span></p><p className="text-xs text-ink-soft">UPI / Cards — goes live soon; choose COD to order today</p></div>
+                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "razorpay" ? "border-pine bg-pine" : "border-slate-300")}>{paymentMethod === "razorpay" && <Check className="size-3 text-white" />}</div>
                 </button>
                 {/* COD */}
                 <button
@@ -689,10 +690,10 @@ function CheckoutContent() {
                   className={cn(
                     "w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-all text-left",
                     total > COD_MAX_AMOUNT ? "border-slate-200 opacity-50 cursor-not-allowed" :
-                    paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#F3F8F1]" : "border-slate-200 hover:border-slate-300"
+                    paymentMethod === "cod" ? "border-pine bg-sage-wash/60" : "border-line hover:border-pine/40"
                   )}
                 >
-                  <Banknote className="size-5 text-[#1A6B3C]" />
+                  <Banknote className="size-5 text-[#16382B]" />
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-slate-800">Cash on Delivery</p>
                     <p className="text-xs text-slate-500">
@@ -703,12 +704,12 @@ function CheckoutContent() {
                         : "Pay in cash when your order arrives. Available for orders up to ₹5,000."}
                     </p>
                   </div>
-                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "cod" ? "border-[#1A6B3C] bg-[#1A6B3C]" : "border-slate-300")}>{paymentMethod === "cod" && <Check className="size-3 text-white" />}</div>
+                  <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", paymentMethod === "cod" ? "border-pine bg-pine" : "border-slate-300")}>{paymentMethod === "cod" && <Check className="size-3 text-white" />}</div>
                 </button>
               </div>
               {paymentMethod === "razorpay" && (
-                <div className="p-3 bg-blue-50 rounded-lg flex items-center gap-2 text-xs text-blue-700">
-                  <Truck className="size-4 shrink-0" /> You will be redirected to Razorpay's secure payment gateway. Your card details are never stored on our servers.
+                <div className="p-3 bg-gold-tint/60 border border-brass/30 rounded-xl flex items-center gap-2 text-xs text-charcoal">
+                  <AlertCircle className="size-4 shrink-0 text-brass-deep" /> Online payment is coming soon — it won&apos;t charge you today. Cash on Delivery places your order instantly.
                 </div>
               )}
               {paymentMethod === "cod" && (
@@ -723,11 +724,11 @@ function CheckoutContent() {
 
           {/* Navigation buttons */}
           <div className="flex items-center gap-3">
-            {step > 0 && <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="border-[#1A6B3C] text-[#1A6B3C]">Back</Button>}
+            {step > 0 && <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="rounded-full border-pine/40 text-pine hover:bg-pine hover:text-ivory">Back</Button>}
             {step < STEPS.length - 1 ? (
-              <Button onClick={handleNext} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">Continue <ChevronRight className="size-4" /></Button>
+              <Button onClick={handleNext} className="bg-pine hover:bg-brass-deep text-ivory rounded-full flex-1 gap-2">Continue <ChevronRight className="size-4" /></Button>
             ) : (
-              <Button onClick={handlePlaceOrder} disabled={isPlacing} className="bg-[#1A6B3C] hover:bg-[#16A34A] flex-1 gap-2">
+              <Button onClick={handlePlaceOrder} disabled={isPlacing} className="bg-pine hover:bg-brass-deep text-ivory rounded-full flex-1 gap-2">
                 {isPlacing ? <><Loader2 className="size-4 animate-spin" />{placeButtonLoading}</> : <>{placeButtonLabel}</>}
               </Button>
             )}
@@ -736,8 +737,8 @@ function CheckoutContent() {
 
         {/* Right: Order/Booking summary (sticky) */}
         <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-            <h3 className="text-base font-bold text-[#1A6B3C]">{summaryTitle}</h3>
+          <div className="sticky top-32 bg-paper border border-line rounded-[18px] p-5 space-y-3">
+            <h3 className="font-display text-xl text-pine">{summaryTitle}</h3>
             <Separator />
 
             {isBookingMode && bookingService ? (
@@ -781,16 +782,21 @@ function CheckoutContent() {
             <Separator />
             <div className="flex justify-between items-baseline">
               <span className="text-base font-bold text-slate-800">Total</span>
-              <span className="text-xl font-bold text-[#1A6B3C] tabular-nums">
+              <span className="text-xl font-bold text-[#16382B] tabular-nums">
                 {isBookingMode ? bookingPriceLabel : formatINR(total)}
               </span>
             </div>
             {!isBookingMode && (
-              <div className="flex items-center gap-2 text-xs text-slate-500 pt-2">
-                <Truck className="size-3.5 text-[#1A6B3C]" />
+              <div className="flex items-center gap-2 text-xs text-ink-soft pt-2">
+                <Truck className="size-3.5 text-pine" />
                 {shipping === 0 ? "Free delivery applied!" : `Add ${formatINR(FREE_SHIPPING_THRESHOLD - subtotal)} more for free delivery`}
               </div>
             )}
+            <GuaranteeCallout variant="compact" className="pt-1" />
+            <div className="flex items-center gap-2 text-xs text-ink-soft">
+              <ShieldCheck className="size-3.5 text-pine" />
+              Secure checkout · WhatsApp support Mon–Sun, 9AM–7PM
+            </div>
             {isBookingMode && (
               <p className="text-[10px] text-slate-400 text-center pt-1">
                 Free cancellation up to 24h before the scheduled time.
@@ -860,7 +866,7 @@ export default function CheckoutPage() {
     <Suspense
       fallback={
         <Container className="py-16 text-center">
-          <Loader2 className="size-8 animate-spin text-[#1A6B3C] mx-auto" />
+          <Loader2 className="size-8 animate-spin text-[#16382B] mx-auto" />
           <p className="text-sm text-slate-500 mt-3">Loading checkout…</p>
         </Container>
       }

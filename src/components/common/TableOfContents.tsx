@@ -26,7 +26,7 @@ export function TableOfContents({ items, className }: TableOfContentsProps) {
         className
       )}
     >
-      <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A] mb-3">
+      <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B] mb-3">
         On This Page
       </p>
       <ul className="space-y-1 border-l border-slate-200">
@@ -34,7 +34,7 @@ export function TableOfContents({ items, className }: TableOfContentsProps) {
           <li key={item.id}>
             <a
               href={`#${item.id}`}
-              className="block pl-3 py-1.5 text-sm text-slate-600 hover:text-[#1A6B3C] hover:border-l-2 hover:border-[#1A6B3C] -ml-px transition-colors"
+              className="block pl-3 py-1.5 text-sm text-slate-600 hover:text-[#16382B] hover:border-l-2 hover:border-[#16382B] -ml-px transition-colors"
             >
               {item.label}
             </a>

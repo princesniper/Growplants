@@ -90,13 +90,13 @@ export default function AddressesPage() {
     <Container className="py-6 md:py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A6B3C]">My Addresses</h1>
+          <h1 className="text-2xl font-bold text-[#16382B]">My Addresses</h1>
           <p className="text-sm text-slate-500 mt-1">{addresses.length} saved {addresses.length === 1 ? "address" : "addresses"}</p>
         </div>
         {!showPicker && (
           <Button
             onClick={handleAdd}
-            className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+            className="bg-[#16382B] hover:bg-[#A8843F] gap-2"
           >
             <Plus className="size-4" />Add Address
           </Button>
@@ -110,7 +110,7 @@ export default function AddressesPage() {
       ) : addresses.length === 0 && !showPicker ? (
         <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
           <div className="size-16 rounded-full bg-[#F3F8F1] flex items-center justify-center">
-            <MapPin className="size-8 text-[#1A6B3C]" />
+            <MapPin className="size-8 text-[#16382B]" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-slate-800">No saved addresses</h3>
@@ -118,7 +118,7 @@ export default function AddressesPage() {
               Add your first delivery address. Location verification is required.
             </p>
           </div>
-          <Button onClick={handleAdd} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+          <Button onClick={handleAdd} className="bg-[#16382B] hover:bg-[#A8843F] gap-2">
             <Plus className="size-4" />Add First Address
           </Button>
         </div>
@@ -131,7 +131,7 @@ export default function AddressesPage() {
             >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-[#1A6B3C] bg-[#F0FAF4] px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-[#16382B] bg-[#F0FAF4] px-2 py-0.5 rounded-full">
                     {a.label}
                   </span>
                   {a.isDefault && (
@@ -156,7 +156,7 @@ export default function AddressesPage() {
                   )}
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => handleEdit(a)} className="p-1.5 text-slate-400 hover:text-[#1A6B3C]" aria-label="Edit">
+                  <button onClick={() => handleEdit(a)} className="p-1.5 text-slate-400 hover:text-[#16382B]" aria-label="Edit">
                     <Edit2 className="size-3.5" />
                   </button>
                   <button
@@ -176,7 +176,7 @@ export default function AddressesPage() {
                 {!a.isDefault && (
                   <button
                     onClick={() => setDefaultAddress(a.id)}
-                    className="text-xs font-medium text-[#1A6B3C] hover:underline"
+                    className="text-xs font-medium text-[#16382B] hover:underline"
                   >
                     Set as default
                   </button>

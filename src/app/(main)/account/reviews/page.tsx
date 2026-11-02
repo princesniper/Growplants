@@ -19,22 +19,22 @@ export default function ReviewsPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Reviews ({MY_REVIEWS.length})</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Reviews ({MY_REVIEWS.length})</h1>
       <div className="space-y-3">
         {MY_REVIEWS.map((r) => (
           <div key={r.id} className="bg-white border border-slate-200 rounded-xl p-4">
             <div className="flex items-start justify-between gap-3 mb-2">
               <div>
-                <Link href={`/product/${r.productSlug}`} className="text-sm font-semibold text-slate-800 hover:text-[#1A6B3C]">{r.productName}</Link>
+                <Link href={`/product/${r.productSlug}`} className="text-sm font-semibold text-slate-800 hover:text-[#16382B]">{r.productName}</Link>
                 <p className="text-xs text-slate-400">{r.date}</p>
               </div>
-              <div className="flex items-center gap-0.5">{[1, 2, 3, 4, 5].map((s) => <Star key={s} className={`size-3.5 ${s <= r.rating ? "fill-[#E8930A] text-[#E8930A]" : "text-gray-200"}`} />)}</div>
+              <div className="flex items-center gap-0.5">{[1, 2, 3, 4, 5].map((s) => <Star key={s} className={`size-3.5 ${s <= r.rating ? "fill-[#C6A15B] text-[#C6A15B]" : "text-gray-200"}`} />)}</div>
             </div>
             {r.title && <p className="text-sm font-medium text-slate-800 mb-1">{r.title}</p>}
             <p className="text-sm text-slate-600 leading-relaxed">{r.text}</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-xs text-slate-400">👍 Helpful ({r.helpful})</span>
-              <button className="text-xs text-[#1A6B3C] font-medium hover:underline">Edit</button>
+              <button className="text-xs text-[#16382B] font-medium hover:underline">Edit</button>
               <button className="text-xs text-red-500 font-medium hover:underline">Delete</button>
             </div>
           </div>

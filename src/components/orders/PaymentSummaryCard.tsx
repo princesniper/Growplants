@@ -122,7 +122,7 @@ export function PaymentSummaryCard({ order, className }: PaymentSummaryCardProps
     >
       {/* Header */}
       <div className="flex items-center gap-2 p-5 sm:p-6 pb-3">
-        <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+        <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
           <CreditCard className="size-4 text-white" />
         </div>
         <h3 className="text-base sm:text-lg font-bold text-slate-800">Payment Details</h3>
@@ -243,12 +243,12 @@ export function PaymentSummaryCard({ order, className }: PaymentSummaryCardProps
         <Separator />
 
         {/* Grand Total hero */}
-        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#1A6B3C]/10">
+        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F3F8F1] to-green-50 rounded-xl border border-[#16382B]/10">
           <div className="flex items-center gap-1.5">
-            <IndianRupee className="size-5 text-[#1A6B3C]" />
+            <IndianRupee className="size-5 text-[#16382B]" />
             <span className="text-sm sm:text-base font-bold text-slate-800">Grand Total</span>
           </div>
-          <span className="text-xl sm:text-2xl font-bold text-[#1A6B3C] tabular-nums">
+          <span className="text-xl sm:text-2xl font-bold text-[#16382B] tabular-nums">
             {formatINR(order.total)}
           </span>
         </div>

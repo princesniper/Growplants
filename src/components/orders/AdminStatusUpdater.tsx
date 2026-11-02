@@ -126,7 +126,7 @@ export function AdminStatusUpdater({
       <Button
         onClick={() => setIsOpen(!isOpen)}
         variant="outline"
-        className="border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#F3F8F1] gap-2 text-sm"
+        className="border-[#16382B] text-[#16382B] hover:bg-[#F3F8F1] gap-2 text-sm"
         size="sm"
         disabled={updating}
       >
@@ -167,13 +167,13 @@ export function AdminStatusUpdater({
                     className={cn(
                       "w-full text-left px-3 py-2 text-sm flex items-center justify-between gap-2 transition-colors",
                       isCurrent
-                        ? "bg-[#1A6B3C]/10 text-[#1A6B3C] font-bold cursor-default"
+                        ? "bg-[#16382B]/10 text-[#16382B] font-bold cursor-default"
                         : "text-slate-700 hover:bg-[#F3F8F1]",
                       !isCurrent && !updating && "cursor-pointer",
                     )}
                   >
                     <span>{ORDER_STATUS_LABELS[status]}</span>
-                    {isCurrent && <CheckCircle2 className="size-4 text-[#1A6B3C]" />}
+                    {isCurrent && <CheckCircle2 className="size-4 text-[#16382B]" />}
                   </button>
                 );
               })}

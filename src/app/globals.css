@@ -3,15 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * ============================================================================
- * GrowPlants — "Growth and Vitality" Design System
- * Source: design.md (user-provided specification)
- *
- * Design Style: Modern, Clean, Premium, Nature-Inspired, Trust-Focused
- * Brand Personality: Fresh, Natural, Premium, Professional, Friendly
- * Core Principles: Mobile-First, Fast Scannability, Minimal Cognitive Load,
- *                  High Conversion, Accessibility-First
+/* ============================================================================
+ * GROWPLANTS — Premium Botanical Design System (redesign/premium-ui)
+ * Locked palette: pine #16382B · ivory #FBF8F1 · brass #C6A15B · terracotta #C4704F
+ * Type: Cormorant Garamond (display) + Inter (body) + Noto Devanagari
+ * 60-30-10: ivory canvas / pine structure / brass + terracotta story
  * ============================================================================
  */
 
@@ -121,6 +117,30 @@
   --color-primary-800: #123614;
   --color-primary-900: #081E0A;
 
+  /* ---- Premium botanical palette (locked design tokens) ----
+     Pine #16382B (primary) · Ivory #FBF8F1 (canvas) · Brass #C6A15B (accent)
+     Terracotta #C4704F (sale/"live" energy). Usable as bg-pine, text-brass,
+     border-line, etc. throughout the P0 pages. */
+  --color-pine: var(--pine);
+  --color-pine-deep: var(--pine-deep);
+  --color-pine-ink: var(--pine-ink);
+  --color-ivory: var(--ivory);
+  --color-paper: var(--paper);
+  --color-brass: var(--brass);
+  --color-brass-deep: var(--brass-deep);
+  --color-terracotta: var(--terracotta);
+  --color-stone: var(--stone);
+  --color-sage: var(--sage);
+  --color-sage-wash: var(--sage-wash);
+  --color-clay: var(--clay);
+  --color-gold-tint: var(--gold-tint);
+  --color-charcoal: var(--charcoal);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-moss: var(--moss);
+  --color-line: var(--line);
+  --color-sand: var(--sand);
+
   /* ---- Radius scale (design.md §5) ---- */
   --radius-sm: 6px;
   --radius-md: 12px;
@@ -135,7 +155,7 @@
   --shadow-md: 0 4px 16px rgba(24, 29, 23, 0.10);
   --shadow-lg: 0 8px 32px rgba(24, 29, 23, 0.12);
   --shadow-xl: 0 16px 48px rgba(24, 29, 23, 0.15);
-  --shadow-focus: 0 0 0 3px rgba(13, 99, 27, 0.35);
+  --shadow-focus: 0 0 0 3px rgba(168, 132, 63, 0.35);
 
   /* ---- Motion (design.md §9: 150ms / 200ms / 300ms) ---- */
   --ease-fast: cubic-bezier(0.4, 0, 0.2, 1);
@@ -147,38 +167,61 @@
 }
 
 /* ============================================================================
- * LIGHT THEME — "Growth and Vitality" (design.md)
+ * LIGHT THEME — Premium Botanical (ivory canvas, pine structure, brass story)
+ * shadcn semantic tokens are intact (same variable names); their VALUES are
+ * remapped onto the locked palette so every existing component re-themes.
  * ============================================================================
  */
 :root {
-  /* ---- shadcn semantic tokens (user's exact brand colors) ---- */
-  --background: #FAFAF6;                  /* page background */
-  --foreground: #1C1C1C;                  /* body text */
+  /* ---- Locked design tokens (source of truth) ---- */
+  --pine: #16382B;                        /* primary */
+  --pine-deep: #0F2A20;                   /* footer, hero overlays */
+  --pine-ink: #0E241C;                    /* deepest green */
+  --ivory: #FBF8F1;                       /* page canvas, 60% */
+  --paper: #FFFFFF;                       /* cards, surfaces */
+  --brass: #C6A15B;                       /* CTA accents, links on dark */
+  --brass-deep: #A8843F;                  /* CTA hover, focus rings */
+  --terracotta: #C4704F;                  /* sale badges, "live" energy */
+  --stone: #EFE7D8;                       /* neutral warm surface */
+  --sage: #7A8B6F;                        /* muted botanical green */
+  --sage-wash: #EAF0E8;                   /* alternating section bands */
+  --clay: #E8D9C8;                        /* warm detail tint */
+  --gold-tint: #F3EAD3;                   /* highlight wash */
+  --charcoal: #22301F;                    /* warm near-black */
+  --ink: #22302A;                         /* body text (never pure black) */
+  --ink-soft: #5A6B62;                    /* secondary text, captions */
+  --moss: #4A6B54;                        /* success, in-stock, guarantee checks */
+  --line: #E4E0D4;                        /* borders, dividers */
+  --sand: #F3EEE1;                        /* skeleton loaders, image placeholders */
+
+  /* ---- shadcn semantic tokens (values mapped to the locked palette) ---- */
+  --background: #FBF8F1;                  /* ivory page background */
+  --foreground: #22302A;                  /* warm ink body text */
   --card: #ffffff;                        /* card surface */
-  --card-foreground: #1C1C1C;
+  --card-foreground: #22302A;
   --popover: #ffffff;
-  --popover-foreground: #1C1C1C;
-  --primary: #1A6B3C;                     /* brand green (user's exact value) */
-  --primary-foreground: #ffffff;
-  --secondary: #7a5649;                   /* brown */
-  --secondary-foreground: #ffffff;
-  --muted: #F3F8F1;                       /* light green surface */
-  --muted-foreground: #64748b;            /* slate-500 */
-  --accent: #E8930A;                      /* orange accent (user's exact value) */
-  --accent-foreground: #ffffff;
-  --destructive: #EF4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;                      /* slate-200 */
-  --input: #e2e8f0;
-  --ring: #1A6B3C;
+  --popover-foreground: #22302A;
+  --primary: #16382B;                     /* pine — primary buttons, header */
+  --primary-foreground: #FBF8F1;          /* ivory text on pine */
+  --secondary: #EFE7D8;                   /* stone */
+  --secondary-foreground: #16382B;
+  --muted: #EFE7D8;                       /* stone surface */
+  --muted-foreground: #5A6B62;            /* ink-soft */
+  --accent: #C6A15B;                      /* brass accent */
+  --accent-foreground: #16382B;           /* pine text on brass */
+  --destructive: #C4704F;                 /* terracotta (also sale/badges) */
+  --destructive-foreground: #FBF8F1;
+  --border: #E4E0D4;                      /* line */
+  --input: #E4E0D4;
+  --ring: #A8843F;                        /* brass-deep focus */
   --radius: 0.5rem;
 
-  /* ---- User's exact brand colors ---- */
-  --brand-green: #1A6B3C;
-  --brand-green-hover: #16A34A;
-  --brand-orange: #E8930A;
-  --brand-surface: #F3F8F1;
-  --brand-dark: #0F2419;
+  /* ---- Brand aliases (kept for compatibility, remapped) ---- */
+  --brand-green: #16382B;
+  --brand-green-hover: #A8843F;
+  --brand-orange: #C6A15B;
+  --brand-surface: #EAF0E8;
+  --brand-dark: #0F2A20;
   --brand-wa-green: #25D366;
 
   /* ---- Primary scale ---- */
@@ -188,49 +231,49 @@
   --color-primary-300: #8FD68E;
   --color-primary-400: #5ABB59;
   --color-primary-500: #2E7D32;
-  --color-primary-600: #1A6B3C;
+  --color-primary-600: #16382B;
   --color-primary-700: #1C4D1E;
   --color-primary-800: #123614;
   --color-primary-900: #081E0A;
 
   /* ---- Material 3 surface system (kept for compatibility) ---- */
-  --surface: #FAFAF6;
+  --surface: #FBF8F1;
   --surface-dim: #d7dbd2;
-  --surface-bright: #FAFAF6;
+  --surface-bright: #FBF8F1;
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #F3F8F1;
+  --surface-container-low: #EAF0E8;
   --surface-container: #ebefe5;
   --surface-container-high: #e5eadf;
   --surface-container-highest: #e0e4da;
-  --on-surface: #1C1C1C;
+  --on-surface: #22302A;
   --on-surface-variant: #40493d;
   --outline: #707a6c;
   --outline-variant: #bfcaba;
 
   /* ---- Status colors ---- */
   --leaf-green: #43A047;
-  --success: #22C55E;
-  --warning: #E8930A;
-  --on-warning: #ffffff;
+  --success: #4A6B54;
+  --warning: #C6A15B;
+  --on-warning: #16382B;
   --info: #3B82F6;
   --on-info: #ffffff;
-  --error: #EF4444;
-  --on-error: #ffffff;
+  --error: #C4704F;
+  --on-error: #FBF8F1;
 
   /* ---- Sidebar ---- */
   --sidebar: #ffffff;
   --sidebar-foreground: #1C1C1C;
-  --sidebar-primary: #1A6B3C;
+  --sidebar-primary: #16382B;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #F3F8F1;
   --sidebar-accent-foreground: #1C1C1C;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #1A6B3C;
+  --sidebar-ring: #16382B;
 
   /* ---- Charts ---- */
-  --chart-1: #1A6B3C;
+  --chart-1: #16382B;
   --chart-2: #43A047;
-  --chart-3: #E8930A;
+  --chart-3: #C6A15B;
   --chart-4: #7a5649;
   --chart-5: #923357;
 }
@@ -340,11 +383,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Headings use Inter (design.md §3: Inter for all typography) */
+  /* Headings use Cormorant Garamond (premium botanical display serif) */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
   }
 
   /* Tabular numerals for prices, tables, dashboards */
@@ -404,16 +447,16 @@
     @apply mx-auto w-full max-w-7xl;
   }
 
-  /* Section vertical rhythm (matching user's section-padding) */
+  /* Section vertical rhythm — editorial spacing (blueprint: 112px desktop / 64px mobile) */
   .section-padding {
-    @apply py-12 md:py-16 lg:py-20;
+    @apply py-16 md:py-24 lg:py-28;
   }
 
-  /* Font display utility (user's font-display class) */
+  /* Font display utility — Cormorant Garamond display serif */
   .font-display {
-    font-family: var(--font-inter), system-ui, sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   /* Footer social button (matching user's footer-social-btn) */
@@ -423,28 +466,32 @@
     color: rgba(255, 255, 255, 0.6);
   }
   .footer-social-btn:hover {
-    background: #1A6B3C;
-    color: #ffffff;
+    background: #C6A15B;
+    color: #16382B;
   }
 
-  /* ---- Typography scale (design.md §3) ---- */
+  /* ---- Typography scale (blueprint E1: Cormorant display + Inter body) ---- */
   .text-display {
-    font-size: clamp(2rem, 1.4rem + 3vw, 3rem);
-    line-height: 1.2;
-    font-weight: 700;
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(2.5rem, 1.8rem + 3.5vw, 4rem);
+    line-height: 1.15;
+    font-weight: 600;
   }
   .text-h1 {
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
     font-size: clamp(2rem, 1.5rem + 2.5vw, 3rem);
-    line-height: 1.2;
-    font-weight: 700;
+    line-height: 1.15;
+    font-weight: 600;
   }
   .text-h2 {
-    font-size: clamp(1.75rem, 1.4rem + 1.75vw, 2.5rem);
-    line-height: 1.2;
-    font-weight: 700;
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.875rem, 1.5rem + 1.75vw, 2.5rem);
+    line-height: 1.15;
+    font-weight: 600;
   }
   .text-h3 {
-    font-size: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+    font-family: var(--font-cormorant-garamond), "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.5rem, 1.3rem + 1vw, 1.75rem);
     line-height: 1.2;
     font-weight: 600;
   }
@@ -538,10 +585,10 @@
 /* Soft pulsing glow — used by the "current" step in OrderTrackingTimeline */
 @keyframes pulse-soft {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(26, 107, 60, 0.35);
+    box-shadow: 0 0 0 0 rgba(22, 56, 43, 0.35);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(26, 107, 60, 0);
+    box-shadow: 0 0 0 6px rgba(22, 56, 43, 0);
   }
 }
 .animate-pulse-soft {
@@ -563,7 +610,7 @@
   100% { background-position: 1000px 0; }
 }
 .animate-shimmer {
-  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background: linear-gradient(90deg, #F3EEE1 0%, #E4E0D4 50%, #F3EEE1 100%);
   background-size: 1000px 100%;
   animation: shimmer 1.8s linear infinite;
 }
@@ -725,8 +772,8 @@
 }
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(26, 107, 60, 0.12);
-  border-color: rgba(26, 107, 60, 0.3);
+  box-shadow: 0 12px 32px rgba(22, 56, 43, 0.12);
+  border-color: rgba(22, 56, 43, 0.3);
 }
 
 /* ─── Button ripple effect ─── */
@@ -766,7 +813,7 @@
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-glow:hover {
-  box-shadow: 0 0 20px rgba(26, 107, 60, 0.35);
+  box-shadow: 0 0 20px rgba(22, 56, 43, 0.35);
   transform: translateY(-1px);
 }
 
@@ -859,9 +906,9 @@
 
 /* ─── Pulse ring — for GPS verification button ─── */
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(26, 107, 60, 0.5); }
-  70% { box-shadow: 0 0 0 12px rgba(26, 107, 60, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(26, 107, 60, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(22, 56, 43, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(22, 56, 43, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 56, 43, 0); }
 }
 .animate-pulse-ring {
   animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -913,9 +960,9 @@
 }
 .skeleton-wave {
   background: linear-gradient(90deg,
-    #f1f5f9 25%,
-    #e2e8f0 37%,
-    #f1f5f9 63%
+    #F3EEE1 25%,
+    #E4E0D4 37%,
+    #F3EEE1 63%
   );
   background-size: 200% 100%;
   animation: skeleton-wave 1.4s ease infinite;
@@ -935,22 +982,22 @@ html {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1A6B3C;
+  background: #16382B;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #16A34A;
+  background: #A8843F;
 }
 
 /* ─── Selection color ─── */
 ::selection {
-  background: rgba(26, 107, 60, 0.2);
-  color: #0F2419;
+  background: rgba(22, 56, 43, 0.2);
+  color: #0F2A20;
 }
 
 /* ─── Focus visible — accessible focus ring ─── */
 :focus-visible {
-  outline: 2px solid #1A6B3C;
+  outline: 2px solid #A8843F;
   outline-offset: 2px;
 }
 
@@ -963,7 +1010,7 @@ html {
 
 /* ─── Text gradient — for premium headings ─── */
 .text-gradient-brand {
-  background: linear-gradient(135deg, #1A6B3C 0%, #43A047 50%, #1A6B3C 100%);
+  background: linear-gradient(135deg, #16382B 0%, #4A6B54 50%, #C6A15B 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -985,7 +1032,7 @@ html {
   100% { background-position: 200% center; }
 }
 .shimmer-text {
-  background: linear-gradient(90deg, #94a3b8 25%, #1A6B3C 50%, #94a3b8 75%);
+  background: linear-gradient(90deg, #94a3b8 25%, #16382B 50%, #94a3b8 75%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

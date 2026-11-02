@@ -51,7 +51,7 @@ export function TrackingErrorState({
         {onRetry && (
           <Button
             onClick={onRetry}
-            className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+            className="bg-[#16382B] hover:bg-[#A8843F] gap-2"
             size="sm"
           >
             <RefreshCw className="size-4" />

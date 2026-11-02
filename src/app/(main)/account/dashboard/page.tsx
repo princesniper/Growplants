@@ -41,7 +41,7 @@ export default function DashboardPage() {
     <Container className="py-6 md:py-8">
       {/* Welcome */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1A6B3C]">Welcome back, {user?.fullName?.split(" ")[0] ?? "Guest"}!</h1>
+        <h1 className="text-2xl font-bold text-[#16382B]">Welcome back, {user?.fullName?.split(" ")[0] ?? "Guest"}!</h1>
         <p className="text-sm text-slate-500 mt-1">Here&apos;s what&apos;s happening with your account.</p>
       </div>
 
@@ -60,7 +60,7 @@ export default function DashboardPage() {
 
       {/* Total spent */}
       {totalSpent > 0 && (
-        <div className="bg-gradient-to-r from-[#1A6B3C] to-[#16A34A] text-white rounded-xl p-5 mb-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#16382B] to-[#A8843F] text-white rounded-xl p-5 mb-6 flex items-center justify-between">
           <div>
             <p className="text-sm text-white/80">Total Spent on GrowPlants</p>
             <p className="text-2xl font-bold tabular-nums">{formatINR(totalSpent)}</p>
@@ -74,7 +74,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-slate-800">Recent Orders</h2>
-            <Link href="/account/orders" className="text-xs font-medium text-[#1A6B3C] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
+            <Link href="/account/orders" className="text-xs font-medium text-[#16382B] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
           </div>
           {orders.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-6">No orders yet</p>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", ORDER_STATUS_COLORS[o.orderStatus])}>{ORDER_STATUS_LABELS[o.orderStatus]}</span>
-                    <span className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(o.total)}</span>
+                    <span className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(o.total)}</span>
                   </div>
                 </Link>
               ))}
@@ -100,7 +100,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-slate-800">Recent Bookings</h2>
-            <Link href="/account/bookings" className="text-xs font-medium text-[#1A6B3C] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
+            <Link href="/account/bookings" className="text-xs font-medium text-[#16382B] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
           </div>
           {bookings.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-6">No bookings yet</p>
@@ -122,8 +122,8 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/shop" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1A6B3C] text-white text-sm font-medium rounded-lg hover:bg-[#16A34A] transition-colors"><ShoppingBag className="size-4" />Shop Plants</Link>
-        <Link href="/services" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#1A6B3C] text-[#1A6B3C] text-sm font-medium rounded-lg hover:bg-[#F3F8F1] transition-colors"><Calendar className="size-4" />Book a Service</Link>
+        <Link href="/shop" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#16382B] text-white text-sm font-medium rounded-lg hover:bg-[#A8843F] transition-colors"><ShoppingBag className="size-4" />Shop Plants</Link>
+        <Link href="/services" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#16382B] text-[#16382B] text-sm font-medium rounded-lg hover:bg-[#F3F8F1] transition-colors"><Calendar className="size-4" />Book a Service</Link>
         <Link href="/account/wishlist" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"><Heart className="size-4" />View Wishlist</Link>
         <Link href="/account/addresses" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"><MapPin className="size-4" />Addresses ({addressCount})</Link>
       </div>

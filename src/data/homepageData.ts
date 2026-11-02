@@ -103,6 +103,8 @@ export interface Product {
   isNewArrival: boolean;
   isAirPurifying: boolean;
   tags: string[];
+  isPetSafe?: boolean;
+  difficulty?: string;
 }
 
 import plantsData from "@/data/plants-data.json";

@@ -7,7 +7,7 @@ import {
   ShoppingCart, Heart, Search, Menu, X, ChevronDown, User, LogOut, Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/common/Logo";
+import { MegaMenu } from "@/components/global/MegaMenu";
 import { NotificationBell } from "@/components/global/NotificationBell";
 import { MobileDrawerNav } from "@/components/global/MobileDrawerNav";
 import { useCart } from "@/contexts/CartContext";
@@ -16,16 +16,12 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useBilingual } from "@/store/useBilingual";
 import { appToast } from "@/lib/toast";
 
-const SEARCH_CATEGORIES = ["All Categories", "Indoor Plants", "Outdoor Plants", "Planters", "Services"];
-
+/* Need-based primary nav — every link deep-links into /shop's URL-synced filters */
 const NAV_LINKS = [
-  { label: "Shop", href: "/shop" },
+  { label: "Plants", href: "/shop?categories=indoor,outdoor,air-purifying,succulent,summer,winter,decorative" },
+  { label: "Pots & Planters", href: "/shop?categories=ceramic-planters,decorative-planters,terracotta-planters,plastic-planters,ceramic,plastic" },
+  { label: "Plant Finder", href: "/plant-finder", accent: true },
   { label: "Services", href: "/services" },
-  { label: "New", href: "/shop?filter=new", hideOnLg: true },
-  { label: "Best Sellers", href: "/shop?filter=bestseller", hideOnXl: true },
-  { label: "Trending", href: "/shop?filter=trending", hideOnXl: true },
-  { label: "Offers", href: "/offers", accent: true },
-  { label: "Blog", href: "/blog" },
 ];
 
 export function Header() {
@@ -40,10 +36,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [showSearchCategoryDropdown, setShowSearchCategoryDropdown] = useState(false);
 
-  const categorySelectRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,9 +44,6 @@ export function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (categorySelectRef.current && !categorySelectRef.current.contains(event.target as Node)) {
-        setShowSearchCategoryDropdown(false);
-      }
       if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
         setAccountMenuOpen(false);
       }
@@ -69,8 +59,7 @@ export function Header() {
   const executeSearch = (queryStr: string = searchQuery) => {
     const term = queryStr.trim();
     if (term) {
-      const catParam = selectedCategory !== "All Categories" ? `&category=${encodeURIComponent(selectedCategory)}` : "";
-      window.location.href = `/shop?q=${encodeURIComponent(term)}${catParam}`;
+      window.location.href = `/shop?q=${encodeURIComponent(term)}`;
     }
   };
 
@@ -86,9 +75,8 @@ export function Header() {
   };
 
   const isActive = (href: string) => {
-    if (href === "/shop") return pathname === "/shop" || pathname.startsWith("/product");
+    if (href.startsWith("/shop")) return pathname === "/shop" || pathname.startsWith("/product");
     if (href === "/services") return pathname === "/services" || pathname.startsWith("/services");
-    if (href === "/blog") return pathname.startsWith("/blog");
     return pathname === href;
   };
 
@@ -97,33 +85,33 @@ export function Header() {
       {/* Sticky container */}
       <div
         className={cn(
-          "sticky top-0 z-40 w-full backdrop-blur-brand transition-all duration-300 shadow-sm",
-          scrolled ? "shadow-md border-b border-slate-100" : "border-b border-slate-200"
+          "sticky top-0 z-40 w-full bg-ivory/95 backdrop-blur transition-all duration-300",
+          scrolled ? "shadow-[0_8px_24px_rgba(22,56,43,0.08)] border-b border-line" : "border-b border-line/60"
         )}
       >
-        {/* ---------- TIER 2: Main marketplace header ---------- */}
-        <div className="h-[52px] lg:h-[56px] flex items-center px-4 md:px-6">
+        {/* ---------- TIER 2: Main header ---------- */}
+        <div className="h-[60px] lg:h-[68px] flex items-center px-4 md:px-6">
           <div className="max-w-7xl mx-auto w-full flex items-center gap-4 lg:gap-6">
             {/* Hamburger (mobile) */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]"
+              className="lg:hidden p-2 text-pine hover:text-brass-deep transition-colors"
               aria-label="Open menu"
             >
               <Menu className="h-6 w-6" />
             </button>
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+            <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="GrowPlants home">
+              <div className="relative h-9 w-9 overflow-hidden rounded-xl shadow-sm">
                 <img src="/logo-mark.png" alt="GrowPlants Logo" className="object-cover w-full h-full" />
               </div>
               <div className="flex flex-col">
-                <span className="font-display font-extrabold text-base lg:text-lg text-[#1A6B3C] tracking-tight leading-none">
+                <span className="font-display text-xl lg:text-2xl text-pine tracking-tight leading-none">
                   GROWPLANTS
                 </span>
-                <span className="text-[9px] text-slate-400 font-semibold tracking-wide mt-0 uppercase hidden sm:inline-block">
-                  Plants &amp; Services
+                <span className="text-[9px] text-ink-soft font-medium tracking-[0.18em] uppercase hidden sm:inline-block mt-0.5">
+                  Sonipat · Nursery Fresh
                 </span>
               </div>
             </Link>
@@ -131,70 +119,45 @@ export function Header() {
             {/* Center search bar */}
             <div className="hidden lg:flex flex-1 justify-center px-2">
               <form onSubmit={handleSearchSubmit} className="flex max-w-2xl items-center relative w-full">
-                <div className="w-full flex h-[36px] border border-slate-300 rounded-md overflow-hidden bg-slate-50 focus-within:ring-2 focus-within:ring-[#1A6B3C]/10 focus-within:border-[#1A6B3C] transition-all">
-                  {/* Category dropdown */}
-                  <div className="relative border-r border-slate-200 flex items-center" ref={categorySelectRef}>
-                    <button
-                      type="button"
-                      onClick={() => setShowSearchCategoryDropdown(!showSearchCategoryDropdown)}
-                      className="h-full px-3 text-xs font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <span className="hidden sm:inline">{selectedCategory}</span>
-                      <ChevronDown className="h-3 w-3 text-slate-400" />
-                    </button>
-                    {showSearchCategoryDropdown && (
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 shadow-xl rounded-md py-1.5 min-w-[160px] z-50">
-                        {SEARCH_CATEGORIES.map((cat) => (
-                          <button
-                            key={cat}
-                            type="button"
-                            onClick={() => { setSelectedCategory(cat); setShowSearchCategoryDropdown(false); }}
-                            className="w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#1A6B3C] transition-colors"
-                          >
-                            {cat}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Search input */}
+                <div className="w-full flex h-[40px] border border-line rounded-full overflow-hidden bg-paper focus-within:ring-2 focus-within:ring-brass/30 focus-within:border-brass transition-all shadow-sm">
                   <div className="flex-1 relative flex items-center">
+                    <Search className="h-4 w-4 text-ink-soft ml-4 shrink-0" aria-hidden="true" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search plants, planters, fertilizers, services..."
-                      className="w-full h-full bg-transparent px-3 text-xs font-semibold text-slate-800 outline-none"
+                      placeholder="Search plants, planters… try “pet safe”"
+                      className="w-full h-full bg-transparent px-3 text-sm text-charcoal outline-none placeholder:text-ink-soft/70"
+                      aria-label="Search products"
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-3 p-1 rounded-full text-slate-400 hover:text-slate-600"
+                        className="absolute right-3 p-1 rounded-full text-ink-soft hover:text-pine"
+                        aria-label="Clear search"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
-
-                  {/* Submit button */}
                   <button
                     type="submit"
-                    className="bg-[#1A6B3C] hover:bg-[#16A34A] text-white px-4 transition-colors flex items-center justify-center cursor-pointer"
+                    className="bg-pine hover:bg-brass-deep text-ivory px-5 transition-colors flex items-center justify-center cursor-pointer"
+                    aria-label="Search"
                   >
-                    <Search className="h-3.5 w-3.5" />
+                    <Search className="h-4 w-4" />
                   </button>
                 </div>
               </form>
             </div>
 
             {/* Right icons */}
-            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 shrink-0">
+            <div className="flex items-center gap-1 md:gap-2 shrink-0 ml-auto lg:ml-0">
               {/* Mobile search toggle */}
               <button
                 onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-                className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]"
+                className="lg:hidden p-2 text-pine hover:text-brass-deep"
                 aria-label="Search"
               >
                 <Search className="h-5 w-5" />
@@ -203,13 +166,12 @@ export function Header() {
               {/* Wishlist */}
               <Link
                 href={isAuthenticated ? "/account/wishlist" : "/login"}
-                className="relative flex flex-col items-center justify-center p-1.5 rounded-lg text-slate-600 hover:text-[#1A6B3C] hover:bg-slate-50 transition-colors"
+                className="relative hidden sm:flex flex-col items-center justify-center p-1.5 rounded-lg text-pine hover:text-brass-deep hover:bg-sage-wash/60 transition-colors"
                 aria-label={`Wishlist, ${wishlistCount} items`}
               >
                 <Heart className="h-5 w-5" />
-                <span className="text-[9px] font-bold mt-0 hidden md:inline-block">Wishlist</span>
                 {wishlistCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 text-white text-[7px] font-extrabold h-3 w-3 flex items-center justify-center rounded-full">
+                  <span className="absolute top-0 right-0 bg-terracotta text-ivory text-[7px] font-extrabold h-3.5 min-w-3.5 px-0.5 flex items-center justify-center rounded-full">
                     {wishlistCount}
                   </span>
                 )}
@@ -218,13 +180,12 @@ export function Header() {
               {/* Cart */}
               <button
                 onClick={openDrawer}
-                className="relative flex flex-col items-center justify-center p-1.5 rounded-lg text-slate-600 hover:text-[#1A6B3C] hover:bg-slate-50 transition-colors cursor-pointer"
+                className="relative flex flex-col items-center justify-center p-1.5 rounded-lg text-pine hover:text-brass-deep hover:bg-sage-wash/60 transition-colors cursor-pointer"
                 aria-label={`Cart, ${cartCount} items`}
               >
                 <ShoppingCart className="h-5 w-5" />
-                <span className="text-[9px] font-bold mt-0 hidden md:inline-block">Cart</span>
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-amber-500 text-white text-[7px] font-extrabold h-3 w-3 flex items-center justify-center rounded-full">
+                  <span className="absolute top-0 right-0 bg-brass text-pine-ink text-[7px] font-extrabold h-3.5 min-w-3.5 px-0.5 flex items-center justify-center rounded-full">
                     {cartCount}
                   </span>
                 )}
@@ -233,17 +194,16 @@ export function Header() {
               {/* Notifications (authenticated only) */}
               {isAuthenticated && <NotificationBell className="hidden sm:block" />}
 
-              {/* Account (desktop — hidden on mobile) */}
+              {/* Account (desktop) */}
               {isAuthenticated && user ? (
                 <div ref={accountRef} className="relative hidden lg:block">
                   <button
                     onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-                    className="size-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold hover:opacity-90 transition-opacity overflow-hidden border-2 border-white shadow-sm"
+                    className="size-9 rounded-full bg-pine text-ivory flex items-center justify-center text-xs font-bold hover:bg-brass-deep transition-colors overflow-hidden border-2 border-brass/30 shadow-sm"
                     aria-label={`Account — ${user.fullName}`}
                     aria-expanded={accountMenuOpen}
                   >
                     {user.profileImageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={user.profileImageUrl}
                         alt={user.fullName}
@@ -255,11 +215,10 @@ export function Header() {
                     )}
                   </button>
                   {accountMenuOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl rounded-md overflow-hidden z-50">
-                      <div className="p-3 border-b border-slate-100 bg-slate-50 flex items-center gap-2.5">
-                        <div className="size-9 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold overflow-hidden shrink-0">
+                    <div className="absolute top-full right-0 mt-2 w-56 bg-paper border border-line shadow-xl rounded-xl overflow-hidden z-50">
+                      <div className="p-3 border-b border-line bg-sage-wash/50 flex items-center gap-2.5">
+                        <div className="size-9 rounded-full bg-pine text-ivory flex items-center justify-center text-sm font-bold overflow-hidden shrink-0">
                           {user.profileImageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={user.profileImageUrl}
                               alt={user.fullName}
@@ -271,18 +230,18 @@ export function Header() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 truncate">{user.fullName}</p>
-                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                          <p className="text-sm font-semibold text-charcoal truncate">{user.fullName}</p>
+                          <p className="text-xs text-ink-soft truncate">{user.email}</p>
                         </div>
                       </div>
                       <div className="p-1.5">
-                        <Link href="/account" onClick={() => setAccountMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-50 text-sm text-slate-700">
-                          <User className="h-4 w-4 text-[#1A6B3C]" /> My Account
+                        <Link href="/account" onClick={() => setAccountMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sage-wash/60 text-sm text-charcoal">
+                          <User className="h-4 w-4 text-pine" /> My Account
                         </Link>
-                        <Link href="/account/settings" onClick={() => setAccountMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-50 text-sm text-slate-700">
-                          <Settings className="h-4 w-4 text-[#1A6B3C]" /> Settings
+                        <Link href="/account/settings" onClick={() => setAccountMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sage-wash/60 text-sm text-charcoal">
+                          <Settings className="h-4 w-4 text-pine" /> Settings
                         </Link>
-                        <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 text-sm text-red-600">
+                        <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-terracotta/10 text-sm text-terracotta">
                           <LogOut className="h-4 w-4" /> Sign Out
                         </button>
                       </div>
@@ -292,18 +251,17 @@ export function Header() {
               ) : (
                 <Link
                   href="/login"
-                  className="hidden lg:flex items-center px-4 py-1.5 bg-[#1A6B3C] hover:bg-[#16A34A] text-white font-semibold text-xs rounded-md shadow-sm hover:shadow-md transition-all active:scale-95 ml-1"
+                  className="hidden lg:inline-flex items-center px-5 py-2 bg-pine hover:bg-brass-deep text-ivory font-semibold text-sm rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 ml-1"
                 >
                   Sign In
                 </Link>
               )}
 
-              {/* Mobile account icon (hidden on desktop — uses MobileBottomNav instead) */}
+              {/* Mobile account icon */}
               {isAuthenticated && user ? (
                 <Link href="/account" className="lg:hidden">
-                  <div className="w-7 h-7 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-xs font-bold overflow-hidden">
+                  <div className="w-7 h-7 rounded-full bg-pine text-ivory flex items-center justify-center text-xs font-bold overflow-hidden">
                     {user.profileImageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={user.profileImageUrl}
                         alt={user.fullName}
@@ -316,7 +274,7 @@ export function Header() {
                   </div>
                 </Link>
               ) : (
-                <Link href="/login" className="lg:hidden p-2 text-slate-700 hover:text-[#1A6B3C]">
+                <Link href="/login" className="lg:hidden p-2 text-pine hover:text-brass-deep">
                   <User className="h-5 w-5" />
                 </Link>
               )}
@@ -326,55 +284,43 @@ export function Header() {
 
         {/* Mobile expanded search */}
         {mobileSearchOpen && (
-          <div className="lg:hidden px-4 pb-3 border-b border-slate-100 bg-white">
+          <div className="lg:hidden px-4 pb-3 border-b border-line bg-ivory">
             <form onSubmit={handleSearchSubmit} className="flex gap-2">
-              <div className="flex-1 flex items-center border border-slate-300 rounded-md bg-slate-50 px-2.5 py-1.5">
-                <Search className="h-4 w-4 text-slate-400 mr-2" />
+              <div className="flex-1 flex items-center border border-line rounded-full bg-paper px-3.5 py-2">
+                <Search className="h-4 w-4 text-ink-soft mr-2" />
                 <input
                   type="text"
-                  placeholder="Search plants, services..."
+                  placeholder="Search plants, planters…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full text-xs font-semibold text-slate-700 bg-transparent outline-none"
+                  className="w-full text-sm text-charcoal bg-transparent outline-none placeholder:text-ink-soft/70"
+                  aria-label="Search products"
                 />
               </div>
-              <button type="submit" className="px-4 bg-[#1A6B3C] hover:bg-[#16A34A] text-white text-xs font-bold rounded-md">
+              <button type="submit" className="px-5 bg-pine hover:bg-brass-deep text-ivory text-sm font-semibold rounded-full">
                 Go
               </button>
             </form>
           </div>
         )}
 
-        {/* ---------- TIER 3: Category navigation ---------- */}
-        <div className="hidden lg:block h-11 border-t border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 lg:px-6 h-full flex justify-between items-center gap-4">
-            {/* Categories button — B12 FIX: Link to /shop instead of opening mobile drawer on desktop */}
-            <div className="relative h-full flex items-center">
-              <Link
-                href="/shop"
-                className="h-full flex items-center gap-1.5 font-bold text-xs text-slate-800 hover:text-[#1A6B3C] transition-colors cursor-pointer whitespace-nowrap"
-              >
-                <Menu className="h-4 w-4" />
-                <span className="hidden sm:inline">Categories</span>
-                <ChevronDown className="h-3 w-3 text-slate-400" />
-              </Link>
-            </div>
+        {/* ---------- TIER 3: Need-based navigation ---------- */}
+        <div className="hidden lg:block h-12 border-t border-line/60">
+          <div className="max-w-7xl mx-auto px-4 lg:px-6 h-full flex items-center gap-6">
+            <MegaMenu />
 
-            {/* Center nav links */}
-            <nav className="flex items-center gap-5 lg:gap-6 h-full">
+            <nav className="flex items-center gap-6 h-full" aria-label="Primary">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-[11px] font-bold uppercase tracking-wide py-3 whitespace-nowrap transition-colors",
-                    link.hideOnLg && "hidden lg:block",
-                    link.hideOnXl && "hidden xl:block",
+                    "text-[12px] font-bold uppercase tracking-[0.08em] py-3 whitespace-nowrap transition-colors",
                     link.accent
-                      ? "text-[#1A6B3C] hover:text-[#16A34A]"
+                      ? "text-brass-deep hover:text-pine"
                       : isActive(link.href)
-                      ? "text-[#1A6B3C]"
-                      : "text-slate-700 hover:text-[#1A6B3C]"
+                      ? "text-pine underline decoration-brass decoration-2 underline-offset-8"
+                      : "text-charcoal/80 hover:text-pine"
                   )}
                 >
                   {link.label}
@@ -382,21 +328,20 @@ export function Header() {
               ))}
             </nav>
 
-            {/* Right CTAs */}
-            <div className="flex items-center gap-3 ml-auto">
+            {/* Right: quick need links */}
+            <div className="flex items-center gap-4 ml-auto">
               <Link
-                href="/shop?filter=deals"
-                className="text-[11px] font-bold text-red-600 hover:text-red-700 uppercase tracking-wide flex items-center gap-0.5 whitespace-nowrap"
+                href="/shop?pet_safe=true"
+                className="text-[11px] font-semibold text-ink-soft hover:text-pine uppercase tracking-wide whitespace-nowrap transition-colors"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
-                <span className="hidden lg:inline">Deals</span>
+                Pet-Safe
               </Link>
-              <div className="h-3 w-px bg-slate-300" />
+              <span className="h-3 w-px bg-line" aria-hidden="true" />
               <Link
-                href="/shop?filter=seasonal"
-                className="text-[11px] font-bold text-amber-600 hover:text-amber-700 uppercase tracking-wide whitespace-nowrap"
+                href="/shop?difficulty=Easy"
+                className="text-[11px] font-semibold text-ink-soft hover:text-pine uppercase tracking-wide whitespace-nowrap transition-colors"
               >
-                Seasonal
+                Beginner
               </Link>
             </div>
           </div>

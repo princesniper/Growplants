@@ -34,7 +34,7 @@ export default function ProviderCalendarPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">Calendar</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">Calendar</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Calendar */}
@@ -57,9 +57,9 @@ export default function ProviderCalendarPage() {
               const hasBookings = CALENDAR_BOOKINGS[key];
               const isSelected = selectedDate === key;
               return (
-                <button key={day} onClick={() => setSelectedDate(key)} className={cn("aspect-square rounded-lg border text-sm font-medium transition-all relative", isSelected ? "bg-[#1A6B3C] text-white border-[#1A6B3C]" : hasBookings ? "bg-[#F3F8F1] border-[#1A6B3C]/20 text-[#1A6B3C] hover:border-[#1A6B3C]" : "border-slate-100 text-slate-600 hover:bg-slate-50")}>
+                <button key={day} onClick={() => setSelectedDate(key)} className={cn("aspect-square rounded-lg border text-sm font-medium transition-all relative", isSelected ? "bg-[#16382B] text-white border-[#16382B]" : hasBookings ? "bg-[#F3F8F1] border-[#16382B]/20 text-[#16382B] hover:border-[#16382B]" : "border-slate-100 text-slate-600 hover:bg-slate-50")}>
                   {day}
-                  {hasBookings && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">{hasBookings.map((_, j) => <span key={j} className={cn("size-1 rounded-full", isSelected ? "bg-white" : "bg-[#E8930A]")} />)}</span>}
+                  {hasBookings && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">{hasBookings.map((_, j) => <span key={j} className={cn("size-1 rounded-full", isSelected ? "bg-white" : "bg-[#C6A15B]")} />)}</span>}
                 </button>
               );
             })}
@@ -72,9 +72,9 @@ export default function ProviderCalendarPage() {
           {selectedDate && CALENDAR_BOOKINGS[selectedDate] ? (
             <div className="space-y-2">
               {CALENDAR_BOOKINGS[selectedDate].map((b, i) => (
-                <div key={i} className="p-3 rounded-lg bg-[#F3F8F1] border border-[#1A6B3C]/10">
+                <div key={i} className="p-3 rounded-lg bg-[#F3F8F1] border border-[#16382B]/10">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs font-semibold text-[#1A6B3C]">{b.time}</p>
+                    <p className="text-xs font-semibold text-[#16382B]">{b.time}</p>
                     <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded-full", b.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700")}>{b.status}</span>
                   </div>
                   <p className="text-sm font-medium text-slate-800">{b.service}</p>

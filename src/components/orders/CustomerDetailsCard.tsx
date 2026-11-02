@@ -48,13 +48,13 @@ function AddressCard({
     <div className={cn(
       "rounded-xl border p-4 space-y-3 transition-all",
       showGpsBadge && hasGps
-        ? "bg-[#F3F8F1] border-[#1A6B3C]/20"
+        ? "bg-[#F3F8F1] border-[#16382B]/20"
         : "bg-slate-50 border-slate-200",
     )}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <Icon className="size-4 text-[#1A6B3C]" />
+          <Icon className="size-4 text-[#16382B]" />
           <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide">{title}</h4>
         </div>
         {showGpsBadge && hasGps && (
@@ -67,7 +67,7 @@ function AddressCard({
 
       {/* Recipient */}
       <div className="flex items-start gap-2.5">
-        <div className="size-8 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center shrink-0 text-xs font-bold">
+        <div className="size-8 rounded-full bg-[#16382B] text-white flex items-center justify-center shrink-0 text-xs font-bold">
           {getInitials(address.fullName || "U")}
         </div>
         <div className="min-w-0">
@@ -75,7 +75,7 @@ function AddressCard({
           <div className="flex flex-col gap-0.5 mt-0.5">
             <a
               href={`tel:${address.phone}`}
-              className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#1A6B3C] transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#16382B] transition-colors"
             >
               <Phone className="size-3" />
               {address.phone}
@@ -83,7 +83,7 @@ function AddressCard({
             {address.email && (
               <a
                 href={`mailto:${address.email}`}
-                className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#1A6B3C] transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-slate-600 hover:text-[#16382B] transition-colors"
               >
                 <Mail className="size-3" />
                 <span className="truncate">{address.email}</span>
@@ -125,7 +125,7 @@ export function CustomerDetailsCard({ order, className }: CustomerDetailsCardPro
     >
       {/* Header */}
       <div className="flex items-center gap-2 p-5 sm:p-6 pb-3">
-        <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+        <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
           <User className="size-4 text-white" />
         </div>
         <h3 className="text-base sm:text-lg font-bold text-slate-800">Customer Details</h3>

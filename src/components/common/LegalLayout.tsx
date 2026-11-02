@@ -32,7 +32,7 @@ export function LegalLayout({
         {/* Main content */}
         <div className="lg:col-span-3 max-w-3xl">
           <div className="mb-8">
-            <h1 className="text-2xl md:text-4xl font-bold text-[#1A6B3C] mb-2">
+            <h1 className="text-2xl md:text-4xl font-bold text-[#16382B] mb-2">
               {title}
             </h1>
             <p className="text-sm text-slate-500">Last updated: {lastUpdated}</p>

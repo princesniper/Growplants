@@ -94,7 +94,7 @@ function ItemRow({ item, index }: { item: OrderItem; index: number }) {
           <div className="min-w-0">
             <Link
               href={`/product/${item.slug}`}
-              className="text-sm sm:text-base font-semibold text-slate-800 hover:text-[#1A6B3C] line-clamp-1 transition-colors"
+              className="text-sm sm:text-base font-semibold text-slate-800 hover:text-[#16382B] line-clamp-1 transition-colors"
             >
               {item.name}
             </Link>
@@ -133,7 +133,7 @@ function ItemRow({ item, index }: { item: OrderItem; index: number }) {
 
           {/* Line total */}
           <div className="text-right shrink-0">
-            <p className="text-sm sm:text-lg font-bold text-[#1A6B3C] tabular-nums">
+            <p className="text-sm sm:text-lg font-bold text-[#16382B] tabular-nums">
               {formatINR(lineTotal)}
             </p>
             {item.quantity > 1 && (
@@ -206,7 +206,7 @@ export function OrderItemsCard({ order, className }: OrderItemsCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-5 sm:p-6 pb-4 bg-gradient-to-r from-[#F3F8F1] to-transparent">
         <div className="flex items-center gap-2.5">
-          <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+          <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
             <Package className="size-4 text-white" />
           </div>
           <div>

@@ -38,11 +38,11 @@ export default function ProviderBookingsPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Bookings</h1>
+      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Bookings</h1>
 
       {/* Filters */}
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#1A6B3C] text-white" : "bg-white text-slate-700 border border-slate-200")}>{f.label}</button>)}
+        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#16382B] text-white" : "bg-white text-slate-700 border border-slate-200")}>{f.label}</button>)}
       </div>
 
       {/* Booking list */}
@@ -62,7 +62,7 @@ export default function ProviderBookingsPage() {
             <p className="text-xs text-slate-500 mb-3">📍 {b.address}</p>
             {b.notes && <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded mb-3">📝 {b.notes}</p>}
             <div className="flex flex-wrap gap-2">
-              {b.status === "pending" && <Button size="sm" className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-1.5" onClick={() => handleAction(b.id, "Confirmed")}><CheckCircle2 className="size-3.5" />Confirm</Button>}
+              {b.status === "pending" && <Button size="sm" className="bg-[#16382B] hover:bg-[#A8843F] gap-1.5" onClick={() => handleAction(b.id, "Confirmed")}><CheckCircle2 className="size-3.5" />Confirm</Button>}
               {b.status === "confirmed" && <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-1.5" onClick={() => handleAction(b.id, "In Progress")}><Play className="size-3.5" />Start Service</Button>}
               {b.status === "in_progress" && <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white gap-1.5" onClick={() => handleAction(b.id, "Completed")}><Camera className="size-3.5" />Complete + Upload Photos</Button>}
               {(b.status === "pending" || b.status === "confirmed") && <Button size="sm" variant="outline" className="border-red-500 text-red-500 gap-1.5" onClick={() => handleAction(b.id, "Cancelled")}><XCircle className="size-3.5" />Cancel</Button>}

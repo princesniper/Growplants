@@ -41,16 +41,16 @@ export default function AboutPage() {
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-4">
-              <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A]">How It Started</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1A6B3C]">From a Small Nursery to Sonipat&apos;s Trusted Plant Store</h2>
+              <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B]">How It Started</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#16382B]">From a Small Nursery to Sonipat&apos;s Trusted Plant Store</h2>
               <div className="space-y-3 text-base text-slate-600 leading-relaxed">
                 <p>GrowPlants began with a simple observation: finding healthy, quality plants in Sonipat was harder than it should be. Local nurseries had limited variety, online stores shipped damaged plants, and booking a reliable gardener felt like a gamble.</p>
                 <p>We set out to change that. What started as a small nursery in Sonipat has grown into Haryana&apos;s most trusted botanical marketplace — combining a curated plant store with a verified gardening service platform. Today, we serve over 1,200 happy customers across Sonipat, with plans to expand to every major city in Haryana.</p>
                 <p>Our mission is simple: make it easy for every Sonipat home to have healthy plants and expert gardening help. Whether you&apos;re a first-time plant parent or a seasoned gardener, we&apos;re here to help you grow.</p>
               </div>
               <div className="flex gap-3 pt-2">
-                <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"><Link href="/shop">Shop Plants <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
-                <Button asChild variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#1A6B3C] hover:text-white gap-2"><Link href="/contact">Contact Us <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
+                <Button asChild className="bg-[#16382B] hover:bg-[#A8843F] gap-2"><Link href="/shop">Shop Plants <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
+                <Button asChild variant="outline" className="border-[#16382B] text-[#16382B] hover:bg-[#16382B] hover:text-white gap-2"><Link href="/contact">Contact Us <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
               </div>
             </div>
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
@@ -60,7 +60,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      <section className="py-10 bg-[#1A6B3C] text-white">
+      <section className="py-10 bg-[#16382B] text-white">
         <Container>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((s) => (<div key={s.label} className="text-center"><p className="text-2xl md:text-4xl font-bold tabular-nums">{s.value}</p><p className="text-sm text-white/80 mt-1">{s.label}</p></div>))}
@@ -71,8 +71,8 @@ export default function AboutPage() {
       <section className="py-12 md:py-16 bg-[#F3F8F1]">
         <Container>
           <div className="max-w-3xl mx-auto text-center space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A6B3C]/10 text-[#1A6B3C] text-sm font-medium"><Sparkles className="size-4" aria-hidden="true" />Our Mission</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1A6B3C]">Make Every Sonipat Home a Little Greener</h2>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#16382B]/10 text-[#16382B] text-sm font-medium"><Sparkles className="size-4" aria-hidden="true" />Our Mission</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#16382B]">Make Every Sonipat Home a Little Greener</h2>
             <p className="text-base md:text-lg text-slate-600 leading-relaxed">We believe everyone deserves access to healthy plants and expert gardening help. That&apos;s why we&apos;ve built a platform that combines a carefully curated plant store with a network of verified, background-checked gardeners — all dedicated to helping you create and maintain beautiful green spaces, whether it&apos;s a single indoor plant or a full balcony garden transformation.</p>
           </div>
         </Container>
@@ -81,13 +81,13 @@ export default function AboutPage() {
       <section className="py-12 md:py-16 bg-white">
         <Container>
           <div className="text-center mb-10 max-w-2xl mx-auto">
-            <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A] mb-2">What We Stand For</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1A6B3C]">Our Core Values</h2>
+            <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B] mb-2">What We Stand For</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#16382B]">Our Core Values</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {VALUES.map((v) => (
               <div key={v.title} className="flex flex-col items-start gap-3 p-5 rounded-lg bg-[#F3F8F1] border border-slate-100 hover:shadow-md transition-all">
-                <div className="size-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#E8930A15" }}><v.icon className="size-6" style={{ color: "#E8930A" }} aria-hidden="true" /></div>
+                <div className="size-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#C6A15B15" }}><v.icon className="size-6" style={{ color: "#C6A15B" }} aria-hidden="true" /></div>
                 <div><h3 className="text-base font-semibold text-slate-800 mb-1">{v.title}</h3><p className="text-sm text-slate-600">{v.desc}</p></div>
               </div>
             ))}
@@ -97,12 +97,12 @@ export default function AboutPage() {
 
       <section className="py-12 md:py-16 bg-[#F3F8F1]">
         <Container>
-          <div className="relative overflow-hidden rounded-xl bg-[#1A6B3C] text-white p-8 md:p-12 text-center">
+          <div className="relative overflow-hidden rounded-xl bg-[#16382B] text-white p-8 md:p-12 text-center">
             <div className="relative z-10 max-w-2xl mx-auto space-y-4">
               <h2 className="text-2xl md:text-3xl font-bold">Ready to Start Your Green Journey?</h2>
               <p className="text-white/80">Shop healthy plants, book verified gardeners, or get free plant care advice on WhatsApp. We&apos;re here to help your garden thrive.</p>
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <Button asChild size="lg" className="bg-[#E8930A] hover:bg-[#E8930A]/90 text-white gap-2"><Link href="/shop">Shop Plants <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
+                <Button asChild size="lg" className="bg-[#C6A15B] hover:bg-[#C6A15B]/90 text-white gap-2"><Link href="/shop">Shop Plants <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
                 <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20 hover:text-white gap-2"><Link href="/services">Book a Gardener <ArrowRight className="size-4" aria-hidden="true" /></Link></Button>
               </div>
             </div>

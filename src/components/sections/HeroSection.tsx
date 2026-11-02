@@ -1,190 +1,109 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ShieldCheck, Star, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { HERO_SLIDES } from "@/data/homepageData";
+import { ArrowRight, Sun, Droplets, PawPrint, ShieldCheck } from "lucide-react";
+import { Container } from "@/components/common/Container";
+import { PincodeChecker } from "@/components/global/PincodeChecker";
+import { ScrollReveal } from "@/components/common/ScrollReveal";
 
-const AUTOPLAY_MS = 6000;
-
+/**
+ * HeroSection — editorial hero (blueprint D1.3).
+ * Serif H1 → subline → dual CTA (quiz + bestsellers) → trust microline with
+ * inline pincode checker. Right: lifestyle image with floating care-badge chips.
+ * Mobile: stacked, image first.
+ */
 export function HeroSection() {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const autoplayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const touchStartX = useRef<number | null>(null);
-
-  const goTo = useCallback((idx: number) => {
-    setActive((prev) => (idx + HERO_SLIDES.length) % HERO_SLIDES.length);
-  }, []);
-
-  const goNext = () => goTo(active + 1);
-  const goPrev = () => goTo(active - 1);
-
-  useEffect(() => {
-    if (paused) return;
-    const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-    autoplayRef.current = setTimeout(() => setActive((prev) => (prev + 1) % HERO_SLIDES.length), AUTOPLAY_MS);
-    return () => { if (autoplayRef.current) clearTimeout(autoplayRef.current); };
-  }, [active, paused]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 50) { if (delta > 0) goPrev(); else goNext(); }
-    touchStartX.current = null;
-  };
-
   return (
-    <section
-      className="relative w-full"
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Featured promotions"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-    >
+    <section className="relative overflow-hidden bg-ivory" aria-label="Welcome to GrowPlants">
+      {/* soft botanical wash */}
       <div
-        className="relative overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{ height: "clamp(420px, 55vw, 600px)" }}
-      >
-        {HERO_SLIDES.map((slide, idx) => {
-          const isActive = idx === active;
-          return (
-            <div
-              key={slide.id}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`Slide ${idx + 1} of ${HERO_SLIDES.length}: ${slide.headline}`}
-              aria-hidden={!isActive}
-              className={cn(
-                "absolute inset-0 transition-opacity duration-700",
-                isActive ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-              )}
-            >
-              <Image
-                src={slide.image}
-                alt={slide.imageAlt}
-                fill
-                priority={idx === 0}
-                sizes="100vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/20" />
+        className="pointer-events-none absolute inset-0"
+        aria-hidden="true"
+        style={{
+          background:
+            "radial-gradient(60% 80% at 85% 20%, rgba(198,161,91,0.12) 0%, transparent 60%), radial-gradient(50% 70% at 10% 90%, rgba(22,56,43,0.06) 0%, transparent 60%)",
+        }}
+      />
+      <Container className="relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center py-12 md:py-16 lg:py-24">
+          {/* Image first on mobile */}
+          <ScrollReveal variant="scale" className="order-1 lg:order-2">
+            <div className="relative mx-auto max-w-[520px]">
+              <div className="relative aspect-[4/5] sm:aspect-[5/5] lg:aspect-[4/4.6] overflow-hidden rounded-[28px] shadow-[0_24px_60px_rgba(22,56,43,0.18)]">
+                <Image
+                  src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1200&q=80"
+                  alt="Healthy indoor plants styled in a bright Sonipat home"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-pine-ink/25 via-transparent to-transparent" aria-hidden="true" />
+              </div>
 
-              <div className="relative h-full max-w-[1400px] mx-auto px-4 md:px-6 flex items-center">
-                <div className="max-w-xl space-y-4 md:space-y-5">
-                  {/* Badge */}
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#1A6B3C]/95 backdrop-blur-md rounded-full border border-emerald-500/30 text-white text-[10px] md:text-xs font-bold uppercase tracking-wider">
-                    <ShieldCheck className="size-3.5" aria-hidden="true" />
-                    {slide.badge}
-                  </span>
-
-                  {/* Headline */}
-                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                    {slide.headline}
-                  </h1>
-
-                  {/* Subtitle */}
-                  <p className="text-base md:text-lg text-white/90 max-w-md">
-                    {slide.subtitle}
-                  </p>
-
-                  {/* Trust badge */}
-                  <div className="flex items-center gap-1.5 text-white/95 text-sm font-semibold">
-                    <Star className="size-4 fill-[#E8930A] text-[#E8930A]" aria-hidden="true" />
-                    {slide.trustBadge}
-                  </div>
-
-                  {/* CTAs */}
-                  <div className="flex flex-wrap items-center gap-3 pt-2">
-                    <Button asChild size="lg" className="gap-2 bg-[#1A6B3C] hover:bg-[#16A34A] text-white text-sm md:text-base">
-                      <Link href={slide.primaryCta.href}>
-                        {slide.primaryCta.label}
-                        <ArrowRight className="size-4" aria-hidden="true" />
-                      </Link>
-                    </Button>
-                    <Button asChild size="lg" variant="outline" className="text-sm md:text-base bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20 hover:text-white">
-                      <Link href={slide.secondaryCta.href}>
-                        {slide.secondaryCta.label}
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
+              {/* Floating care-badge chips */}
+              <div className="absolute top-6 -left-2 sm:left-4 flex items-center gap-1.5 rounded-full bg-ivory/95 backdrop-blur px-3 py-2 shadow-lg border border-line animate-float">
+                <Sun className="size-4 text-brass-deep" aria-hidden="true" />
+                <span className="text-xs font-semibold text-pine">Bright indirect light</span>
+              </div>
+              <div
+                className="absolute top-1/3 -right-2 sm:right-4 flex items-center gap-1.5 rounded-full bg-ivory/95 backdrop-blur px-3 py-2 shadow-lg border border-line animate-float"
+                style={{ animationDelay: "0.8s" }}
+              >
+                <Droplets className="size-4 text-brass-deep" aria-hidden="true" />
+                <span className="text-xs font-semibold text-pine">Weekly watering</span>
+              </div>
+              <div
+                className="absolute bottom-8 left-4 sm:left-8 flex items-center gap-1.5 rounded-full bg-ivory/95 backdrop-blur px-3 py-2 shadow-lg border border-line animate-float"
+                style={{ animationDelay: "1.6s" }}
+              >
+                <PawPrint className="size-4 text-brass-deep" aria-hidden="true" />
+                <span className="text-xs font-semibold text-pine">Pet-safe picks</span>
               </div>
             </div>
-          );
-        })}
+          </ScrollReveal>
 
-        {/* Arrows */}
-        <button
-          type="button"
-          onClick={goPrev}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 size-11 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center text-slate-800 hover:bg-white hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="size-5" aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          onClick={goNext}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 size-11 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center text-slate-800 hover:bg-white hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="size-5" aria-hidden="true" />
-        </button>
+          {/* Copy */}
+          <ScrollReveal variant="up" className="order-2 lg:order-1">
+            <div className="max-w-xl">
+              <p className="inline-flex items-center gap-1.5 rounded-full border border-brass/40 bg-gold-tint/70 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brass-deep">
+                <ShieldCheck className="size-3.5" aria-hidden="true" />
+                Sonipat&apos;s nursery-fresh plant store
+              </p>
+              <h1 className="font-display text-pine mt-5 text-[2.75rem] leading-[1.05] sm:text-6xl lg:text-[4.25rem]">
+                Plants, <em className="text-brass-deep">chosen</em> for your home.
+              </h1>
+              <p className="mt-5 text-lg text-ink-soft leading-relaxed">
+                Nursery-fresh plants, delivered in Sonipat in 1–2 days — with pots that actually fit.
+              </p>
 
-        {/* Dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2" role="tablist" aria-label="Slide navigation">
-          {HERO_SLIDES.map((slide, idx) => (
-            <button
-              key={slide.id}
-              type="button"
-              role="tab"
-              aria-selected={idx === active}
-              aria-label={`Go to slide ${idx + 1}`}
-              onClick={() => goTo(idx)}
-              className={cn(
-                "h-2.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white",
-                idx === active ? "w-8 bg-[#E8930A]" : "w-2.5 bg-white/40 hover:bg-white/60"
-              )}
-            />
-          ))}
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/plant-finder"
+                  className="inline-flex items-center gap-2 rounded-full bg-pine px-7 py-3.5 text-base font-semibold text-ivory shadow-[0_12px_28px_rgba(22,56,43,0.25)] transition-all hover:bg-brass-deep hover:text-ivory hover:-translate-y-0.5 active:translate-y-0 min-h-[48px]"
+                >
+                  Find my plant
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-pine/25 px-7 py-3.5 text-base font-semibold text-pine transition-all hover:border-pine hover:bg-pine hover:text-ivory min-h-[48px]"
+                >
+                  Shop bestsellers
+                </Link>
+              </div>
+
+              {/* Trust microline + pincode checker */}
+              <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm text-ink-soft">
+                <span className="font-medium text-pine">30-day replacement · COD available</span>
+                <span className="hidden sm:inline h-4 w-px bg-line" aria-hidden="true" />
+                <PincodeChecker variant="compact" />
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
-
-        {/* Progress bar */}
-        {!paused && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20">
-            <div
-              key={active}
-              className="h-full bg-[#E8930A]"
-              style={{ animation: `hero-progress ${AUTOPLAY_MS}ms linear forwards` }}
-            />
-          </div>
-        )}
-      </div>
-
-      <style jsx>{`
-        @keyframes hero-progress {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
+      </Container>
     </section>
   );
 }

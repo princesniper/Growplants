@@ -20,7 +20,7 @@ export function MobileFilterSheet({ filters, onChange, onClear, open, onOpenChan
       <SheetContent side="bottom" className="h-[85vh] p-0 flex flex-col [&>button]:hidden">
         <SheetHeader className="p-4 border-b border-slate-200 space-y-0">
           <div className="flex items-center justify-between">
-            <SheetTitle className="text-base font-bold text-[#1A6B3C] flex items-center gap-2">
+            <SheetTitle className="text-base font-bold text-[#16382B] flex items-center gap-2">
               <SlidersHorizontal className="size-4" aria-hidden="true" />
               Filters
             </SheetTitle>
@@ -33,7 +33,7 @@ export function MobileFilterSheet({ filters, onChange, onClear, open, onOpenChan
           <FilterSidebar filters={filters} onChange={onChange} onClear={onClear} />
         </div>
         <div className="p-4 border-t border-slate-200">
-          <Button onClick={() => onOpenChange(false)} className="w-full bg-[#1A6B3C] hover:bg-[#16A34A]">
+          <Button onClick={() => onOpenChange(false)} className="w-full bg-[#16382B] hover:bg-[#A8843F]">
             Show {resultCount} Results
           </Button>
         </div>

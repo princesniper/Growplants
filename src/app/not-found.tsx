@@ -10,17 +10,17 @@ export default function NotFound() {
         {/* Illustration */}
         <div className="relative inline-block">
           <div className="size-24 md:size-32 rounded-full bg-[#F3F8F1] flex items-center justify-center mx-auto">
-            <Sprout className="size-12 md:size-16 text-[#1A6B3C]" aria-hidden="true" />
+            <Sprout className="size-12 md:size-16 text-[#16382B]" aria-hidden="true" />
           </div>
           {/* 404 badge */}
-          <div className="absolute -top-2 -right-2 bg-[#E8930A] text-white text-sm font-bold px-3 py-1 rounded-full">
+          <div className="absolute -top-2 -right-2 bg-[#C6A15B] text-white text-sm font-bold px-3 py-1 rounded-full">
             404
           </div>
         </div>
 
         {/* Text */}
         <div className="space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#1A6B3C]">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#16382B]">
             Oops! This Page Got Lost in the Garden
           </h1>
           <p className="text-base text-slate-600">
@@ -31,13 +31,13 @@ export default function NotFound() {
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+          <Button asChild className="bg-[#16382B] hover:bg-[#A8843F] gap-2">
             <Link href="/">
               <Home className="size-4" aria-hidden="true" />
               Back to Home
             </Link>
           </Button>
-          <Button asChild variant="outline" className="border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#1A6B3C] hover:text-white gap-2">
+          <Button asChild variant="outline" className="border-[#16382B] text-[#16382B] hover:bg-[#16382B] hover:text-white gap-2">
             <Link href="/shop">
               <ShoppingBag className="size-4" aria-hidden="true" />
               Browse Shop
@@ -47,7 +47,7 @@ export default function NotFound() {
 
         {/* Suggested links */}
         <div className="pt-6 border-t border-slate-200">
-          <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A] mb-3">
+          <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B] mb-3">
             Popular Destinations
           </p>
           <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
@@ -61,7 +61,7 @@ export default function NotFound() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-slate-600 hover:text-[#1A6B3C] font-medium hover:underline underline-offset-4 transition-colors"
+                  className="text-slate-600 hover:text-[#16382B] font-medium hover:underline underline-offset-4 transition-colors"
                 >
                   {link.label}
                 </Link>

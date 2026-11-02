@@ -739,7 +739,7 @@ export function MapLocationPicker({
                   className={cn(
                     "flex flex-col items-center gap-1 py-2.5 rounded-xl border-2 transition-all active:scale-95",
                     active
-                      ? "border-[#1A6B3C] bg-[#F0FAF4] text-[#1A6B3C]"
+                      ? "border-[#16382B] bg-[#F0FAF4] text-[#16382B]"
                       : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
                   )}
                   aria-pressed={active}
@@ -830,7 +830,7 @@ export function MapLocationPicker({
         {/* Phone */}
         <div className="space-y-1.5">
           <Label className="text-sm font-medium text-slate-700">Phone Number</Label>
-          <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1A6B3C]/20 focus-within:border-[#1A6B3C]">
+          <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#16382B]/20 focus-within:border-[#16382B]">
             <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">
               +91
             </span>
@@ -857,7 +857,7 @@ export function MapLocationPicker({
             id="picker-isDefault"
             checked={form.isDefault}
             onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
-            className="size-4 accent-[#1A6B3C]"
+            className="size-4 accent-[#16382B]"
           />
           <Label htmlFor="picker-isDefault" className="text-sm cursor-pointer">
             Set as default address
@@ -891,7 +891,7 @@ export function MapLocationPicker({
           className={cn(
             "w-full h-12 gap-2 text-sm font-semibold",
             locationVerified && !isSaving
-              ? "bg-[#1A6B3C] hover:bg-[#16A34A] shadow-md shadow-[#1A6B3C]/20"
+              ? "bg-[#16382B] hover:bg-[#A8843F] shadow-md shadow-[#16382B]/20"
               : "bg-slate-300 text-slate-500 cursor-not-allowed"
           )}
         >
@@ -940,7 +940,7 @@ export function MapLocationPicker({
                   setSearchResults([]);
                 }
               }}
-              className="w-full h-10 pl-10 pr-10 rounded-full bg-white shadow-md focus:ring-2 focus:ring-[#1A6B3C]/20 focus:border-[#1A6B3C] border border-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
+              className="w-full h-10 pl-10 pr-10 rounded-full bg-white shadow-md focus:ring-2 focus:ring-[#16382B]/20 focus:border-[#16382B] border border-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
             />
             {searchQuery && (
               <button
@@ -967,7 +967,7 @@ export function MapLocationPicker({
                     onClick={() => handleSelectSearchResult(r)}
                     className="w-full text-left px-3 py-2.5 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-0 flex items-start gap-2"
                   >
-                    <MapPin className="size-4 text-[#1A6B3C] mt-0.5 shrink-0" />
+                    <MapPin className="size-4 text-[#16382B] mt-0.5 shrink-0" />
                     <span className="text-xs text-slate-700 line-clamp-2 leading-snug">
                       {r.displayName}
                     </span>
@@ -986,9 +986,9 @@ export function MapLocationPicker({
             title="Use my current GPS location"
           >
             {isLocating ? (
-              <Loader2 className="size-5 text-[#1A6B3C] animate-spin" />
+              <Loader2 className="size-5 text-[#16382B] animate-spin" />
             ) : (
-              <Crosshair className="size-5 text-[#1A6B3C]" />
+              <Crosshair className="size-5 text-[#16382B]" />
             )}
           </button>
         </div>
@@ -1006,7 +1006,7 @@ export function MapLocationPicker({
       {!isMapReady && (
         <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100">
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="size-7 animate-spin text-[#1A6B3C]" />
+            <Loader2 className="size-7 animate-spin text-[#16382B]" />
             <p className="text-xs text-slate-500">Loading map…</p>
           </div>
         </div>
@@ -1059,7 +1059,7 @@ export function MapLocationPicker({
       {isMapReady && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
           {isMapPanning ? (
-            <div className="bg-[#1A6B3C] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+            <div className="bg-[#16382B] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
               <Navigation className="size-3" />
               Move the map to position the pin
             </div>
@@ -1086,7 +1086,7 @@ export function MapLocationPicker({
             {/* Address row */}
             <div className="flex items-start gap-3">
               <div className="size-9 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0 mt-0.5">
-                <MapPin className="size-4 text-[#1A6B3C]" />
+                <MapPin className="size-4 text-[#16382B]" />
               </div>
               <div className="flex-1 min-w-0">
                 {isReverseGeocoding ? (
@@ -1168,7 +1168,7 @@ export function MapLocationPicker({
                 className={cn(
                   "w-full h-11 gap-2 text-sm font-semibold",
                   canConfirmLocation
-                    ? "bg-[#1A6B3C] hover:bg-[#16A34A] shadow-md shadow-[#1A6B3C]/20"
+                    ? "bg-[#16382B] hover:bg-[#A8843F] shadow-md shadow-[#16382B]/20"
                     : "bg-slate-300 text-slate-500 cursor-not-allowed"
                 )}
               >
@@ -1215,7 +1215,7 @@ export function MapLocationPicker({
           transform: translateX(-50%) rotate(-45deg);
           width: 30px;
           height: 30px;
-          background: linear-gradient(135deg, #1A6B3C 0%, #16A34A 100%);
+          background: linear-gradient(135deg, #16382B 0%, #A8843F 100%);
           border: 3px solid white;
           border-radius: 50% 50% 50% 0;
           box-shadow: 0 6px 14px rgba(26, 107, 60, 0.45), 0 1px 3px rgba(0,0,0,0.18);
@@ -1234,7 +1234,7 @@ export function MapLocationPicker({
           transform: translateX(-50%);
           width: 4px;
           height: 14px;
-          background: linear-gradient(180deg, #1A6B3C 0%, #0d4a26 100%);
+          background: linear-gradient(180deg, #16382B 0%, #0d4a26 100%);
           border-radius: 0 0 2px 2px;
         }
         .gp-pin-shadow {

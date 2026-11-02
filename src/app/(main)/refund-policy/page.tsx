@@ -29,7 +29,7 @@ export default function RefundPolicyPage() {
       />
       <LegalLayout title="Refund & Return Policy" lastUpdated="1 January 2026" tocItems={TOC}>
         <section id="overview" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">1. Overview</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">1. Overview</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>At GrowPlants, we want you to be completely satisfied with your purchase. This Refund Policy explains the conditions under which we accept returns and issue refunds for plants, planters, gardening products, and gardening services.</p>
             <p>Since plants are living products, our return policy for plants differs from non-living products. Please read the sections below carefully to understand your eligibility for returns and refunds.</p>
@@ -38,7 +38,7 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="plants" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">2. Plant Returns (24-Hour Damage Guarantee)</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">2. Plant Returns (24-Hour Damage Guarantee)</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p><strong className="text-slate-800">24-Hour Damage Claim Window:</strong> If your plant arrives damaged, wilted, or in poor health, you must report it within 24 hours of delivery. Contact us via WhatsApp or email with your order number and clear photos of the damaged plant.</p>
             <p><strong className="text-slate-800">Resolution Options:</strong></p>
@@ -52,7 +52,7 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="planters" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">3. Planters &amp; Accessories (7-Day Return)</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">3. Planters &amp; Accessories (7-Day Return)</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p><strong className="text-slate-800">7-Day Return Window:</strong> Planters, pots, tools, seeds, fertilizers, and other gardening accessories can be returned within 7 days of delivery if they have manufacturing defects or arrived damaged during shipping.</p>
             <p><strong className="text-slate-800">Conditions for Return:</strong></p>
@@ -68,7 +68,7 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="services" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">4. Gardening Service Cancellations &amp; Refunds</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">4. Gardening Service Cancellations &amp; Refunds</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p><strong className="text-slate-800">Cancellation by Customer:</strong></p>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -83,7 +83,7 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="timelines" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">5. Refund Timelines</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">5. Refund Timelines</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>Refunds are initiated after approval and processed as follows:</p>
             <div className="overflow-x-auto">
@@ -107,11 +107,11 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="process" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">6. How to Request a Refund</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">6. How to Request a Refund</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>To request a refund, follow these steps:</p>
             <ol className="list-decimal pl-5 space-y-1.5">
-              <li>Contact us via WhatsApp (<a href="https://wa.me/919812345678" className="text-[#1A6B3C] hover:underline">+91 98123 45678</a>) or email (<a href="mailto:hello@growplants.in" className="text-[#1A6B3C] hover:underline">hello@growplants.in</a>).</li>
+              <li>Contact us via WhatsApp (<a href="https://wa.me/919812345678" className="text-[#16382B] hover:underline">+91 98123 45678</a>) or email (<a href="mailto:hello@growplants.in" className="text-[#16382B] hover:underline">hello@growplants.in</a>).</li>
               <li>Provide your order number or booking ID.</li>
               <li>For damaged plants: Attach clear photos taken within 24 hours of delivery.</li>
               <li>For defective accessories: Attach photos of the defect.</li>
@@ -122,7 +122,7 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="non-refundable" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">7. Non-Refundable Items</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">7. Non-Refundable Items</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>The following are not eligible for refunds:</p>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -137,13 +137,13 @@ export default function RefundPolicyPage() {
         </section>
 
         <section id="contact" className="scroll-mt-24">
-          <h2 className="text-xl font-bold text-[#1A6B3C] mb-3">8. Contact</h2>
+          <h2 className="text-xl font-bold text-[#16382B] mb-3">8. Contact</h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>If you have any questions about our Refund Policy, please contact us:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Email: <a href="mailto:hello@growplants.in" className="text-[#1A6B3C] hover:underline">hello@growplants.in</a></li>
-              <li>Phone: <a href="tel:+919812345678" className="text-[#1A6B3C] hover:underline">+91 98123 45678</a></li>
-              <li>WhatsApp: <a href="https://wa.me/919812345678" className="text-[#1A6B3C] hover:underline">Chat with us</a></li>
+              <li>Email: <a href="mailto:hello@growplants.in" className="text-[#16382B] hover:underline">hello@growplants.in</a></li>
+              <li>Phone: <a href="tel:+919812345678" className="text-[#16382B] hover:underline">+91 98123 45678</a></li>
+              <li>WhatsApp: <a href="https://wa.me/919812345678" className="text-[#16382B] hover:underline">Chat with us</a></li>
               <li>Address: Sonipat, Haryana 131001, India</li>
             </ul>
           </div>

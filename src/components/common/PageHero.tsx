@@ -37,11 +37,11 @@ export function PageHero({
               <li key={i} className="flex items-center gap-1.5">
                 {i > 0 && <ChevronRight className="size-3 text-slate-400" aria-hidden="true" />}
                 {crumb.href ? (
-                  <Link href={crumb.href} className="hover:text-[#1A6B3C] transition-colors">
+                  <Link href={crumb.href} className="hover:text-[#16382B] transition-colors">
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className="text-[#1A6B3C] font-medium">{crumb.label}</span>
+                  <span className="text-[#16382B] font-medium">{crumb.label}</span>
                 )}
               </li>
             ))}
@@ -50,11 +50,11 @@ export function PageHero({
 
         <div className={cn(align === "center" && "text-center mx-auto max-w-3xl")}>
           {overline && (
-            <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A] mb-2">
+            <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B] mb-2">
               {overline}
             </p>
           )}
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#1A6B3C] leading-tight">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-[#16382B] leading-tight">
             {title}
           </h1>
           {subtitle && (

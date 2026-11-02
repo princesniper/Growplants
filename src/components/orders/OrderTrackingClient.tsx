@@ -151,7 +151,7 @@ export function OrderTrackingClient({ orderId }: OrderTrackingClientProps) {
       <Container className="py-6 md:py-10">
         <Link
           href="/account/orders"
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4"
+          className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-4"
         >
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
@@ -169,7 +169,7 @@ export function OrderTrackingClient({ orderId }: OrderTrackingClientProps) {
       <Container className="py-6 md:py-10">
         <Link
           href="/account/orders"
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4"
+          className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-4"
         >
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
@@ -207,7 +207,7 @@ export function OrderTrackingClient({ orderId }: OrderTrackingClientProps) {
       {/* Back link */}
       <Link
         href="/account/orders"
-        className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-5 transition-colors"
+        className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#16382B] mb-5 transition-colors"
       >
         <ArrowLeft className="size-3.5" /> Back to Orders
       </Link>
@@ -252,9 +252,9 @@ export function OrderTrackingClient({ orderId }: OrderTrackingClientProps) {
           />
 
           {/* GrowPlants Care guarantee */}
-          <div className="bg-gradient-to-br from-[#F3F8F1] to-white rounded-2xl border border-[#1A6B3C]/10 p-5 shadow-sm">
+          <div className="bg-gradient-to-br from-[#F3F8F1] to-white rounded-2xl border border-[#16382B]/10 p-5 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="size-10 rounded-xl bg-[#1A6B3C] flex items-center justify-center shrink-0">
+              <div className="size-10 rounded-xl bg-[#16382B] flex items-center justify-center shrink-0">
                 <span className="text-lg">🌿</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -264,7 +264,7 @@ export function OrderTrackingClient({ orderId }: OrderTrackingClientProps) {
                 </p>
                 <Link
                   href="/refund-policy"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#1A6B3C] hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#16382B] hover:underline"
                 >
                   Learn more →
                 </Link>

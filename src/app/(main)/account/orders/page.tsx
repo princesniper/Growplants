@@ -43,24 +43,24 @@ export default function OrdersPage() {
 
   return (
     <Container className="py-8 md:py-10">
-      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Orders</h1>
+      <h1 className="font-display text-2xl text-pine mb-6">My Orders</h1>
 
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
         {FILTERS.map((f) => (
-          <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#16382B] text-white" : "bg-white text-slate-700 border border-slate-200 hover:border-[#16382B]/30")}>{f.label}</button>
+          <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-pine text-white" : "bg-paper text-ink border border-line hover:border-pine/30")}>{f.label}</button>
         ))}
       </div>
 
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <p className="text-sm text-slate-500 text-center py-8">No {filter} orders found.</p>
+          <p className="text-sm text-ink-soft text-center py-8">No {filter} orders found.</p>
         ) : (
           filtered.map((order) => (
-            <Link key={order.id} href={`/account/orders/${order.id}`} className="block bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-[#16382B]/20 transition-all">
+            <Link key={order.id} href={`/account/orders/${order.id}`} className="block bg-paper border border-line rounded-[18px] p-4 hover:shadow-md hover:border-pine/20 transition-all">
               <div className="flex items-center justify-between gap-3 mb-2">
                 <div>
-                  <p className="text-sm font-bold text-slate-800">#{order.orderNumber}</p>
-                  <p className="text-xs text-slate-500">Placed on {formatDate(order.createdAt)}</p>
+                  <p className="text-sm font-bold text-ink">#{order.orderNumber}</p>
+                  <p className="text-xs text-ink-soft">Placed on {formatDate(order.createdAt)}</p>
                 </div>
                 <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-full", ORDER_STATUS_COLORS[order.orderStatus])}>
                   {ORDER_STATUS_LABELS[order.orderStatus]}
@@ -69,23 +69,23 @@ export default function OrdersPage() {
 
               <div className="flex items-center gap-2 mb-3">
                 {order.items.slice(0, 3).map((item, i) => (
-                  <div key={i} className="relative size-10 rounded-lg overflow-hidden bg-slate-50 shrink-0">
+                  <div key={i} className="relative size-10 rounded-lg overflow-hidden bg-stone shrink-0">
                     {item.image && <Image src={item.image} alt={item.name} fill sizes="40px" className="object-cover" />}
                   </div>
                 ))}
-                {order.items.length > 3 && <span className="text-xs text-slate-500">+{order.items.length - 3} more</span>}
+                {order.items.length > 3 && <span className="text-xs text-ink-soft">+{order.items.length - 3} more</span>}
                 <div className="flex-1" />
-                <p className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(order.total)}</p>
+                <p className="text-sm font-bold text-pine tabular-nums">{formatINR(order.total)}</p>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-xs text-ink-soft">
                 <span className="flex items-center gap-1.5">
                   {order.items.length} {order.items.length === 1 ? "item" : "items"} · {order.paymentMethod === "cod" ? "COD" : "Paid Online"}
                   <span className={cn("font-semibold px-1.5 py-0.5 rounded-full", PAYMENT_STATUS_COLORS[order.paymentStatus])}>
                     {PAYMENT_STATUS_LABELS[order.paymentStatus]}
                   </span>
                 </span>
-                <span className="flex items-center gap-0.5 text-[#16382B] font-medium">View Details <ChevronRight className="size-3" /></span>
+                <span className="flex items-center gap-0.5 text-pine font-medium">View Details <ChevronRight className="size-3" /></span>
               </div>
             </Link>
           ))

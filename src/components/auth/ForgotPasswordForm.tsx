@@ -54,7 +54,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
           <CheckCircle2 className="size-8" aria-hidden="true" />
         </div>
         <div className="space-y-2">
-          <h3 className="text-h4 font-semibold text-foreground">Check your inbox</h3>
+          <h3 className="font-display text-h4 font-semibold text-foreground">Check your inbox</h3>
           <p className="text-body-sm text-muted-foreground max-w-sm mx-auto">
             We&apos;ve sent a password reset link to{" "}
             <span className="font-semibold text-foreground">{submittedIdentifier}</span>.
@@ -74,7 +74,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
             .
           </AlertDescription>
         </Alert>
-        <Button onClick={onBackToLogin} variant="outline" className="w-full gap-2">
+        <Button onClick={onBackToLogin} variant="outline" className="w-full gap-2 rounded-full">
           <ArrowLeft className="size-4" aria-hidden="true" />
           Back to login
         </Button>
@@ -99,7 +99,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
             type="text"
             autoComplete="username"
             placeholder="you@email.com or +91 98765 43210"
-            className="pl-9 h-12 rounded-md"
+            className="pl-9 h-12 rounded-xl"
             aria-invalid={!!errors.identifier}
             aria-describedby={errors.identifier ? "forgot-identifier-error" : undefined}
             {...register("identifier")}
@@ -131,7 +131,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-12 gap-2"
+        className="w-full h-12 gap-2 rounded-full"
         size="lg"
       >
         {isSubmitting ? (

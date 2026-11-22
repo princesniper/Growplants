@@ -81,7 +81,7 @@ export function EmptyState({
         <Icon className={s.icon} aria-hidden="true" />
       </div>
       <div className="space-y-1.5 max-w-sm">
-        <h3 className={cn("font-semibold text-foreground", s.title)}>{title}</h3>
+        <h3 className={cn("font-display font-semibold text-foreground", s.title)}>{title}</h3>
         {description && (
           <p className={cn("text-muted-foreground", s.desc)}>{description}</p>
         )}

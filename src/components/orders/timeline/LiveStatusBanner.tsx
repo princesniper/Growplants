@@ -11,12 +11,12 @@
  *   Expected delivery: Tomorrow between 10:00 AM – 2:00 PM
  *
  * Variants by current status:
- *   - pending / payment_confirmed → amber (order received)
- *   - confirmed / processing / quality_inspection / packed → blue (preparing)
- *   - shipped → purple (shipped, with ETA)
- *   - out_for_delivery → orange (out for delivery, with arrival time)
- *   - delivered → green (delivered, with delivery time)
- *   - cancelled → red
+ *   - pending / payment_confirmed → gold/brass (order received)
+ *   - confirmed / processing / quality_inspection / packed → pine/terracotta (preparing)
+ *   - shipped → gold/brass (shipped, with ETA)
+ *   - out_for_delivery → terracotta/clay (out for delivery, with arrival time)
+ *   - delivered → moss/sage (delivered, with delivery time)
+ *   - cancelled → terracotta
  * ============================================================================
  */
 import { cn } from "@/lib/utils";
@@ -55,12 +55,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "❌",
       headline: "Your order has been cancelled.",
       subline: order.statusHistory.find((s) => s.status === "cancelled")?.note,
-      bg: "bg-red-50",
-      border: "border-red-200",
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
-      headlineColor: "text-red-800",
-      sublineColor: "text-red-600",
+      bg: "bg-terracotta/10",
+      border: "border-terracotta/30",
+      iconBg: "bg-clay",
+      iconColor: "text-terracotta",
+      headlineColor: "text-terracotta",
+      sublineColor: "text-terracotta",
     };
   }
 
@@ -77,12 +77,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "🎉",
       headline: "Your order has been delivered!",
       subline: deliveryTime ? `Delivered on ${deliveryTime}` : undefined,
-      bg: "bg-green-50",
-      border: "border-green-200",
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
-      headlineColor: "text-green-800",
-      sublineColor: "text-green-700",
+      bg: "bg-sage-wash",
+      border: "border-moss/25",
+      iconBg: "bg-sage-wash",
+      iconColor: "text-moss",
+      headlineColor: "text-moss",
+      sublineColor: "text-moss",
     };
   }
 
@@ -93,12 +93,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "📦",
       headline: "Your order has been shipped.",
       subline: estimatedDelivery ? `Expected delivery: ${estimatedDelivery}` : undefined,
-      bg: "bg-purple-50",
-      border: "border-purple-200",
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
-      headlineColor: "text-purple-800",
-      sublineColor: "text-purple-700",
+      bg: "bg-gold-tint/60",
+      border: "border-brass/30",
+      iconBg: "bg-gold-tint",
+      iconColor: "text-brass-deep",
+      headlineColor: "text-pine",
+      sublineColor: "text-ink-soft",
     };
   }
 
@@ -109,12 +109,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "🚚",
       headline: "Your order is out for delivery!",
       subline: estimatedDelivery ? `Arriving: ${estimatedDelivery}` : "Delivery agent is on the way",
-      bg: "bg-orange-50",
-      border: "border-orange-200",
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
-      headlineColor: "text-orange-800",
-      sublineColor: "text-orange-700",
+      bg: "bg-clay/60",
+      border: "border-terracotta/30",
+      iconBg: "bg-clay",
+      iconColor: "text-terracotta",
+      headlineColor: "text-terracotta",
+      sublineColor: "text-terracotta/80",
     };
   }
 
@@ -125,12 +125,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "🌿",
       headline: "Your plants are undergoing quality inspection.",
       subline: "Each plant is being carefully checked for health and quality.",
-      bg: "bg-teal-50",
-      border: "border-teal-200",
-      iconBg: "bg-teal-100",
-      iconColor: "text-teal-600",
-      headlineColor: "text-teal-800",
-      sublineColor: "text-teal-700",
+      bg: "bg-sage-wash",
+      border: "border-pine/20",
+      iconBg: "bg-sage-wash",
+      iconColor: "text-pine",
+      headlineColor: "text-pine",
+      sublineColor: "text-ink-soft",
     };
   }
 
@@ -141,12 +141,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "📦",
       headline: "Your order has been packed safely.",
       subline: "Ready to be handed over to the courier.",
-      bg: "bg-cyan-50",
-      border: "border-cyan-200",
-      iconBg: "bg-cyan-100",
-      iconColor: "text-cyan-600",
-      headlineColor: "text-cyan-800",
-      sublineColor: "text-cyan-700",
+      bg: "bg-stone",
+      border: "border-line",
+      iconBg: "bg-stone",
+      iconColor: "text-pine",
+      headlineColor: "text-pine",
+      sublineColor: "text-ink-soft",
     };
   }
 
@@ -157,12 +157,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "🌱",
       headline: "We're preparing your plants.",
       subline: "Your order is being carefully prepared for dispatch.",
-      bg: "bg-indigo-50",
-      border: "border-indigo-200",
-      iconBg: "bg-indigo-100",
-      iconColor: "text-indigo-600",
-      headlineColor: "text-indigo-800",
-      sublineColor: "text-indigo-700",
+      bg: "bg-clay/60",
+      border: "border-terracotta/30",
+      iconBg: "bg-clay",
+      iconColor: "text-terracotta",
+      headlineColor: "text-terracotta",
+      sublineColor: "text-terracotta/80",
     };
   }
 
@@ -173,12 +173,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
       emoji: "✅",
       headline: "Payment confirmed. Thank you!",
       subline: "Our team will confirm your order shortly.",
-      bg: "bg-emerald-50",
-      border: "border-emerald-200",
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
-      headlineColor: "text-emerald-800",
-      sublineColor: "text-emerald-700",
+      bg: "bg-sage-wash",
+      border: "border-moss/25",
+      iconBg: "bg-sage-wash",
+      iconColor: "text-moss",
+      headlineColor: "text-moss",
+      sublineColor: "text-moss",
     };
   }
 
@@ -190,12 +190,12 @@ function getBannerConfig(order: Order, estimatedDelivery?: string): BannerConfig
     subline: order.paymentMethod === "cod"
       ? "Please keep the cash ready for delivery."
       : "We're verifying your payment.",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    headlineColor: "text-amber-800",
-    sublineColor: "text-amber-700",
+    bg: "bg-gold-tint/60",
+    border: "border-brass/30",
+    iconBg: "bg-gold-tint",
+    iconColor: "text-brass-deep",
+    headlineColor: "text-pine",
+    sublineColor: "text-ink-soft",
   };
 }
 
@@ -223,7 +223,7 @@ export function LiveStatusBanner({
         {/* Icon */}
         <div
           className={cn(
-            "size-11 sm:size-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+            "size-11 sm:size-12 rounded-[18px] flex items-center justify-center shrink-0 shadow-sm",
             config.iconBg,
           )}
         >
@@ -232,7 +232,7 @@ export function LiveStatusBanner({
 
         {/* Content */}
         <div className="flex-1 min-w-0 space-y-0.5">
-          <p className={cn("text-sm sm:text-base font-bold leading-tight", config.headlineColor)}>
+          <p className={cn("font-display text-sm sm:text-base leading-tight", config.headlineColor)}>
             <span className="mr-1.5" aria-hidden="true">{config.emoji}</span>
             {config.headline}
           </p>
@@ -247,10 +247,10 @@ export function LiveStatusBanner({
         {order.orderStatus !== "delivered" && order.orderStatus !== "cancelled" && (
           <div className="hidden sm:flex items-center gap-1.5 shrink-0">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-              <span className="relative inline-flex size-2 rounded-full bg-green-500" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-moss opacity-75 animate-ping" />
+              <span className="relative inline-flex size-2 rounded-full bg-sage-wash0" />
             </span>
-            <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wide">
+            <span className="text-[10px] font-medium text-ink-soft uppercase tracking-wide">
               Live
             </span>
           </div>
@@ -259,7 +259,7 @@ export function LiveStatusBanner({
 
       {/* Decorative leaf pattern (botanical theme) */}
       <Leaf
-        className="absolute -bottom-3 -right-3 size-20 opacity-10 rotate-12"
+        className="absolute -bottom-3 -right-3 size-20 text-pine opacity-10 rotate-12"
         aria-hidden="true"
       />
     </div>

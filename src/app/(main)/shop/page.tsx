@@ -42,12 +42,34 @@ function ShopPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const initialCategory = searchParams.get("category");
+  // Read the filters this page writes to the URL (updateURL, C13) on load,
+  // so shared links and the plant-finder deep-link (?quiz=1) restore the
+  // same filters. Absent params fall back to DEFAULT_FILTERS, so normal
+  // navigation is unchanged.
+  const initialFilters: ShopFilters = (() => {
+    const split = (v: string | null) => (v ? v.split(",").filter(Boolean) : []);
+    const num = (v: string | null, fallback: number) => {
+      const n = v === null ? NaN : parseInt(v, 10);
+      return Number.isNaN(n) ? fallback : n;
+    };
+    const singleCategory = searchParams.get("category");
+    return {
+      ...DEFAULT_FILTERS,
+      categories: singleCategory ? [singleCategory] : split(searchParams.get("categories")),
+      minRating: num(searchParams.get("rating"), DEFAULT_FILTERS.minRating),
+      inStockOnly: searchParams.get("in_stock") === "true",
+      petSafeOnly: searchParams.get("pet_safe") === "true",
+      priceRange: [
+        num(searchParams.get("min_price"), DEFAULT_FILTERS.priceRange[0]),
+        num(searchParams.get("max_price"), DEFAULT_FILTERS.priceRange[1]),
+      ] as [number, number],
+      sunlight: split(searchParams.get("sunlight")),
+      difficulty: split(searchParams.get("difficulty")),
+      suitableFor: split(searchParams.get("suitable_for")),
+    };
+  })();
 
-  const [filters, setFilters] = useState<ShopFilters>({
-    ...DEFAULT_FILTERS,
-    categories: initialCategory ? [initialCategory] : [],
-  });
+  const [filters, setFilters] = useState<ShopFilters>(initialFilters);
   const [sort, setSort] = useState<SortValue>("featured");
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);

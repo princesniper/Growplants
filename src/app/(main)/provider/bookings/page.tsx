@@ -38,35 +38,35 @@ export default function ProviderBookingsPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#16382B] mb-6">My Bookings</h1>
+      <h1 className="text-2xl font-bold text-pine mb-6">My Bookings</h1>
 
       {/* Filters */}
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#16382B] text-white" : "bg-white text-slate-700 border border-slate-200")}>{f.label}</button>)}
+        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-pine text-ivory" : "bg-paper text-ink border border-line")}>{f.label}</button>)}
       </div>
 
       {/* Booking list */}
       <div className="space-y-3">
         {filtered.map((b) => (
-          <div key={b.id} className="bg-white border border-slate-200 rounded-xl p-4">
+          <div key={b.id} className="bg-paper border border-line rounded-[18px] p-4">
             <div className="flex items-center justify-between gap-3 mb-2">
-              <div><p className="text-sm font-bold text-slate-800">{b.bookingNumber}</p><p className="text-xs text-slate-500">{b.serviceName}</p></div>
+              <div><p className="text-sm font-bold text-charcoal">{b.bookingNumber}</p><p className="text-xs text-ink-soft">{b.serviceName}</p></div>
               <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-full", BOOKING_STATUS_COLORS[b.status])}>{BOOKING_STATUS_LABELS[b.status]}</span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-600 mb-3">
-              <div><span className="font-medium text-slate-700">Customer:</span> {b.customerName}</div>
-              <div><span className="font-medium text-slate-700">Date:</span> {formatDate(b.date)}</div>
-              <div><span className="font-medium text-slate-700">Time:</span> {b.timeSlot}</div>
-              <div><span className="font-medium text-slate-700">Amount:</span> {formatINR(b.price)}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-ink-soft mb-3">
+              <div><span className="font-medium text-ink">Customer:</span> {b.customerName}</div>
+              <div><span className="font-medium text-ink">Date:</span> {formatDate(b.date)}</div>
+              <div><span className="font-medium text-ink">Time:</span> {b.timeSlot}</div>
+              <div><span className="font-medium text-ink">Amount:</span> {formatINR(b.price)}</div>
             </div>
-            <p className="text-xs text-slate-500 mb-3">📍 {b.address}</p>
-            {b.notes && <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded mb-3">📝 {b.notes}</p>}
+            <p className="text-xs text-ink-soft mb-3">📍 {b.address}</p>
+            {b.notes && <p className="text-xs text-brass-deep bg-gold-tint p-2 rounded mb-3">📝 {b.notes}</p>}
             <div className="flex flex-wrap gap-2">
-              {b.status === "pending" && <Button size="sm" className="bg-[#16382B] hover:bg-[#A8843F] gap-1.5" onClick={() => handleAction(b.id, "Confirmed")}><CheckCircle2 className="size-3.5" />Confirm</Button>}
-              {b.status === "confirmed" && <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-1.5" onClick={() => handleAction(b.id, "In Progress")}><Play className="size-3.5" />Start Service</Button>}
-              {b.status === "in_progress" && <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white gap-1.5" onClick={() => handleAction(b.id, "Completed")}><Camera className="size-3.5" />Complete + Upload Photos</Button>}
-              {(b.status === "pending" || b.status === "confirmed") && <Button size="sm" variant="outline" className="border-red-500 text-red-500 gap-1.5" onClick={() => handleAction(b.id, "Cancelled")}><XCircle className="size-3.5" />Cancel</Button>}
-              <Button size="sm" variant="outline" className="border-slate-300 text-slate-600 gap-1.5" onClick={() => setSelected(b)}><ChevronRight className="size-3.5" />Details</Button>
+              {b.status === "pending" && <Button size="sm" className="bg-pine hover:bg-brass-deep gap-1.5" onClick={() => handleAction(b.id, "Confirmed")}><CheckCircle2 className="size-3.5" />Confirm</Button>}
+              {b.status === "confirmed" && <Button size="sm" className="bg-brass hover:bg-brass-deep text-pine-ink gap-1.5" onClick={() => handleAction(b.id, "In Progress")}><Play className="size-3.5" />Start Service</Button>}
+              {b.status === "in_progress" && <Button size="sm" className="bg-moss hover:bg-pine text-ivory gap-1.5" onClick={() => handleAction(b.id, "Completed")}><Camera className="size-3.5" />Complete + Upload Photos</Button>}
+              {(b.status === "pending" || b.status === "confirmed") && <Button size="sm" variant="outline" className="border-terracotta text-terracotta gap-1.5" onClick={() => handleAction(b.id, "Cancelled")}><XCircle className="size-3.5" />Cancel</Button>}
+              <Button size="sm" variant="outline" className="border-line text-ink-soft gap-1.5" onClick={() => setSelected(b)}><ChevronRight className="size-3.5" />Details</Button>
             </div>
           </div>
         ))}
@@ -75,8 +75,8 @@ export default function ProviderBookingsPage() {
       {/* Detail modal */}
       {selected && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-xl p-6 max-w-md w-full space-y-3" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-slate-900">{selected.bookingNumber}</h2>
+          <div className="bg-paper rounded-[18px] p-6 max-w-md w-full space-y-3" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-pine">{selected.bookingNumber}</h2>
             <div className="space-y-1 text-sm">
               <p><strong>Service:</strong> {selected.serviceName}</p>
               <p><strong>Customer:</strong> {selected.customerName}</p>

@@ -67,7 +67,7 @@ export function CareSpecs({
       icon: Droplets,
       label: "Water",
       value: WATER_LABELS[water],
-      tone: "text-info",
+      tone: "text-moss",
     });
   }
   if (difficulty) {
@@ -117,7 +117,7 @@ export function CareSpecs({
       {specs.map((spec) => (
         <div
           key={spec.label}
-          className="flex items-start gap-2 p-3 rounded-lg bg-muted/50"
+          className="flex items-start gap-2 p-3 rounded-[18px] bg-sage-wash/60 border border-line"
         >
           <spec.icon className={cn("size-5 mt-0.5", spec.tone)} aria-hidden="true" />
           <div className="flex flex-col">

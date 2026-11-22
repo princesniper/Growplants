@@ -57,7 +57,7 @@ export function IconBadge({
   const inner = (
     <span
       className={cn(
-        "relative inline-flex items-center justify-center rounded-full text-foreground hover:bg-muted hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "relative inline-flex items-center justify-center rounded-full text-foreground hover:bg-sage-wash hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         BTN_SIZE[size],
         className
       )}

@@ -74,7 +74,7 @@ export function Price({
             {formatINR(basePrice!)}
           </span>
           {showDiscount && discount > 0 && (
-            <span className="text-body-sm font-semibold text-success tabular-nums">
+            <span className="text-body-sm font-semibold text-terracotta tabular-nums">
               {discount}% off
             </span>
           )}

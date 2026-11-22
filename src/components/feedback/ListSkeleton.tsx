@@ -23,16 +23,16 @@ export function ListSkeleton({
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-3 p-3 border border-border rounded-lg bg-card"
+          className="flex items-center gap-3 p-3 border border-border rounded-[18px] bg-card"
         >
           {showThumbnail && (
-            <Skeleton className="size-12 rounded-md shrink-0" />
+            <Skeleton className="size-12 rounded-lg bg-sand shrink-0" />
           )}
           <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-3 w-3/4" />
+            <Skeleton className="h-4 w-1/2 bg-sand" />
+            <Skeleton className="h-3 w-3/4 bg-sand" />
           </div>
-          <Skeleton className="h-6 w-16 rounded-md" />
+          <Skeleton className="h-6 w-16 rounded-full bg-sand" />
         </div>
       ))}
     </div>

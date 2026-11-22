@@ -158,7 +158,7 @@ export function NotificationBell({ className }: { className?: string }) {
           aria-label="Notifications"
           className={cn(
             "absolute top-full right-0 mt-2 w-[360px] max-w-[calc(100vw-2rem)] z-50",
-            "rounded-xl border border-border bg-popover shadow-lg overflow-hidden"
+            "rounded-[18px] border border-border bg-popover shadow-lg overflow-hidden"
           )}
         >
           {/* Header */}
@@ -168,7 +168,7 @@ export function NotificationBell({ className }: { className?: string }) {
               <button
                 type="button"
                 onClick={markAllRead}
-                className="text-caption text-primary hover:text-primary-hover font-medium flex items-center gap-1"
+                className="text-caption text-primary hover:text-brass-deep font-medium flex items-center gap-1"
               >
                 <Check className="size-3" aria-hidden="true" />
                 Mark all read
@@ -189,8 +189,8 @@ export function NotificationBell({ className }: { className?: string }) {
                   type="button"
                   onClick={() => markRead(n.id)}
                   className={cn(
-                    "w-full flex items-start gap-3 p-3 text-left hover:bg-muted transition-colors border-b border-border last:border-0",
-                    !n.isRead && "bg-primary/5"
+                    "w-full flex items-start gap-3 p-3 text-left hover:bg-sage-wash/60 transition-colors border-b border-border last:border-0",
+                    !n.isRead && "bg-sage-wash/70"
                   )}
                 >
                   <span className="text-lg shrink-0 mt-0.5" aria-hidden="true">

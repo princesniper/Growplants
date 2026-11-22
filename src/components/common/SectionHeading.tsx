@@ -52,7 +52,7 @@ export function SectionHeading({
       {action && (
         <a
           href={action.href}
-          className="text-body-sm font-medium text-primary hover:text-primary-hover transition-colors hover:underline underline-offset-4 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="inline-flex items-center gap-1 rounded-full border border-line bg-paper px-3.5 py-1.5 text-body-sm font-medium text-primary transition-colors hover:border-brass hover:text-brass-deep shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {action.label} →
         </a>

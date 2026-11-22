@@ -44,7 +44,7 @@ export function MobileBottomNav() {
       className={cn(
         "md:hidden fixed bottom-0 left-0 right-0 z-40",
         "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80",
-        "border-t border-border",
+        "border-t border-border shadow-[0_-8px_24px_rgba(22,56,43,0.08)]",
         "pb-[env(safe-area-inset-bottom)]"
       )}
       aria-label="Mobile navigation"
@@ -69,7 +69,7 @@ export function MobileBottomNav() {
                   )}
                   aria-label={`${isHi ? item.labelHi : item.label}${itemCount > 0 ? `, ${itemCount} items` : ""}`}
                 >
-                  <span className="relative">
+                  <span className={cn("relative flex items-center justify-center rounded-full px-2.5 py-1", isActive && "bg-primary/10")}>
                     <item.icon className="size-5" aria-hidden="true" />
                     {itemCount > 0 && (
                       <span
@@ -85,7 +85,7 @@ export function MobileBottomNav() {
                       </span>
                     )}
                   </span>
-                  <span className="text-caption font-medium">
+                  <span className={cn("text-caption font-medium", isActive && "font-semibold")}>
                     {isHi ? item.labelHi : item.label}
                   </span>
                 </button>
@@ -150,8 +150,10 @@ export function MobileBottomNav() {
                 aria-current={isActive ? "page" : undefined}
                 aria-label={isHi ? item.labelHi : item.label}
               >
-                <item.icon className="size-5" aria-hidden="true" />
-                <span className="text-caption font-medium">
+                <span className={cn("flex items-center justify-center rounded-full px-2.5 py-1", isActive && "bg-primary/10")}>
+                  <item.icon className="size-5" aria-hidden="true" />
+                </span>
+                <span className={cn("text-caption font-medium", isActive && "font-semibold")}>
                   {isHi ? item.labelHi : item.label}
                 </span>
               </Link>

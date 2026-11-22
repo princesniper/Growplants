@@ -42,7 +42,7 @@ export function ErrorState({
       role="alert"
     >
       <div
-        className="size-14 rounded-full bg-destructive/10 text-destructive flex items-center justify-center"
+        className="size-14 rounded-full bg-destructive/10 text-destructive border border-destructive/20 flex items-center justify-center"
       >
         <Icon className="size-7" aria-hidden="true" />
       </div>
@@ -69,7 +69,7 @@ export function ErrorState({
       {showSupport && (
         <a
           href="/contact"
-          className="text-body-sm text-primary hover:text-primary-hover mt-1 underline-offset-4 hover:underline"
+          className="text-body-sm text-primary hover:text-brass-deep mt-1 underline-offset-4 hover:underline"
         >
           Contact support
         </a>

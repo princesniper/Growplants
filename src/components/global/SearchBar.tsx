@@ -198,7 +198,7 @@ export function SearchBar({ variant = "header", className }: SearchBarProps) {
           role="listbox"
           className={cn(
             "absolute top-full left-0 right-0 mt-2 z-50",
-            "rounded-xl border border-border bg-popover shadow-lg overflow-hidden",
+            "rounded-[18px] border border-border bg-popover shadow-lg overflow-hidden",
             "max-h-[70vh] overflow-y-auto scrollbar-pretty"
           )}
         >
@@ -216,7 +216,7 @@ export function SearchBar({ variant = "header", className }: SearchBarProps) {
                   aria-selected="false"
                 >
                   <Package
-                    className="size-10 rounded-md bg-muted text-muted-foreground shrink-0"
+                    className="size-10 rounded-lg bg-sand text-muted-foreground shrink-0"
                     aria-hidden="true"
                   />
                   <div className="flex-1 min-w-0">

@@ -15,12 +15,10 @@ import type {
  * Used across: order cards, booking cards, provider lists, admin tables,
  * returns, customer profiles.
  *
- * Colors follow the design system semantic tokens (Part E.2):
- *   - success: delivered, completed, approved, paid, active
- *   - warning: pending, processing, in_progress, under_review, suspended
- *   - info:    confirmed, provider_assigned, out_for_delivery
- *   - danger:  cancelled, failed, rejected, no_show_*, disputed
- *   - muted:   refunded, partial_refund, return_completed, deleted
+ * Colors follow the locked premium tokens (blueprint Part E1 — no blue/green/
+ * amber Tailwind pastels): moss = success, brass = warning, terracotta =
+ * danger, pine tint = informational (confirmed / out for delivery), stone =
+ * muted/refunded. Pill shape per blueprint radii (chips 999px).
  */
 export interface StatusPillProps {
   status:
@@ -83,7 +81,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   outline: "text-foreground border-border",
   success: "bg-success/15 text-success border border-success/30 hover:bg-success/20",
   warning: "bg-warning/15 text-warning border border-warning/30 hover:bg-warning/20",
-  info: "bg-info/15 text-info border border-info/30 hover:bg-info/20",
+  info: "bg-pine/10 text-pine border border-pine/25 hover:bg-pine/15",
 };
 
 export function StatusPill({ status, className }: StatusPillProps) {
@@ -95,7 +93,7 @@ export function StatusPill({ status, className }: StatusPillProps) {
   return (
     <Badge
       className={cn(
-        "font-medium capitalize rounded-md border-0",
+        "font-medium capitalize rounded-full border-0",
         VARIANT_CLASSES[config.variant],
         className
       )}

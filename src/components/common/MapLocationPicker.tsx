@@ -693,30 +693,30 @@ export function MapLocationPicker({
 
   // ─── Shared: Address Form (right column on desktop, full-screen step on mobile) ───
   const addressForm = (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-paper">
       {/* Form header */}
-      <div className="shrink-0 px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+      <div className="shrink-0 px-4 py-3 border-b border-line/60 flex items-center gap-3">
         <button
           onClick={handleBackToMap}
-          className="sm:hidden size-9 shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 flex items-center justify-center transition-all"
+          className="sm:hidden size-9 shrink-0 rounded-full bg-stone hover:bg-sand active:scale-95 flex items-center justify-center transition-all"
           aria-label="Back to map"
         >
-          <ChevronLeft className="size-5 text-slate-700" />
+          <ChevronLeft className="size-5 text-ink" />
         </button>
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-bold text-slate-800 leading-tight">
+          <h2 className="font-display text-base text-ink leading-tight">
             Enter Complete Address
           </h2>
-          <p className="text-[11px] text-slate-500 leading-tight">
+          <p className="text-[11px] text-ink-soft leading-tight">
             Fill in your delivery details
           </p>
         </div>
         <button
           onClick={onClose}
-          className="size-9 shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 flex items-center justify-center transition-all"
+          className="size-9 shrink-0 rounded-full bg-stone hover:bg-sand active:scale-95 flex items-center justify-center transition-all"
           aria-label="Close"
         >
-          <X className="size-5 text-slate-700" />
+          <X className="size-5 text-ink" />
         </button>
       </div>
 
@@ -724,7 +724,7 @@ export function MapLocationPicker({
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4">
         {/* Address type selector */}
         <div className="space-y-2">
-          <Label className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+          <Label className="text-xs font-semibold text-ink uppercase tracking-wide">
             Address Type
           </Label>
           <div className="grid grid-cols-4 gap-2">
@@ -737,10 +737,10 @@ export function MapLocationPicker({
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, label: opt.value }))}
                   className={cn(
-                    "flex flex-col items-center gap-1 py-2.5 rounded-xl border-2 transition-all active:scale-95",
+                    "flex flex-col items-center gap-1 py-2.5 rounded-[18px] border-2 transition-all active:scale-95",
                     active
-                      ? "border-[#16382B] bg-[#F0FAF4] text-[#16382B]"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                      ? "border-pine bg-sage-wash text-pine"
+                      : "border-line bg-paper text-ink-soft hover:border-line"
                   )}
                   aria-pressed={active}
                 >
@@ -754,8 +754,8 @@ export function MapLocationPicker({
 
         {/* Flat / House / Building */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">
-            Flat / House / Building Name <span className="text-red-500">*</span>
+          <Label className="text-sm font-medium text-ink">
+            Flat / House / Building Name <span className="text-terracotta">*</span>
           </Label>
           <Input
             value={form.houseNo}
@@ -763,15 +763,15 @@ export function MapLocationPicker({
             placeholder="e.g. Flat 302, Green Residency"
             className={cn(
               "h-11",
-              formErrors.houseNo && "border-red-300 focus-visible:ring-red-200"
+              formErrors.houseNo && "border-terracotta/40 focus-visible:ring-terracotta/30"
             )}
           />
-          {formErrors.houseNo && <p className="text-xs text-red-500">{formErrors.houseNo}</p>}
+          {formErrors.houseNo && <p className="text-xs text-terracotta">{formErrors.houseNo}</p>}
         </div>
 
         {/* Floor */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">Floor</Label>
+          <Label className="text-sm font-medium text-ink">Floor</Label>
           <Input
             value={form.floor}
             onChange={(e) => setForm({ ...form, floor: e.target.value })}
@@ -782,8 +782,8 @@ export function MapLocationPicker({
 
         {/* Area / Locality */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">
-            Area / Sector / Locality <span className="text-red-500">*</span>
+          <Label className="text-sm font-medium text-ink">
+            Area / Sector / Locality <span className="text-terracotta">*</span>
           </Label>
           <Input
             value={form.locality}
@@ -791,15 +791,15 @@ export function MapLocationPicker({
             placeholder="e.g. Sector 12, Green Street"
             className={cn(
               "h-11",
-              formErrors.locality && "border-red-300 focus-visible:ring-red-200"
+              formErrors.locality && "border-terracotta/40 focus-visible:ring-terracotta/30"
             )}
           />
-          {formErrors.locality && <p className="text-xs text-red-500">{formErrors.locality}</p>}
+          {formErrors.locality && <p className="text-xs text-terracotta">{formErrors.locality}</p>}
         </div>
 
         {/* Nearby Landmark */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">Nearby Landmark</Label>
+          <Label className="text-sm font-medium text-ink">Nearby Landmark</Label>
           <Input
             value={form.landmark}
             onChange={(e) => setForm({ ...form, landmark: e.target.value })}
@@ -808,12 +808,12 @@ export function MapLocationPicker({
           />
         </div>
 
-        <div className="h-px bg-slate-100 my-2" />
+        <div className="h-px bg-stone my-2" />
 
         {/* Name */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">
-            Name <span className="text-red-500">*</span>
+          <Label className="text-sm font-medium text-ink">
+            Name <span className="text-terracotta">*</span>
           </Label>
           <Input
             value={form.fullName}
@@ -821,17 +821,17 @@ export function MapLocationPicker({
             placeholder="Full name"
             className={cn(
               "h-11",
-              formErrors.fullName && "border-red-300 focus-visible:ring-red-200"
+              formErrors.fullName && "border-terracotta/40 focus-visible:ring-terracotta/30"
             )}
           />
-          {formErrors.fullName && <p className="text-xs text-red-500">{formErrors.fullName}</p>}
+          {formErrors.fullName && <p className="text-xs text-terracotta">{formErrors.fullName}</p>}
         </div>
 
         {/* Phone */}
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium text-slate-700">Phone Number</Label>
-          <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#16382B]/20 focus-within:border-[#16382B]">
-            <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">
+          <Label className="text-sm font-medium text-ink">Phone Number</Label>
+          <div className="flex h-11 rounded-md border border-line overflow-hidden focus-within:ring-2 focus-within:ring-pine/20 focus-within:border-pine">
+            <span className="flex items-center px-3 bg-stone text-sm font-medium text-ink-soft border-r border-line">
               +91
             </span>
             <input
@@ -847,7 +847,7 @@ export function MapLocationPicker({
               className="flex-1 px-3 text-sm bg-transparent outline-none"
             />
           </div>
-          {formErrors.phone && <p className="text-xs text-red-500">{formErrors.phone}</p>}
+          {formErrors.phone && <p className="text-xs text-terracotta">{formErrors.phone}</p>}
         </div>
 
         {/* Default checkbox */}
@@ -857,7 +857,7 @@ export function MapLocationPicker({
             id="picker-isDefault"
             checked={form.isDefault}
             onChange={(e) => setForm({ ...form, isDefault: e.target.checked })}
-            className="size-4 accent-[#16382B]"
+            className="size-4 accent-pine"
           />
           <Label htmlFor="picker-isDefault" className="text-sm cursor-pointer">
             Set as default address
@@ -866,15 +866,15 @@ export function MapLocationPicker({
 
         {/* Errors summary */}
         {(formErrors.location || formErrors.pincode) && (
-          <div className="rounded-md bg-red-50 border border-red-100 p-3 space-y-1">
+          <div className="rounded-md bg-terracotta/10 border border-terracotta/20 p-3 space-y-1">
             {formErrors.location && (
-              <p className="text-xs text-red-600 flex items-start gap-1.5">
+              <p className="text-xs text-terracotta flex items-start gap-1.5">
                 <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
                 {formErrors.location}
               </p>
             )}
             {formErrors.pincode && (
-              <p className="text-xs text-red-600 flex items-start gap-1.5">
+              <p className="text-xs text-terracotta flex items-start gap-1.5">
                 <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
                 {formErrors.pincode}
               </p>
@@ -884,15 +884,15 @@ export function MapLocationPicker({
       </div>
 
       {/* Save button (sticky footer) */}
-      <div className="shrink-0 px-4 py-3 border-t border-slate-100 bg-white">
+      <div className="shrink-0 px-4 py-3 border-t border-line/60 bg-paper">
         <Button
           onClick={handleSave}
           disabled={isSaving || !locationVerified}
           className={cn(
             "w-full h-12 gap-2 text-sm font-semibold",
             locationVerified && !isSaving
-              ? "bg-[#16382B] hover:bg-[#A8843F] shadow-md shadow-[#16382B]/20"
-              : "bg-slate-300 text-slate-500 cursor-not-allowed"
+              ? "bg-pine hover:bg-brass-deep shadow-md shadow-pine/20"
+              : "bg-sand text-ink-soft cursor-not-allowed"
           )}
         >
           {isSaving ? (
@@ -911,7 +911,7 @@ export function MapLocationPicker({
   const mapColumn = (
     <div
       ref={mapContainerRef}
-      className="relative bg-slate-200 w-full h-full overflow-hidden"
+      className="relative bg-sand w-full h-full overflow-hidden"
     >
       {/* ─── Top floating bar (search + close + GPS) ─── */}
       <div className="absolute top-0 inset-x-0 z-[1000] p-3 pointer-events-none">
@@ -919,15 +919,15 @@ export function MapLocationPicker({
           {/* Close (mobile) — also closes picker */}
           <button
             onClick={onClose}
-            className="sm:hidden size-10 shrink-0 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+            className="sm:hidden size-10 shrink-0 rounded-full bg-paper shadow-md flex items-center justify-center hover:bg-sage-wash active:scale-95 transition-all"
             aria-label="Close"
           >
-            <X className="size-5 text-slate-700" />
+            <X className="size-5 text-ink" />
           </button>
 
           {/* Search */}
           <div className="flex-1 min-w-0 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-ink-soft/60 pointer-events-none" />
             <input
               type="text"
               placeholder="Search area, street, or landmark…"
@@ -940,7 +940,7 @@ export function MapLocationPicker({
                   setSearchResults([]);
                 }
               }}
-              className="w-full h-10 pl-10 pr-10 rounded-full bg-white shadow-md focus:ring-2 focus:ring-[#16382B]/20 focus:border-[#16382B] border border-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 transition-all"
+              className="w-full h-10 pl-10 pr-10 rounded-full bg-paper shadow-md focus:ring-2 focus:ring-pine/20 focus:border-pine border border-transparent outline-none text-sm text-ink placeholder:text-ink-soft/60 transition-all"
             />
             {searchQuery && (
               <button
@@ -948,27 +948,27 @@ export function MapLocationPicker({
                   setSearchQuery("");
                   setSearchResults([]);
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 size-5 rounded-full hover:bg-slate-200 flex items-center justify-center"
+                className="absolute right-3 top-1/2 -translate-y-1/2 size-5 rounded-full hover:bg-sand flex items-center justify-center"
                 aria-label="Clear search"
               >
-                <X className="size-3.5 text-slate-500" />
+                <X className="size-3.5 text-ink-soft" />
               </button>
             )}
             {isSearching && (
-              <Loader2 className="absolute right-9 top-1/2 -translate-y-1/2 size-4 animate-spin text-slate-400" />
+              <Loader2 className="absolute right-9 top-1/2 -translate-y-1/2 size-4 animate-spin text-ink-soft/60" />
             )}
 
             {/* Search results dropdown */}
             {searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-slate-100 max-h-[40vh] overflow-y-auto z-[1001]">
+              <div className="absolute left-0 right-0 top-full mt-1 bg-paper rounded-[18px] shadow-xl border border-line/60 max-h-[40vh] overflow-y-auto z-[1001]">
                 {searchResults.map((r, i) => (
                   <button
                     key={i}
                     onClick={() => handleSelectSearchResult(r)}
-                    className="w-full text-left px-3 py-2.5 hover:bg-slate-50 active:bg-slate-100 border-b border-slate-100 last:border-0 flex items-start gap-2"
+                    className="w-full text-left px-3 py-2.5 hover:bg-sage-wash active:bg-stone border-b border-line/60 last:border-0 flex items-start gap-2"
                   >
-                    <MapPin className="size-4 text-[#16382B] mt-0.5 shrink-0" />
-                    <span className="text-xs text-slate-700 line-clamp-2 leading-snug">
+                    <MapPin className="size-4 text-pine mt-0.5 shrink-0" />
+                    <span className="text-xs text-ink line-clamp-2 leading-snug">
                       {r.displayName}
                     </span>
                   </button>
@@ -981,14 +981,14 @@ export function MapLocationPicker({
           <button
             onClick={handleLocate}
             disabled={isLocating}
-            className="size-10 shrink-0 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50"
+            className="size-10 shrink-0 rounded-full bg-paper shadow-md flex items-center justify-center hover:bg-sage-wash active:scale-95 transition-all disabled:opacity-50"
             aria-label="Use my current GPS location"
             title="Use my current GPS location"
           >
             {isLocating ? (
-              <Loader2 className="size-5 text-[#16382B] animate-spin" />
+              <Loader2 className="size-5 text-pine animate-spin" />
             ) : (
-              <Crosshair className="size-5 text-[#16382B]" />
+              <Crosshair className="size-5 text-pine" />
             )}
           </button>
         </div>
@@ -1004,20 +1004,20 @@ export function MapLocationPicker({
 
       {/* ─── Loading overlay ─── */}
       {!isMapReady && (
-        <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100">
+        <div className="absolute inset-0 z-[2] flex items-center justify-center bg-stone">
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="size-7 animate-spin text-[#16382B]" />
-            <p className="text-xs text-slate-500">Loading map…</p>
+            <Loader2 className="size-7 animate-spin text-pine" />
+            <p className="text-xs text-ink-soft">Loading map…</p>
           </div>
         </div>
       )}
 
       {/* ─── Load-error overlay ─── */}
       {error?.kind === "load" && (
-        <div className="absolute inset-0 z-[2] flex items-center justify-center bg-slate-100 p-6">
+        <div className="absolute inset-0 z-[2] flex items-center justify-center bg-stone p-6">
           <div className="flex flex-col items-center gap-2 max-w-xs text-center">
-            <AlertCircle className="size-9 text-red-500" />
-            <p className="text-xs font-medium text-slate-700">{error.message}</p>
+            <AlertCircle className="size-9 text-terracotta" />
+            <p className="text-xs font-medium text-ink">{error.message}</p>
             <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
           </div>
         </div>
@@ -1041,17 +1041,17 @@ export function MapLocationPicker({
       <div className="absolute right-3 top-1/2 -translate-y-1/2 z-[1000] flex flex-col gap-2">
         <button
           onClick={handleZoomIn}
-          className="size-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+          className="size-10 rounded-lg bg-paper shadow-md flex items-center justify-center hover:bg-sage-wash active:scale-95 transition-all"
           aria-label="Zoom in"
         >
-          <Plus className="size-4 text-slate-700" />
+          <Plus className="size-4 text-ink" />
         </button>
         <button
           onClick={handleZoomOut}
-          className="size-10 rounded-lg bg-white shadow-md flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all"
+          className="size-10 rounded-lg bg-paper shadow-md flex items-center justify-center hover:bg-sage-wash active:scale-95 transition-all"
           aria-label="Zoom out"
         >
-          <Minus className="size-4 text-slate-700" />
+          <Minus className="size-4 text-ink" />
         </button>
       </div>
 
@@ -1059,17 +1059,17 @@ export function MapLocationPicker({
       {isMapReady && (
         <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[999] pointer-events-none">
           {isMapPanning ? (
-            <div className="bg-[#16382B] text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+            <div className="bg-pine text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
               <Navigation className="size-3" />
               Move the map to position the pin
             </div>
           ) : isReverseGeocoding ? (
-            <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+            <div className="bg-pine-ink/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
               <Loader2 className="size-3 animate-spin" />
               Detecting address…
             </div>
           ) : (
-            <div className="bg-slate-900/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
+            <div className="bg-pine-ink/85 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
               <MapPin className="size-3" />
               Drag the map to set your exact location
             </div>
@@ -1081,25 +1081,25 @@ export function MapLocationPicker({
           On desktop: a small card pinned to bottom-left of the map column.
           On mobile: a bottom sheet pinned to bottom of screen. */}
       <div className="absolute bottom-0 inset-x-0 z-[1000] p-3 pointer-events-none">
-        <div className="pointer-events-auto bg-white rounded-xl shadow-lg border border-slate-100 max-w-md mx-auto">
+        <div className="pointer-events-auto bg-paper rounded-[18px] shadow-lg border border-line/60 max-w-md mx-auto">
           <div className="p-3 space-y-2">
             {/* Address row */}
             <div className="flex items-start gap-3">
-              <div className="size-9 rounded-full bg-[#F3F8F1] flex items-center justify-center shrink-0 mt-0.5">
-                <MapPin className="size-4 text-[#16382B]" />
+              <div className="size-9 rounded-full bg-sage-wash flex items-center justify-center shrink-0 mt-0.5">
+                <MapPin className="size-4 text-pine" />
               </div>
               <div className="flex-1 min-w-0">
                 {isReverseGeocoding ? (
                   <div className="space-y-1.5">
-                    <div className="h-3.5 w-3/4 bg-slate-100 rounded animate-pulse" />
-                    <div className="h-3 w-1/2 bg-slate-100 rounded animate-pulse" />
+                    <div className="h-3.5 w-3/4 bg-stone rounded animate-pulse" />
+                    <div className="h-3 w-1/2 bg-stone rounded animate-pulse" />
                   </div>
                 ) : address ? (
                   <>
-                    <p className="text-sm font-semibold text-slate-800 line-clamp-1 leading-snug">
+                    <p className="text-sm font-semibold text-ink line-clamp-1 leading-snug">
                       {address.street || address.area || "Selected location"}
                     </p>
-                    <p className="text-xs text-slate-500 line-clamp-1 leading-tight mt-0.5">
+                    <p className="text-xs text-ink-soft line-clamp-1 leading-tight mt-0.5">
                       {[address.area, address.pincode].filter(Boolean).join(" · ") ||
                        address.displayName ||
                        "Address details unavailable"}
@@ -1107,10 +1107,10 @@ export function MapLocationPicker({
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-semibold text-slate-700 leading-snug">
+                    <p className="text-sm font-semibold text-ink leading-snug">
                       No address yet
                     </p>
-                    <p className="text-xs text-slate-500 leading-tight mt-0.5">
+                    <p className="text-xs text-ink-soft leading-tight mt-0.5">
                       Drag the map to set your delivery spot.
                     </p>
                   </>
@@ -1120,8 +1120,8 @@ export function MapLocationPicker({
                 <span className={cn(
                   "shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full self-start mt-0.5",
                   gpsAccuracy > 100
-                    ? "text-amber-700 bg-amber-100"
-                    : "text-green-700 bg-green-100"
+                    ? "text-brass-deep bg-gold-tint"
+                    : "text-moss bg-sage-wash"
                 )}>
                   GPS · {Math.round(gpsAccuracy)}m
                 </span>
@@ -1133,8 +1133,8 @@ export function MapLocationPicker({
               <div className={cn(
                 "flex items-start gap-1.5 text-[11px] px-2.5 py-1.5 rounded-md",
                 error.kind === "permission" || error.kind === "position" || error.kind === "timeout"
-                  ? "text-amber-700 bg-amber-50"
-                  : "text-red-600 bg-red-50"
+                  ? "text-brass-deep bg-gold-tint/60"
+                  : "text-terracotta bg-terracotta/10"
               )}>
                 <AlertCircle className="size-3.5 shrink-0 mt-0.5" />
                 <span>{error.message}</span>
@@ -1142,7 +1142,7 @@ export function MapLocationPicker({
             )}
 
             {/* Coordinates */}
-            <div className="text-[10px] text-slate-400 tabular-nums font-mono">
+            <div className="text-[10px] text-ink-soft/60 tabular-nums font-mono">
               {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
             </div>
 
@@ -1151,12 +1151,12 @@ export function MapLocationPicker({
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 h-10 border-slate-300 text-slate-600"
+                  className="flex-1 h-10 border-line text-ink-soft"
                   onClick={handleAdjustLocation}
                 >
                   Adjust Location
                 </Button>
-                <div className="flex items-center gap-1.5 px-3 h-10 rounded-md bg-green-50 text-green-700 text-xs font-semibold">
+                <div className="flex items-center gap-1.5 px-3 h-10 rounded-md bg-sage-wash text-moss text-xs font-semibold">
                   <ShieldCheck className="size-4" />
                   Confirmed
                 </div>
@@ -1168,8 +1168,8 @@ export function MapLocationPicker({
                 className={cn(
                   "w-full h-11 gap-2 text-sm font-semibold",
                   canConfirmLocation
-                    ? "bg-[#16382B] hover:bg-[#A8843F] shadow-md shadow-[#16382B]/20"
-                    : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                    ? "bg-pine hover:bg-brass-deep shadow-md shadow-pine/20"
+                    : "bg-sand text-ink-soft cursor-not-allowed"
                 )}
               >
                 {isMapPanning ? (
@@ -1215,10 +1215,10 @@ export function MapLocationPicker({
           transform: translateX(-50%) rotate(-45deg);
           width: 30px;
           height: 30px;
-          background: linear-gradient(135deg, #16382B 0%, #A8843F 100%);
+          background: linear-gradient(135deg, var(--pine) 0%, var(--brass-deep) 100%);
           border: 3px solid white;
           border-radius: 50% 50% 50% 0;
-          box-shadow: 0 6px 14px rgba(26, 107, 60, 0.45), 0 1px 3px rgba(0,0,0,0.18);
+          box-shadow: 0 6px 14px rgba(22, 56, 43, 0.45), 0 1px 3px rgba(0,0,0,0.18);
         }
         .gp-pin-dot {
           position: absolute;
@@ -1226,7 +1226,7 @@ export function MapLocationPicker({
           width: 12px; height: 12px;
           background: white;
           border-radius: 50%;
-          box-shadow: inset 0 0 0 2px rgba(26, 107, 60, 0.2);
+          box-shadow: inset 0 0 0 2px rgba(22, 56, 43, 0.2);
         }
         .gp-pin-stem {
           position: absolute;
@@ -1234,7 +1234,7 @@ export function MapLocationPicker({
           transform: translateX(-50%);
           width: 4px;
           height: 14px;
-          background: linear-gradient(180deg, #16382B 0%, #0d4a26 100%);
+          background: linear-gradient(180deg, var(--pine) 0%, var(--pine-deep) 100%);
           border-radius: 0 0 2px 2px;
         }
         .gp-pin-shadow {
@@ -1257,7 +1257,7 @@ export function MapLocationPicker({
 
         /* ─── Leaflet polish ─── */
         .leaflet-container {
-          background: #e5e7eb;
+          background: var(--sand);
           font-family: inherit;
           touch-action: none;
         }
@@ -1291,7 +1291,7 @@ export function MapLocationPicker({
         */}
         <div
           className={cn(
-            "relative bg-white shadow-2xl overflow-hidden flex gp-pop-in",
+            "relative bg-paper shadow-2xl overflow-hidden flex gp-pop-in",
             "w-full h-[100dvh]",
             "sm:w-[min(960px,95vw)] sm:h-[min(620px,90vh)]",
             "sm:rounded-2xl"
@@ -1300,7 +1300,7 @@ export function MapLocationPicker({
           {/* Map column */}
           <div
             className={cn(
-              "shrink-0 bg-slate-200",
+              "shrink-0 bg-sand",
               // Mobile: full-screen, shown when step === "map"
               step === "map" ? "block" : "hidden",
               "w-full h-full",
@@ -1314,7 +1314,7 @@ export function MapLocationPicker({
           {/* Address form column */}
           <div
             className={cn(
-              "shrink-0 bg-white",
+              "shrink-0 bg-paper",
               // Mobile: full-screen, shown when step === "form"
               step === "form" ? "block" : "hidden",
               "w-full h-full",

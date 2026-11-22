@@ -31,36 +31,36 @@ export default function DashboardPage() {
   const activeBookings = bookings.filter((b) => !["completed", "cancelled"].includes(b.status)).length;
 
   const stats = [
-    { label: "Total Orders", value: orders.length, icon: Package, color: "bg-blue-50 text-blue-600" },
-    { label: "Active Orders", value: activeOrders, icon: ShoppingBag, color: "bg-amber-50 text-amber-600" },
-    { label: "Total Bookings", value: bookings.length, icon: Calendar, color: "bg-purple-50 text-purple-600" },
-    { label: "Wishlist Items", value: wishlistCount, icon: Heart, color: "bg-red-50 text-red-500" },
+    { label: "Total Orders", value: orders.length, icon: Package, color: "bg-sage-wash text-pine" },
+    { label: "Active Orders", value: activeOrders, icon: ShoppingBag, color: "bg-gold-tint text-brass-deep" },
+    { label: "Total Bookings", value: bookings.length, icon: Calendar, color: "bg-clay text-terracotta" },
+    { label: "Wishlist Items", value: wishlistCount, icon: Heart, color: "bg-terracotta/10 text-terracotta" },
   ];
 
   return (
     <Container className="py-6 md:py-8">
       {/* Welcome */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#16382B]">Welcome back, {user?.fullName?.split(" ")[0] ?? "Guest"}!</h1>
-        <p className="text-sm text-slate-500 mt-1">Here&apos;s what&apos;s happening with your account.</p>
+        <h1 className="font-display text-2xl text-pine">Welcome back, {user?.fullName?.split(" ")[0] ?? "Guest"}!</h1>
+        <p className="text-sm text-ink-soft mt-1">Here&apos;s what&apos;s happening with your account.</p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white border border-slate-200 rounded-xl p-4">
+          <div key={stat.label} className="bg-paper border border-line rounded-[18px] p-4">
             <div className={cn("size-10 rounded-lg flex items-center justify-center mb-2", stat.color)}>
               <stat.icon className="size-5" />
             </div>
-            <p className="text-2xl font-bold text-slate-800 tabular-nums">{stat.value}</p>
-            <p className="text-xs text-slate-500">{stat.label}</p>
+            <p className="text-2xl font-bold text-ink tabular-nums">{stat.value}</p>
+            <p className="text-xs text-ink-soft">{stat.label}</p>
           </div>
         ))}
       </div>
 
       {/* Total spent */}
       {totalSpent > 0 && (
-        <div className="bg-gradient-to-r from-[#16382B] to-[#A8843F] text-white rounded-xl p-5 mb-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-pine to-brass-deep text-white rounded-[18px] p-5 mb-6 flex items-center justify-between">
           <div>
             <p className="text-sm text-white/80">Total Spent on GrowPlants</p>
             <p className="text-2xl font-bold tabular-nums">{formatINR(totalSpent)}</p>
@@ -71,24 +71,24 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Recent orders */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
+        <div className="bg-paper border border-line rounded-[18px] p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-slate-800">Recent Orders</h2>
-            <Link href="/account/orders" className="text-xs font-medium text-[#16382B] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
+            <h2 className="font-display text-base text-ink">Recent Orders</h2>
+            <Link href="/account/orders" className="text-xs font-medium text-pine hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
           </div>
           {orders.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-6">No orders yet</p>
+            <p className="text-sm text-ink-soft/60 text-center py-6">No orders yet</p>
           ) : (
             <div className="space-y-2">
               {orders.slice(0, 3).map((o) => (
-                <Link key={o.id} href={`/account/orders/${o.id}`} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                <Link key={o.id} href={`/account/orders/${o.id}`} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-sage-wash transition-colors">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{o.orderNumber}</p>
-                    <p className="text-xs text-slate-500">{formatDate(o.createdAt)} · {o.items.length} items</p>
+                    <p className="text-sm font-medium text-ink truncate">{o.orderNumber}</p>
+                    <p className="text-xs text-ink-soft">{formatDate(o.createdAt)} · {o.items.length} items</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", ORDER_STATUS_COLORS[o.orderStatus])}>{ORDER_STATUS_LABELS[o.orderStatus]}</span>
-                    <span className="text-sm font-bold text-[#16382B] tabular-nums">{formatINR(o.total)}</span>
+                    <span className="text-sm font-bold text-pine tabular-nums">{formatINR(o.total)}</span>
                   </div>
                 </Link>
               ))}
@@ -97,20 +97,20 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent bookings */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
+        <div className="bg-paper border border-line rounded-[18px] p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-slate-800">Recent Bookings</h2>
-            <Link href="/account/bookings" className="text-xs font-medium text-[#16382B] hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
+            <h2 className="font-display text-base text-ink">Recent Bookings</h2>
+            <Link href="/account/bookings" className="text-xs font-medium text-pine hover:underline flex items-center gap-0.5">View All <ArrowRight className="size-3" /></Link>
           </div>
           {bookings.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-6">No bookings yet</p>
+            <p className="text-sm text-ink-soft/60 text-center py-6">No bookings yet</p>
           ) : (
             <div className="space-y-2">
               {bookings.slice(0, 3).map((b) => (
-                <Link key={b.id} href={`/account/bookings/${b.id}`} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                <Link key={b.id} href={`/account/bookings/${b.id}`} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-sage-wash transition-colors">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{b.service.serviceName}</p>
-                    <p className="text-xs text-slate-500">{b.bookingNumber} · {formatDate(b.date)}</p>
+                    <p className="text-sm font-medium text-ink truncate">{b.service.serviceName}</p>
+                    <p className="text-xs text-ink-soft">{b.bookingNumber} · {formatDate(b.date)}</p>
                   </div>
                   <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full shrink-0", BOOKING_STATUS_COLORS[b.status])}>{BOOKING_STATUS_LABELS[b.status]}</span>
                 </Link>
@@ -122,10 +122,10 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/shop" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#16382B] text-white text-sm font-medium rounded-lg hover:bg-[#A8843F] transition-colors"><ShoppingBag className="size-4" />Shop Plants</Link>
-        <Link href="/services" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-[#16382B] text-[#16382B] text-sm font-medium rounded-lg hover:bg-[#F3F8F1] transition-colors"><Calendar className="size-4" />Book a Service</Link>
-        <Link href="/account/wishlist" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"><Heart className="size-4" />View Wishlist</Link>
-        <Link href="/account/addresses" className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"><MapPin className="size-4" />Addresses ({addressCount})</Link>
+        <Link href="/shop" className="inline-flex items-center gap-1.5 px-4 py-2 bg-pine text-white text-sm font-medium rounded-full hover:bg-brass-deep transition-colors"><ShoppingBag className="size-4" />Shop Plants</Link>
+        <Link href="/services" className="inline-flex items-center gap-1.5 px-4 py-2 bg-paper border border-pine text-pine text-sm font-medium rounded-full hover:bg-sage-wash transition-colors"><Calendar className="size-4" />Book a Service</Link>
+        <Link href="/account/wishlist" className="inline-flex items-center gap-1.5 px-4 py-2 bg-paper border border-line text-ink text-sm font-medium rounded-full hover:bg-sage-wash transition-colors"><Heart className="size-4" />View Wishlist</Link>
+        <Link href="/account/addresses" className="inline-flex items-center gap-1.5 px-4 py-2 bg-paper border border-line text-ink text-sm font-medium rounded-full hover:bg-sage-wash transition-colors"><MapPin className="size-4" />Addresses ({addressCount})</Link>
       </div>
     </Container>
   );

@@ -22,9 +22,9 @@ export default function ProviderLayout({ children }: { children: React.ReactNode
   const isActive = (href: string) => pathname === href || (href !== "/provider" && pathname.startsWith(href));
 
   return (
-    <div className="min-h-screen bg-[#FAFAF6]">
+    <div className="min-h-screen bg-ivory">
       {/* Provider banner */}
-      <div className="bg-[#16382B] text-white py-2 px-4 text-center text-sm font-medium">
+      <div className="bg-pine text-ivory py-2 px-4 text-center text-sm font-medium">
         🌱 Provider Portal — You are signed in as a service provider
       </div>
 
@@ -32,25 +32,25 @@ export default function ProviderLayout({ children }: { children: React.ReactNode
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-3 space-y-1">
-              <div className="p-3 mb-3 rounded-lg bg-[#F3F8F1]">
+            <div className="sticky top-24 bg-paper border border-line rounded-[18px] p-3 space-y-1">
+              <div className="p-3 mb-3 rounded-lg bg-sage-wash">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-[#16382B] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                  <div className="size-10 rounded-full bg-pine text-ivory flex items-center justify-center text-sm font-bold shrink-0">
                     {user?.fullName?.charAt(0).toUpperCase() ?? "P"}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.fullName ?? "Provider"}</p>
-                    <p className="text-xs text-slate-500">Verified Gardener</p>
+                    <p className="text-sm font-semibold text-charcoal truncate">{user?.fullName ?? "Provider"}</p>
+                    <p className="text-xs text-ink-soft">Verified Gardener</p>
                   </div>
                 </div>
               </div>
               {NAV_ITEMS.map((item) => (
-                <Link key={item.href} href={item.href} className={cn("flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors", isActive(item.href) ? "bg-[#16382B] text-white" : "text-slate-600 hover:bg-[#F3F8F1] hover:text-[#16382B]")}>
+                <Link key={item.href} href={item.href} className={cn("flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors", isActive(item.href) ? "bg-pine text-ivory" : "text-ink-soft hover:bg-sage-wash hover:text-pine")}>
                   <item.icon className="size-4 shrink-0" />
                   {item.label}
                 </Link>
               ))}
-              <button onClick={() => { logout(); appToast.success("Logged out", "You've been signed out"); }} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+              <button onClick={() => { logout(); appToast.success("Logged out", "You've been signed out"); }} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors">
                 <LogOut className="size-4 shrink-0" />Logout
               </button>
             </div>

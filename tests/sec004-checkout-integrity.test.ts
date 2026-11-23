@@ -34,7 +34,7 @@ mock.module("@/lib/auth", () => ({
 
 mock.module("@/lib/db", () => ({ db: realDb }));
 
-process.env.NODE_ENV = "production"; // no dev mock fallback â€” real semantics
+Object.assign(process.env, { NODE_ENV: "production" }); // no dev mock fallback â€” real semantics
 
 import plantsData from "../src/data/plants-data.json";
 

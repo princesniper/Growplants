@@ -103,7 +103,7 @@ function InfoRow({
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-[#1A6B3C] hover:underline font-medium"
+              className="inline-flex items-center gap-1 text-sm text-[#16382B] hover:underline font-medium"
             >
               <span className={cn(mono && "font-mono")}>{value}</span>
               <ExternalLink className="size-3" />
@@ -146,7 +146,7 @@ export function ShippingDeliveryCard({ order, className }: ShippingDeliveryCardP
     >
       {/* Header */}
       <div className="flex items-center gap-2 p-5 sm:p-6 pb-3">
-        <div className="size-9 rounded-xl bg-[#1A6B3C] flex items-center justify-center shadow-sm">
+        <div className="size-9 rounded-xl bg-[#16382B] flex items-center justify-center shadow-sm">
           <Truck className="size-4 text-white" />
         </div>
         <h3 className="text-base sm:text-lg font-bold text-slate-800">Shipping & Delivery</h3>
@@ -266,9 +266,9 @@ export function ShippingDeliveryCard({ order, className }: ShippingDeliveryCardP
           </div>
         ) : (
           /* Estimated delivery (pending/processing) */
-          <div className="flex items-center gap-3 p-3.5 bg-gradient-to-r from-[#F3F8F1] to-green-50 border border-[#1A6B3C]/10 rounded-xl">
+          <div className="flex items-center gap-3 p-3.5 bg-gradient-to-r from-[#F3F8F1] to-green-50 border border-[#16382B]/10 rounded-xl">
             <div className="size-10 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm">
-              <Calendar className="size-5 text-[#1A6B3C]" />
+              <Calendar className="size-5 text-[#16382B]" />
             </div>
             <div className="min-w-0">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">

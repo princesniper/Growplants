@@ -22,11 +22,11 @@ export function FormSkeleton({
     <div className={cn("space-y-5", className)} aria-hidden="true">
       {Array.from({ length: fields }).map((_, i) => (
         <div key={i} className="space-y-2">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-10 w-full rounded-md" />
+          <Skeleton className="h-3 w-24 bg-sand" />
+          <Skeleton className="h-10 w-full rounded-xl bg-sand" />
         </div>
       ))}
-      {showSubmit && <Skeleton className="h-10 w-full rounded-md" />}
+      {showSubmit && <Skeleton className="h-10 w-full rounded-full bg-sand" />}
     </div>
   );
 }

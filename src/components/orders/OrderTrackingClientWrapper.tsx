@@ -114,7 +114,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
   if (loading && !liveOrder) {
     return (
       <Container className="py-6 md:py-10">
-        <div className="mb-4 h-4 w-32 bg-slate-100 rounded animate-shimmer" />
+        <div className="mb-4 h-4 w-32 bg-stone rounded animate-shimmer" />
         <TrackingSkeleton />
       </Container>
     );
@@ -123,7 +123,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
   if (error && !liveOrder) {
     return (
       <Container className="py-6 md:py-10">
-        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4">
+        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-ink-soft hover:text-pine mb-4">
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
         <TrackingErrorState message={error} onRetry={() => window.location.reload()} />
@@ -134,7 +134,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
   if (notFound || !liveOrder) {
     return (
       <Container className="py-6 md:py-10">
-        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-4">
+        <Link href="/account/orders" className="flex items-center gap-1 text-sm text-ink-soft hover:text-pine mb-4">
           <ArrowLeft className="size-3.5" /> Back to Orders
         </Link>
         <TrackingEmptyState orderNumber={orderId} />
@@ -152,7 +152,7 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
 
   return (
     <Container className="py-6 md:py-10">
-      <Link href="/account/orders" className="flex items-center gap-1 text-sm text-slate-500 hover:text-[#1A6B3C] mb-5 transition-colors">
+      <Link href="/account/orders" className="flex items-center gap-1 text-sm text-ink-soft hover:text-pine mb-5 transition-colors">
         <ArrowLeft className="size-3.5" /> Back to Orders
       </Link>
 
@@ -165,26 +165,26 @@ export function OrderTrackingClientWrapper({ orderId }: OrderTrackingClientWrapp
 
       {showCancelModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowCancelModal(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-paper rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3">
-              <div className="size-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="size-10 rounded-full bg-clay flex items-center justify-center">
                 <span className="text-xl">⚠️</span>
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Cancel Order?</h2>
-                <p className="text-xs text-slate-500">This action cannot be undone.</p>
+                <h2 className="text-lg font-bold text-ink">Cancel Order?</h2>
+                <p className="text-xs text-ink-soft">This action cannot be undone.</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-ink-soft">
               Cancel order <span className="font-bold">#{order.orderNumber}</span>? You&apos;ll receive a confirmation email once the cancellation is processed.
             </p>
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Reason <span className="text-slate-400 font-normal">(optional)</span></Label>
+              <Label className="text-sm font-medium">Reason <span className="text-ink-soft/60 font-normal">(optional)</span></Label>
               <Textarea rows={3} value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="Tell us why you're cancelling..." className="resize-none" />
             </div>
             <div className="flex gap-3 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setShowCancelModal(false)}>Keep Order</Button>
-              <Button className="flex-1 bg-red-500 hover:bg-red-600 text-white" onClick={handleCancel}>Yes, Cancel</Button>
+              <Button className="flex-1 bg-terracotta/100 hover:bg-terracotta/90 text-white" onClick={handleCancel}>Yes, Cancel</Button>
             </div>
           </div>
         </div>

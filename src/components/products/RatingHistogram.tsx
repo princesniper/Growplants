@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  *   - breakdown: array of { stars, count, percentage }
  *   - averageRating, totalCount: shown above the bars
  *
- * Bar fill uses accent (amber) to match Rating star color.
+ * Bar fill uses brass to match the Rating star colour (blueprint E1).
  */
 export interface RatingHistogramProps {
   breakdown: { stars: 1 | 2 | 3 | 4 | 5; count: number; percentage: number }[];
@@ -54,7 +54,7 @@ export function RatingHistogram({
               {row.stars} star
             </span>
             <div
-              className="flex-1 h-2 rounded-full bg-muted overflow-hidden"
+              className="flex-1 h-2 rounded-full bg-line overflow-hidden"
               role="img"
               aria-label={`${STAR_LABELS[row.stars]}: ${row.percentage}% (${row.count} reviews)`}
             >

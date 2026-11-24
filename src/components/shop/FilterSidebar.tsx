@@ -36,8 +36,8 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
   return (
     <div className={cn("space-y-6", className)}>
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-bold text-[#1A6B3C]">Filters</h3>
-        <button onClick={onClear} className="text-xs font-semibold text-[#E8930A] hover:underline">Clear All</button>
+        <h3 className="text-base font-bold text-[#16382B]">Filters</h3>
+        <button onClick={onClear} className="text-xs font-semibold text-[#C6A15B] hover:underline">Clear All</button>
       </div>
       <Separator />
 
@@ -46,7 +46,7 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
         <ul className="space-y-1.5">
           {SHOP_CATEGORIES.map((cat) => (
             <li key={cat.slug}>
-              <label className="flex items-center gap-2 cursor-pointer hover:text-[#1A6B3C] transition-colors">
+              <label className="flex items-center gap-2 cursor-pointer hover:text-[#16382B] transition-colors">
                 <Checkbox checked={filters.categories.includes(cat.slug)} onCheckedChange={() => toggleArray("categories", cat.slug)} />
                 <span className="text-sm text-slate-600 flex-1">{cat.name}</span>
                 <span className="text-xs text-slate-400">({cat.count})</span>
@@ -72,7 +72,7 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
         <div className="flex items-center gap-2">
           {[0, 3, 4, 4.5].map((r) => (
             <button key={r} onClick={() => onChange({ ...filters, minRating: r })}
-              className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-colors", filters.minRating === r ? "bg-[#1A6B3C] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200")}>
+              className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-colors", filters.minRating === r ? "bg-[#16382B] text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200")}>
               {r === 0 ? "All" : `${r}★+`}
             </button>
           ))}
@@ -84,7 +84,7 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
         <h4 className="text-sm font-bold text-slate-700">Sunlight</h4>
         <ul className="space-y-1.5">
           {SUNLIGHT_OPTIONS.map((s) => (
-            <li key={s}><label className="flex items-center gap-2 cursor-pointer hover:text-[#1A6B3C] transition-colors"><Checkbox checked={filters.sunlight.includes(s)} onCheckedChange={() => toggleArray("sunlight", s)} /><span className="text-sm text-slate-600">{s}</span></label></li>
+            <li key={s}><label className="flex items-center gap-2 cursor-pointer hover:text-[#16382B] transition-colors"><Checkbox checked={filters.sunlight.includes(s)} onCheckedChange={() => toggleArray("sunlight", s)} /><span className="text-sm text-slate-600">{s}</span></label></li>
           ))}
         </ul>
       </div>
@@ -94,7 +94,7 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
         <h4 className="text-sm font-bold text-slate-700">Care Difficulty</h4>
         <ul className="space-y-1.5">
           {DIFFICULTY_OPTIONS.map((d) => (
-            <li key={d}><label className="flex items-center gap-2 cursor-pointer hover:text-[#1A6B3C] transition-colors"><Checkbox checked={filters.difficulty.includes(d)} onCheckedChange={() => toggleArray("difficulty", d)} /><span className="text-sm text-slate-600">{d}</span></label></li>
+            <li key={d}><label className="flex items-center gap-2 cursor-pointer hover:text-[#16382B] transition-colors"><Checkbox checked={filters.difficulty.includes(d)} onCheckedChange={() => toggleArray("difficulty", d)} /><span className="text-sm text-slate-600">{d}</span></label></li>
           ))}
         </ul>
       </div>
@@ -104,7 +104,7 @@ export function FilterSidebar({ filters, onChange, onClear, className }: FilterS
         <h4 className="text-sm font-bold text-slate-700">Suitable For</h4>
         <ul className="space-y-1.5">
           {SUITABLE_FOR_OPTIONS.map((s) => (
-            <li key={s}><label className="flex items-center gap-2 cursor-pointer hover:text-[#1A6B3C] transition-colors"><Checkbox checked={filters.suitableFor.includes(s)} onCheckedChange={() => toggleArray("suitableFor", s)} /><span className="text-sm text-slate-600">{s}</span></label></li>
+            <li key={s}><label className="flex items-center gap-2 cursor-pointer hover:text-[#16382B] transition-colors"><Checkbox checked={filters.suitableFor.includes(s)} onCheckedChange={() => toggleArray("suitableFor", s)} /><span className="text-sm text-slate-600">{s}</span></label></li>
           ))}
         </ul>
       </div>

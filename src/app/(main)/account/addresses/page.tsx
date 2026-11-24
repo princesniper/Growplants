@@ -10,7 +10,7 @@ import { MapLocationPicker } from "@/components/common/MapLocationPicker";
 
 function AddressCardSkeleton() {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+    <div className="bg-paper border border-line rounded-[18px] p-4 space-y-2">
       <div className="flex items-center gap-2">
         <Skeleton className="h-5 w-16 rounded-full" />
         <Skeleton className="h-5 w-16 rounded-full" />
@@ -90,13 +90,13 @@ export default function AddressesPage() {
     <Container className="py-6 md:py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A6B3C]">My Addresses</h1>
-          <p className="text-sm text-slate-500 mt-1">{addresses.length} saved {addresses.length === 1 ? "address" : "addresses"}</p>
+          <h1 className="font-display text-2xl text-pine">My Addresses</h1>
+          <p className="text-sm text-ink-soft mt-1">{addresses.length} saved {addresses.length === 1 ? "address" : "addresses"}</p>
         </div>
         {!showPicker && (
           <Button
             onClick={handleAdd}
-            className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+            className="bg-pine hover:bg-brass-deep gap-2"
           >
             <Plus className="size-4" />Add Address
           </Button>
@@ -109,16 +109,16 @@ export default function AddressesPage() {
         </div>
       ) : addresses.length === 0 && !showPicker ? (
         <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
-          <div className="size-16 rounded-full bg-[#F3F8F1] flex items-center justify-center">
-            <MapPin className="size-8 text-[#1A6B3C]" />
+          <div className="size-16 rounded-full bg-sage-wash flex items-center justify-center">
+            <MapPin className="size-8 text-pine" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-800">No saved addresses</h3>
-            <p className="text-sm text-slate-500 mt-1 max-w-md">
+            <h3 className="text-lg font-semibold text-ink">No saved addresses</h3>
+            <p className="text-sm text-ink-soft mt-1 max-w-md">
               Add your first delivery address. Location verification is required.
             </p>
           </div>
-          <Button onClick={handleAdd} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">
+          <Button onClick={handleAdd} className="bg-pine hover:bg-brass-deep gap-2">
             <Plus className="size-4" />Add First Address
           </Button>
         </div>
@@ -127,20 +127,20 @@ export default function AddressesPage() {
           {addresses.map((a) => (
             <div
               key={a.id}
-              className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+              className="bg-paper border border-line rounded-[18px] p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-[#1A6B3C] bg-[#F0FAF4] px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-pine bg-sage-wash px-2 py-0.5 rounded-full">
                     {a.label}
                   </span>
                   {a.isDefault && (
-                    <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-moss bg-sage-wash px-2 py-0.5 rounded-full">
                       Default
                     </span>
                   )}
                   {a.locationVerified || a.gpsVerified ? (
-                    <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                    <span className="text-xs font-bold text-moss bg-sage-wash px-2 py-0.5 rounded-full flex items-center gap-0.5">
                       <ShieldCheck className="size-3" />
                       Verified
                       {a.locationSource && (
@@ -150,33 +150,33 @@ export default function AddressesPage() {
                       )}
                     </span>
                   ) : (
-                    <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full flex items-center gap-0.5">
+                    <span className="text-xs font-bold text-terracotta bg-terracotta/10 px-2 py-0.5 rounded-full flex items-center gap-0.5">
                       <AlertCircle className="size-3" />Not Verified
                     </span>
                   )}
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => handleEdit(a)} className="p-1.5 text-slate-400 hover:text-[#1A6B3C]" aria-label="Edit">
+                  <button onClick={() => handleEdit(a)} className="p-1.5 text-ink-soft/60 hover:text-pine" aria-label="Edit">
                     <Edit2 className="size-3.5" />
                   </button>
                   <button
                     onClick={() => { if (window.confirm("Delete this address? This cannot be undone.")) deleteAddress(a.id); }}
-                    className="p-1.5 text-slate-400 hover:text-red-500"
+                    className="p-1.5 text-ink-soft/60 hover:text-terracotta"
                     aria-label="Delete"
                   >
                     <Trash2 className="size-3.5" />
                   </button>
                 </div>
               </div>
-              <p className="text-sm font-semibold text-slate-800">{a.fullName}</p>
-              <p className="text-xs text-slate-600">{a.houseNo}, {a.locality}</p>
-              <p className="text-xs text-slate-600">{a.city}, {a.state} - {a.pincode}</p>
-              <p className="text-xs text-slate-500 mt-1">📞 {a.phone}</p>
+              <p className="text-sm font-semibold text-ink">{a.fullName}</p>
+              <p className="text-xs text-ink-soft">{a.houseNo}, {a.locality}</p>
+              <p className="text-xs text-ink-soft">{a.city}, {a.state} - {a.pincode}</p>
+              <p className="text-xs text-ink-soft mt-1">📞 {a.phone}</p>
               <div className="flex gap-2 mt-3">
                 {!a.isDefault && (
                   <button
                     onClick={() => setDefaultAddress(a.id)}
-                    className="text-xs font-medium text-[#1A6B3C] hover:underline"
+                    className="text-xs font-medium text-pine hover:underline"
                   >
                     Set as default
                   </button>

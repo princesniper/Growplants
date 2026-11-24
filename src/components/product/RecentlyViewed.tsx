@@ -34,9 +34,9 @@ export function RecentlyViewed({ currentSlug }: { currentSlug: string }) {
             </div>
             <div className="p-3">
               <p className="text-xs font-semibold text-slate-800 line-clamp-1">{item.name}</p>
-              <p className="text-sm font-bold text-[#1A6B3C] mt-1">₹{item.price}</p>
+              <p className="text-sm font-bold text-[#16382B] mt-1">₹{item.price}</p>
               <div className="flex items-center gap-1 mt-1">
-                <Star className="size-3 fill-[#E8930A] text-[#E8930A]" aria-hidden="true" />
+                <Star className="size-3 fill-[#C6A15B] text-[#C6A15B]" aria-hidden="true" />
                 <span className="text-xs text-slate-500">{item.rating.toFixed(1)}</span>
               </div>
             </div>

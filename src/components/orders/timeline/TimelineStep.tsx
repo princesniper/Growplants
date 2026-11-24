@@ -96,7 +96,7 @@ export function TimelineStep({
 
         {/* Premium badge (Quality Inspection) */}
         {stage.isBotanical && state !== "upcoming" && (
-          <span className="absolute -top-1 right-1/2 translate-x-7 px-1.5 py-0.5 rounded-full bg-[#1A6B3C] text-white text-[8px] font-bold uppercase tracking-wide shadow-sm">
+          <span className="absolute -top-1 right-1/2 translate-x-7 px-1.5 py-0.5 rounded-full bg-[#16382B] text-white text-[8px] font-bold uppercase tracking-wide shadow-sm">
             Exclusive
           </span>
         )}
@@ -106,7 +106,7 @@ export function TimelineStep({
           className={cn(
             "text-center text-xs font-semibold leading-tight transition-colors",
             state === "completed" && "text-slate-800",
-            state === "current" && "text-[#1A6B3C] text-sm",
+            state === "current" && "text-[#16382B] text-sm",
             state === "upcoming" && "text-slate-400",
             isCancelled && "text-red-600",
           )}
@@ -128,7 +128,7 @@ export function TimelineStep({
           </p>
         )}
         {formattedDate && state === "current" && (
-          <p className="text-[9px] text-[#1A6B3C] text-center leading-tight font-medium">
+          <p className="text-[9px] text-[#16382B] text-center leading-tight font-medium">
             {formattedDate} · {formattedTime}
           </p>
         )}
@@ -164,7 +164,7 @@ export function TimelineStep({
       <div
         className={cn(
           "flex-1 min-w-0 rounded-xl p-3 transition-all duration-300",
-          state === "current" && "bg-[#F3F8F1] border border-[#1A6B3C]/20 shadow-sm",
+          state === "current" && "bg-[#F3F8F1] border border-[#16382B]/20 shadow-sm",
           state === "completed" && "bg-green-50/50 border border-green-100",
           state === "upcoming" && "bg-transparent",
           isCancelled && "bg-red-50 border border-red-200",
@@ -176,7 +176,7 @@ export function TimelineStep({
             className={cn(
               "text-sm font-semibold leading-tight",
               state === "completed" && "text-slate-800",
-              state === "current" && "text-[#1A6B3C]",
+              state === "current" && "text-[#16382B]",
               state === "upcoming" && "text-slate-400",
               isCancelled && "text-red-600",
             )}
@@ -224,7 +224,7 @@ export function TimelineStep({
           <p
             className={cn(
               "text-[10px] mt-1.5 flex items-center gap-1",
-              state === "current" ? "text-[#1A6B3C] font-medium" : "text-slate-400",
+              state === "current" ? "text-[#16382B] font-medium" : "text-slate-400",
             )}
           >
             <span>📅</span> {formattedDate} · {formattedTime}

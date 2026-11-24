@@ -7,29 +7,21 @@ import { useBilingual } from "@/store/useBilingual";
 
 /**
  * AnnouncementBar — top promotional strip above the Header.
- * Source: 05_recreation_prompts.md Prompt 5
  *
- * Features:
- *   - Bilingual rotating messages (EN/HI from Zustand store)
- *   - Auto-rotates every 5 seconds through a small set of messages
- *   - User-dismissable (persists dismissal in sessionStorage so it doesn't
- *     nag on every page navigation within a session)
- *   - Respects prefers-reduced-motion (no rotation)
- *
- * Used at the very top of MainLayout, above the Header.
+ * Rotating messages (blueprint C3): free-shipping threshold · 30-day
+ * replacement promise · COD available. Dismissable (session-persisted),
+ * respects prefers-reduced-motion.
  */
 const MESSAGES_EN = [
-  "🚚 Free shipping on orders above ₹499 in Sonipat",
-  "🌱 New arrivals: Fresh indoor plants just landed",
-  " Gardner bookings now open in Sonipat — book today",
-  " Use code GROW10 for 10% off your first order",
+  "Free delivery in Sonipat on orders above ₹499",
+  "30-day replacement promise — photo within 48h",
+  "COD available across Sonipat",
 ];
 
 const MESSAGES_HI = [
-  "🚚 सोनीपत में ₹499 से ऊपर के ऑर्डर पर मुफ़्त शिपिंग",
-  "🌱 नई आवक: ताज़े इंडोर पौधे अभी आए",
-  " सोनीपत में माली बुकिंग अब खुली — आज ही बुक करें",
-  " अपने पहले ऑर्डर पर 10% छूट के लिए GROW10 का उपयोग करें",
+  "सोनीपत में ₹499 से ऊपर के ऑर्डर पर मुफ़्त डिलीवरी",
+  "30-दिन रिप्लेसमेंट प्रॉमिस — 48 घंटे के अंदर फोटो भेजें",
+  "सोनीपत में COD उपलब्ध",
 ];
 
 const DISMISS_KEY = "growplants-announcement-dismissed";
@@ -40,7 +32,6 @@ export function AnnouncementBar() {
   const [index, setIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
-  // Check dismissal on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (sessionStorage.getItem(DISMISS_KEY) === "1") {
@@ -48,7 +39,6 @@ export function AnnouncementBar() {
     }
   }, []);
 
-  // Auto-rotate messages (respect reduced motion)
   useEffect(() => {
     if (dismissed) return;
     const prefersReducedMotion =
@@ -74,14 +64,14 @@ export function AnnouncementBar() {
   return (
     <div
       className={cn(
-        "relative w-full bg-primary text-primary-foreground",
+        "relative w-full bg-pine-deep text-ivory",
         "px-4 py-2 text-body-sm text-center",
         "flex items-center justify-center gap-2"
       )}
       role="region"
       aria-label="Announcement"
     >
-      <Sparkles className="size-3.5 shrink-0 opacity-80" aria-hidden="true" />
+      <Sparkles className="size-3.5 shrink-0 text-brass" aria-hidden="true" />
       <p
         className="font-medium transition-opacity duration-300"
         key={index}
@@ -89,14 +79,15 @@ export function AnnouncementBar() {
       >
         {messages[index]}
       </p>
+      <span className="hidden sm:inline-block h-3 w-px bg-brass/40" aria-hidden="true" />
       <button
         type="button"
         onClick={handleDismiss}
         className={cn(
           "absolute right-2 top-1/2 -translate-y-1/2",
           "size-6 inline-flex items-center justify-center rounded-sm",
-          "hover:bg-primary-foreground/20 transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-1 focus-visible:ring-offset-primary"
+          "hover:bg-ivory/10 transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass"
         )}
         aria-label="Dismiss announcement"
       >

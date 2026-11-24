@@ -27,22 +27,22 @@ export default function BookingsPage() {
 
   return (
     <Container className="py-8 md:py-10">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Bookings</h1>
+      <h1 className="font-display text-2xl text-pine mb-6">My Bookings</h1>
       <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-[#1A6B3C] text-white" : "bg-white text-slate-700 border border-slate-200")}>{f.label}</button>)}
+        {FILTERS.map((f) => <button key={f.value} onClick={() => setFilter(f.value)} className={cn("px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors", filter === f.value ? "bg-pine text-white" : "bg-paper text-ink border border-line")}>{f.label}</button>)}
       </div>
       <div className="space-y-3">
-        {filtered.length === 0 ? <p className="text-sm text-slate-500 text-center py-8">No {filter} bookings found.</p> : filtered.map((b) => (
-          <Link key={b.id} href={`/account/bookings/${b.id}`} className="block bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-all">
+        {filtered.length === 0 ? <p className="text-sm text-ink-soft text-center py-8">No {filter} bookings found.</p> : filtered.map((b) => (
+          <Link key={b.id} href={`/account/bookings/${b.id}`} className="block bg-paper border border-line rounded-[18px] p-4 hover:shadow-md transition-all">
             <div className="flex items-center justify-between gap-3 mb-2">
-              <div><p className="text-sm font-bold text-slate-800">{b.bookingNumber}</p><p className="text-xs text-slate-500">{formatDate(b.createdAt)}</p></div>
+              <div><p className="text-sm font-bold text-ink">{b.bookingNumber}</p><p className="text-xs text-ink-soft">{formatDate(b.createdAt)}</p></div>
               <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-full", BOOKING_STATUS_COLORS[b.status])}>{BOOKING_STATUS_LABELS[b.status]}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="relative size-10 rounded-lg overflow-hidden bg-slate-50 shrink-0"><Image src={b.service.image} alt={b.service.serviceName} fill sizes="40px" className="object-cover" /></div>
-              <div className="flex-1 min-w-0"><p className="text-sm font-medium text-slate-800 truncate">{b.service.serviceName}</p><p className="text-xs text-slate-500">{formatDate(b.date)} · {b.timeSlot}</p></div>
-              <p className="text-xs text-slate-500">{b.service.providerName ?? "Auto-assign"}</p>
-              <ChevronRight className="size-4 text-[#1A6B3C]" />
+              <div className="relative size-10 rounded-lg overflow-hidden bg-stone shrink-0"><Image src={b.service.image} alt={b.service.serviceName} fill sizes="40px" className="object-cover" /></div>
+              <div className="flex-1 min-w-0"><p className="text-sm font-medium text-ink truncate">{b.service.serviceName}</p><p className="text-xs text-ink-soft">{formatDate(b.date)} · {b.timeSlot}</p></div>
+              <p className="text-xs text-ink-soft">{b.service.providerName ?? "Auto-assign"}</p>
+              <ChevronRight className="size-4 text-pine" />
             </div>
           </Link>
         ))}

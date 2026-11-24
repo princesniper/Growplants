@@ -69,7 +69,7 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: LoginFormPro
             type="email"
             autoComplete="email"
             placeholder="you@email.com"
-            className="pl-9 h-12 rounded-md"
+            className="pl-9 h-12 rounded-xl"
             aria-invalid={!!errors.identifier}
             aria-describedby={errors.identifier ? "login-identifier-error" : undefined}
             {...register("identifier")}
@@ -106,7 +106,7 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: LoginFormPro
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             placeholder="••••••••"
-            className="pl-9 pr-9 h-12 rounded-md"
+            className="pl-9 pr-9 h-12 rounded-xl"
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? "login-password-error" : undefined}
             {...register("password")}
@@ -150,7 +150,7 @@ export function LoginForm({ onForgotPassword, onSwitchToRegister }: LoginFormPro
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-12 gap-2"
+        className="w-full h-12 gap-2 rounded-full"
         size="lg"
       >
         {isSubmitting ? (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, ShoppingCart, Trash2 } from "lucide-react";
+import { Heart, ShoppingCart, Trash2, Leaf } from "lucide-react";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -32,19 +32,30 @@ export default function WishlistPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">My Wishlist ({items.length})</h1>
+      <h1 className="font-display text-2xl text-pine mb-6">My Wishlist ({items.length})</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         {items.map((p) => (
-          <div key={p.id} className="group flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-all">
-            <Link href={`/product/${p.slug}`} className="relative block aspect-square bg-slate-50 overflow-hidden">
+          <div key={p.id} className="group flex flex-col rounded-[18px] border border-line bg-paper overflow-hidden hover:shadow-md transition-all">
+            <Link href={`/product/${p.slug}`} className="relative block aspect-square bg-stone overflow-hidden">
               <Image src={p.image} alt={p.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
-              <button onClick={() => { removeFromWishlist(p.id); appToast.info("Removed", `${p.name} removed from wishlist`); }} className="absolute top-2 right-2 size-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-red-500 hover:bg-white" aria-label="Remove from wishlist"><Trash2 className="size-4" /></button>
+              <button onClick={() => { removeFromWishlist(p.id); appToast.info("Removed", `${p.name} removed from wishlist`); }} className="absolute top-2 right-2 size-8 rounded-full bg-paper/90 shadow-sm flex items-center justify-center text-terracotta hover:bg-paper" aria-label="Remove from wishlist"><Trash2 className="size-4" /></button>
             </Link>
             <div className="flex flex-col gap-1.5 p-3 flex-1">
-              <p className="text-xs font-bold text-[#1A6B3C]">{p.category.toUpperCase()}</p>
-              <Link href={`/product/${p.slug}`} className="text-sm font-medium text-slate-800 line-clamp-2 hover:text-[#1A6B3C]">{p.name}</Link>
-              <p className="text-lg font-bold text-[#1A6B3C] tabular-nums">{formatINR(p.price)}</p>
-              <Button onClick={() => handleMoveToCart(p)} size="sm" disabled={!p.inStock} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-1.5 mt-auto"><ShoppingCart className="size-3.5" />{p.inStock ? "Move to Cart" : "Out of Stock"}</Button>
+              <p className="text-xs font-bold text-pine">{p.category.toUpperCase()}</p>
+              <Link href={`/product/${p.slug}`} className="text-sm font-medium text-ink line-clamp-2 hover:text-pine">{p.name}</Link>
+              <p className="text-lg font-bold text-pine tabular-nums">{formatINR(p.price)}</p>
+              {(() => {
+                // One-line benefit from the product's own data — never invented.
+                const benefit =
+                  p.specialFeatures?.[0] ??
+                  (p.isAirPurifying ? "Air-purifying" : p.isPetSafe ? "Pet-safe" : p.difficulty === "Easy" ? "Beginner-friendly" : null);
+                return benefit ? (
+                  <p className="text-xs font-medium text-moss flex items-center gap-1">
+                    <Leaf className="size-3 shrink-0" />{benefit}
+                  </p>
+                ) : null;
+              })()}
+              <Button onClick={() => handleMoveToCart(p)} size="sm" disabled={!p.inStock} className="bg-pine hover:bg-brass-deep gap-1.5 mt-auto"><ShoppingCart className="size-3.5" />{p.inStock ? "Move to Cart" : "Out of Stock"}</Button>
             </div>
           </div>
         ))}

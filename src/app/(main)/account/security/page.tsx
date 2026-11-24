@@ -33,41 +33,41 @@ export default function SecurityPage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">Security</h1>
+      <h1 className="font-display text-2xl text-pine mb-6">Security</h1>
 
       {/* Change password */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4">
-        <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-4"><Key className="size-5 text-[#1A6B3C]" />Change Password</h2>
+      <div className="bg-paper border border-line rounded-[18px] p-5 mb-4">
+        <h2 className="font-display text-base text-ink flex items-center gap-2 mb-4"><Key className="size-5 text-pine" />Change Password</h2>
         <div className="space-y-3 max-w-md">
           <div className="space-y-1.5"><Label className="text-sm">Current Password</Label><Input type="password" value={passwords.current} onChange={(e) => setPasswords({ ...passwords, current: e.target.value })} className="h-11" /></div>
           <div className="space-y-1.5"><Label className="text-sm">New Password</Label><Input type="password" value={passwords.new} onChange={(e) => setPasswords({ ...passwords, new: e.target.value })} className="h-11" /></div>
           <div className="space-y-1.5"><Label className="text-sm">Confirm New Password</Label><Input type="password" value={passwords.confirm} onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })} className="h-11" /></div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-          <Button onClick={handleChangePassword} disabled={isChanging} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">{isChanging ? <><Loader2 className="size-4 animate-spin" />Updating...</> : <><Check className="size-4" />Update Password</>}</Button>
+          {error && <p className="text-xs text-terracotta">{error}</p>}
+          <Button onClick={handleChangePassword} disabled={isChanging} className="bg-pine hover:bg-brass-deep gap-2">{isChanging ? <><Loader2 className="size-4 animate-spin" />Updating...</> : <><Check className="size-4" />Update Password</>}</Button>
         </div>
       </div>
 
       {/* Active sessions */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4">
-        <h2 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-4"><Shield className="size-5 text-[#1A6B3C]" />Active Sessions</h2>
+      <div className="bg-paper border border-line rounded-[18px] p-5 mb-4">
+        <h2 className="font-display text-base text-ink flex items-center gap-2 mb-4"><Shield className="size-5 text-pine" />Active Sessions</h2>
         <div className="space-y-3">
           {sessions.map((s, i) => (
-            <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-50">
+            <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-stone">
               <div className="flex items-center gap-3">
-                <div className={`size-9 rounded-lg flex items-center justify-center ${s.current ? "bg-green-100 text-green-600" : "bg-slate-200 text-slate-500"}`}><s.icon className="size-4" /></div>
-                <div><p className="text-sm font-medium text-slate-800">{s.device}{s.current && <span className="ml-2 text-xs font-semibold text-green-600">Active now</span>}</p><p className="text-xs text-slate-500">{s.location} · {s.lastActive}</p></div>
+                <div className={`size-9 rounded-lg flex items-center justify-center ${s.current ? "bg-sage-wash text-moss" : "bg-sand text-ink-soft"}`}><s.icon className="size-4" /></div>
+                <div><p className="text-sm font-medium text-ink">{s.device}{s.current && <span className="ml-2 text-xs font-semibold text-moss">Active now</span>}</p><p className="text-xs text-ink-soft">{s.location} · {s.lastActive}</p></div>
               </div>
-              {!s.current && <Button variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-50 gap-1" onClick={() => appToast.success("Session revoked", "That device has been signed out")}><LogOut className="size-3.5" />Revoke</Button>}
+              {!s.current && <Button variant="outline" size="sm" className="border-terracotta text-terracotta hover:bg-terracotta/10 gap-1" onClick={() => appToast.success("Session revoked", "That device has been signed out")}><LogOut className="size-3.5" />Revoke</Button>}
             </div>
           ))}
         </div>
       </div>
 
       {/* Delete account */}
-      <div className="bg-red-50 border border-red-200 rounded-xl p-5">
-        <h2 className="text-base font-bold text-red-700 mb-1">Danger Zone</h2>
-        <p className="text-sm text-red-600 mb-3">Permanently delete your account and all associated data. This cannot be undone.</p>
-        <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-100" onClick={() => appToast.error("Not available", "Account deletion requires verification. Please contact support.")}>Delete Account</Button>
+      <div className="bg-terracotta/10 border border-terracotta/30 rounded-[18px] p-5">
+        <h2 className="text-base font-bold text-terracotta mb-1">Danger Zone</h2>
+        <p className="text-sm text-terracotta mb-3">Permanently delete your account and all associated data. This cannot be undone.</p>
+        <Button variant="outline" className="border-terracotta text-terracotta hover:bg-clay" onClick={() => appToast.error("Not available", "Account deletion requires verification. Please contact support.")}>Delete Account</Button>
       </div>
     </Container>
   );

@@ -85,7 +85,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Order Placed",
     description: "We have successfully received your order.",
     iconName: "package",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
     detailFields: [
       { key: "date", label: "Date", iconName: "calendar", critical: true },
@@ -99,7 +99,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Order Confirmed",
     description: "Our team has confirmed your order.",
     iconName: "clipboard-check",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
   },
   {
@@ -108,7 +108,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Preparing Your Order",
     description: "Your plants and products are being carefully prepared for dispatch.",
     iconName: "refresh-cw",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
     isBotanical: true,
   },
@@ -118,7 +118,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Packed",
     description: "Your order has been packed safely.",
     iconName: "box",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
   },
   {
@@ -127,7 +127,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Shipped",
     description: "Your package has left our warehouse.",
     iconName: "truck",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
     detailFields: [
       { key: "courierPartner", label: "Courier Partner", iconName: "truck", critical: true },
@@ -140,7 +140,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Out For Delivery",
     description: "Your package is out for delivery.",
     iconName: "map-pin",
-    accentColor: "bg-[#E8930A] text-white",
+    accentColor: "bg-[#C6A15B] text-white",
     iconColor: "text-white",
     detailFields: [
       { key: "deliveryPartner", label: "Delivery Partner", iconName: "user", critical: true },
@@ -155,7 +155,7 @@ export const TIMELINE_STAGES: TimelineStage[] = [
     label: "Delivered",
     description: "Your order has been delivered successfully.",
     iconName: "check-circle",
-    accentColor: "bg-[#1A6B3C] text-white",
+    accentColor: "bg-[#16382B] text-white",
     iconColor: "text-white",
     detailFields: [
       { key: "deliveryTime", label: "Delivery Time", iconName: "clock", critical: true },

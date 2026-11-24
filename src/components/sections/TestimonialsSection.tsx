@@ -25,10 +25,10 @@ export function TestimonialsSection() {
   }, [active, paused]);
 
   return (
-    <section id="testimonials" style={{ backgroundColor: "#0F2419" }} className="text-white scroll-mt-20">
+    <section id="testimonials" style={{ backgroundColor: "#0F2A20" }} className="text-white scroll-mt-20">
       <Container className="py-12 md:py-16">
         <div className="text-center mb-8">
-          <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A] mb-2">Customer Reviews</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B] mb-2">Customer Reviews</p>
           <h2 className="text-2xl md:text-4xl font-bold text-white">What Sonipat Says About Us</h2>
         </div>
 
@@ -47,7 +47,7 @@ export function TestimonialsSection() {
                     <BadgeCheck className="size-5 text-green-400" aria-hidden="true" />
                   </div>
                   <div className="flex items-center gap-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="size-4 fill-[#E8930A] text-[#E8930A]" aria-hidden="true" />)}
+                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="size-4 fill-[#C6A15B] text-[#C6A15B]" aria-hidden="true" />)}
                   </div>
                   <blockquote className="text-lg leading-relaxed max-w-2xl text-white/90">&ldquo;{t.text}&rdquo;</blockquote>
                   <p className="text-sm text-white/60">{t.attribution}</p>
@@ -66,7 +66,7 @@ export function TestimonialsSection() {
               </button>
               <div className="flex items-center justify-center gap-2 mt-6" role="tablist" aria-label="Testimonial navigation">
                 {TESTIMONIALS.map((t, idx) => (
-                  <button key={t.id} type="button" role="tab" aria-selected={idx === active} aria-label={`Go to testimonial ${idx + 1}`} onClick={() => goTo(idx)} className={cn("h-2.5 rounded-full transition-all duration-300", idx === active ? "w-8 bg-[#E8930A]" : "w-2.5 bg-white/30 hover:bg-white/50")} />
+                  <button key={t.id} type="button" role="tab" aria-selected={idx === active} aria-label={`Go to testimonial ${idx + 1}`} onClick={() => goTo(idx)} className={cn("h-2.5 rounded-full transition-all duration-300", idx === active ? "w-8 bg-[#C6A15B]" : "w-2.5 bg-white/30 hover:bg-white/50")} />
                 ))}
               </div>
             </>

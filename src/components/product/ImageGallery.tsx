@@ -60,7 +60,7 @@ export function ImageGallery({
               onClick={() => setActive(i)}
               className={cn(
                 "relative size-16 rounded-lg overflow-hidden border-2 transition-all shrink-0",
-                i === active ? "border-[#1A6B3C]" : "border-slate-200 hover:border-slate-300"
+                i === active ? "border-[#16382B]" : "border-slate-200 hover:border-slate-300"
               )}
               aria-label={`View image ${i + 1}`}
             >

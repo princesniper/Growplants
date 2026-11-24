@@ -11,11 +11,11 @@ export function ProvidersSection() {
       <Container>
         <div className="flex items-end justify-between gap-4 flex-wrap mb-8">
           <div className="space-y-2 max-w-2xl">
-            <p className="text-xs font-bold tracking-widest uppercase text-[#E8930A]">Meet Our Experts</p>
-            <h2 className="text-2xl md:text-4xl font-bold text-[#1A6B3C]">Sonipat&apos;s Top Gardeners</h2>
+            <p className="text-xs font-bold tracking-widest uppercase text-[#C6A15B]">Meet Our Experts</p>
+            <h2 className="text-2xl md:text-4xl font-bold text-[#16382B]">Sonipat&apos;s Top Gardeners</h2>
             <p className="text-base text-slate-600">Every gardener is personally interviewed, background-checked, and approved by our team.</p>
           </div>
-          <Button asChild variant="outline" className="gap-2 border-[#1A6B3C] text-[#1A6B3C] hover:bg-[#1A6B3C] hover:text-white shrink-0">
+          <Button asChild variant="outline" className="gap-2 border-[#16382B] text-[#16382B] hover:bg-[#16382B] hover:text-white shrink-0">
             <Link href="/providers">View All Gardeners <ArrowRight className="size-4" aria-hidden="true" /></Link>
           </Button>
         </div>
@@ -25,7 +25,7 @@ export function ProvidersSection() {
         </div>
 
         {/* Become a Provider CTA */}
-        <div className="relative overflow-hidden rounded-xl bg-[#1A6B3C] text-white p-6 md:p-8">
+        <div className="relative overflow-hidden rounded-xl bg-[#16382B] text-white p-6 md:p-8">
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="space-y-2 max-w-xl">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white text-sm font-medium">
@@ -33,7 +33,7 @@ export function ProvidersSection() {
               </span>
               <h3 className="text-xl font-bold">Join GrowPlants and grow your gardening business across Sonipat.</h3>
             </div>
-            <Button asChild size="lg" className="shrink-0 gap-2 bg-[#E8930A] hover:bg-[#E8930A]/90 text-white">
+            <Button asChild size="lg" className="shrink-0 gap-2 bg-[#C6A15B] hover:bg-[#A8843F] text-[#0E241C]">
               <Link href="/become-provider">Become a Provider <ArrowRight className="size-4" aria-hidden="true" /></Link>
             </Button>
           </div>

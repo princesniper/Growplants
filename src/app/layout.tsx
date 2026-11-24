@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Noto_Sans_Devanagari } from "next/font/google";
+import { Inter, JetBrains_Mono, Noto_Sans_Devanagari, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
@@ -24,6 +24,15 @@ const fontNotoDevanagari = Noto_Sans_Devanagari({
   variable: "--font-noto-devanagari",
   subsets: ["devanagari"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+/* ---------- Display serif: Cormorant Garamond (premium botanical direction) ---------- */
+const fontCormorant = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -124,7 +133,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontInter.variable} ${fontJetbrainsMono.variable} ${fontNotoDevanagari.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${fontInter.variable} ${fontJetbrainsMono.variable} ${fontNotoDevanagari.variable} ${fontCormorant.variable} antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         <a href="#main-content" className="skip-to-content">
           Skip to content

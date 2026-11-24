@@ -1,37 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Check, X, Loader2 } from "lucide-react";
+import { MapPin, Check, X, Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isValidPincode } from "@/lib/utils";
-import { DEFAULT_CITY } from "@/lib/constants";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 
 /**
  * PincodeChecker — inline delivery validation widget.
- * Source: PRD §22.2 (Delivery Zones), §23 (Location & City Management)
  *
- * Phase 3 scope:
- *   - Input for 6-digit Indian pincode
- *   - Validates format, then checks against mock serviceable pincodes
- *   - Shows result: serviceable (✓ Sonipat) or not serviceable (✗)
- *   - Persists valid pincode in localStorage
+ * Calls the REAL endpoint GET /api/pincode/[pincode] (contract:
+ * 6-digit → { ok:true, data:{ pincode, city, district, state, region, block } }).
+ * No mock pincode list, no simulated delay. Endpoint contract is preserved —
+ * this component only reads it.
  *
- * Phase 7+ will wire this to /api/pincode-check which queries the
- * serviceable_pincodes table.
+ * States: idle → checking → ok (shows city + Sonipat delivery promise when the
+ * pincode is in Sonipat) | not-found | invalid | error (network/lookup failed —
+ * shown as "couldn't verify", never as "not deliverable").
  *
- * Used in: Header (compact variant), Checkout (full variant), PDP delivery info.
+ * Used in: Header/mobile drawer (compact variant), PDP buy panel (full variant).
  */
-
-// Phase 3 mock — Sonipat serviceable pincodes (subset)
-const SERVICEABLE_PINCODES = new Set([
-  "131001", "131002", "131003", "131004", "131005", "131006", "131007",
-  "131008", "131009", "131010", "131011", "131012", "131013", "131014",
-  "131015", "131016", "131017", "131018", "131019", "131020",
-  "131021", "131022", "131023", "131024", "131025", "131026", "131027",
-  "131028", "131029", "131030", "131039", "131038", "131037",
-]);
 
 const STORAGE_KEY = "growplants-pincode";
 
@@ -40,51 +30,89 @@ export interface PincodeCheckerProps {
   className?: string;
 }
 
-type Status = "idle" | "checking" | "serviceable" | "not-serviceable" | "invalid";
+type Status = "idle" | "checking" | "ok" | "not-found" | "invalid" | "error";
+
+interface PincodeInfo {
+  pincode: string;
+  city: string;
+  district: string;
+  state: string;
+  region: string;
+  block: string;
+}
 
 export function PincodeChecker({ variant = "compact", className }: PincodeCheckerProps) {
-  const [pincode, setPincode] = useState("");
+  const [pincode, setPincode] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem(STORAGE_KEY) ?? "";
+  });
   const [status, setStatus] = useState<Status>("idle");
+  const [info, setInfo] = useState<PincodeInfo | null>(null);
 
-  const check = () => {
+  const check = async () => {
     if (!isValidPincode(pincode)) {
       setStatus("invalid");
       return;
     }
     setStatus("checking");
-    // Simulate API delay
-    setTimeout(() => {
-      if (SERVICEABLE_PINCODES.has(pincode)) {
-        setStatus("serviceable");
+    setInfo(null);
+    try {
+      const res = await fetch(`/api/pincode/${pincode}`);
+      const json = await res.json();
+      if (res.ok && json.ok) {
+        setInfo(json.data as PincodeInfo);
+        setStatus("ok");
         if (typeof window !== "undefined") {
           localStorage.setItem(STORAGE_KEY, pincode);
         }
+      } else if (res.status === 404) {
+        setStatus("not-found");
       } else {
-        setStatus("not-serviceable");
+        setStatus("error");
       }
-    }, 600);
+    } catch {
+      setStatus("error");
+    }
   };
 
   const reset = () => {
     setPincode("");
+    setInfo(null);
     setStatus("idle");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   };
 
+  const isSonipat =
+    info != null &&
+    (info.city.toLowerCase().includes("sonipat") ||
+      info.district.toLowerCase().includes("sonipat"));
+
+  /* ------------------------------ compact ------------------------------ */
   if (variant === "compact") {
     return (
       <div className={cn("flex items-center gap-1.5 text-body-sm", className)}>
-        <MapPin className="size-4 text-primary shrink-0" aria-hidden="true" />
-        {status === "serviceable" ? (
-          <span className="flex items-center gap-1 text-success font-medium">
-            {pincode} <Check className="size-3.5" aria-hidden="true" />
+        <MapPin className="size-4 text-brass shrink-0" aria-hidden="true" />
+        {status === "ok" && info ? (
+          <span className="flex items-center gap-1 text-moss font-medium">
+            {info.pincode} · {info.city} <Check className="size-3.5" aria-hidden="true" />
           </span>
-        ) : status === "not-serviceable" ? (
+        ) : status === "not-found" ? (
           <button
             type="button"
             onClick={reset}
-            className="flex items-center gap-1 text-destructive font-medium hover:underline"
+            className="flex items-center gap-1 text-terracotta font-medium hover:underline"
           >
             Not deliverable <X className="size-3.5" aria-hidden="true" />
+          </button>
+        ) : status === "error" ? (
+          <button
+            type="button"
+            onClick={reset}
+            className="flex items-center gap-1 text-ink-soft font-medium hover:underline"
+          >
+            Couldn&apos;t verify <RotateCcw className="size-3.5" aria-hidden="true" />
           </button>
         ) : (
           <div className="flex items-center gap-1">
@@ -122,11 +150,11 @@ export function PincodeChecker({ variant = "compact", className }: PincodeChecke
     );
   }
 
-  // Full variant (for checkout / PDP)
+  /* ------------------------------- full -------------------------------- */
   return (
     <div className={cn("space-y-2", className)}>
       <label htmlFor="pincode-input" className="text-body-sm font-medium text-foreground flex items-center gap-1.5">
-        <MapPin className="size-4 text-primary" aria-hidden="true" />
+        <MapPin className="size-4 text-brass" aria-hidden="true" />
         Check delivery
       </label>
       <div className="flex gap-2">
@@ -141,7 +169,7 @@ export function PincodeChecker({ variant = "compact", className }: PincodeChecke
             setStatus("idle");
           }}
           placeholder="Enter 6-digit pincode"
-          aria-invalid={status === "invalid" || status === "not-serviceable"}
+          aria-invalid={status === "invalid" || status === "not-found"}
           className="w-40"
         />
         <Button
@@ -161,18 +189,29 @@ export function PincodeChecker({ variant = "compact", className }: PincodeChecke
         </Button>
       </div>
       {status === "invalid" && (
-        <p className="text-body-sm text-destructive">Enter a valid 6-digit pincode</p>
+        <p className="text-body-sm text-terracotta">Enter a valid 6-digit pincode</p>
       )}
-      {status === "serviceable" && (
-        <p className="text-body-sm text-success flex items-center gap-1.5 font-medium">
-          <Check className="size-4" aria-hidden="true" />
-          Deliverable to {DEFAULT_CITY} — {pincode}
+      {status === "ok" && info && (
+        <p className="text-body-sm text-moss flex items-start gap-1.5 font-medium">
+          <Check className="size-4 shrink-0 mt-0.5" aria-hidden="true" />
+          <span>
+            Deliverable to {info.city}, {info.state} — {info.pincode}
+            {isSonipat && (
+              <> · 1–2 business days in Sonipat · Free over ₹{FREE_SHIPPING_THRESHOLD}</>
+            )}
+          </span>
         </p>
       )}
-      {status === "not-serviceable" && (
-        <p className="text-body-sm text-destructive flex items-center gap-1.5 font-medium">
+      {status === "not-found" && (
+        <p className="text-body-sm text-terracotta flex items-center gap-1.5 font-medium">
           <X className="size-4" aria-hidden="true" />
-          Sorry, we don&apos;t deliver to {pincode} yet
+          Pincode not found — please check and re-enter
+        </p>
+      )}
+      {status === "error" && (
+        <p className="text-body-sm text-ink-soft flex items-center gap-1.5 font-medium">
+          <RotateCcw className="size-4" aria-hidden="true" />
+          Couldn&apos;t verify right now — please try again
         </p>
       )}
     </div>

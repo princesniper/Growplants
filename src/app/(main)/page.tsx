@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { TrustBadges } from "@/components/common/TrustBadges";
+import { Container } from "@/components/common/Container";
 import { QuickCategoryGrid } from "@/components/sections/QuickCategoryGrid";
 import { BestSellersSection } from "@/components/sections/BestSellersSection";
+import { CombosBannerSection } from "@/components/sections/CombosBannerSection";
+import { TravelStorySection } from "@/components/sections/TravelStorySection";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { WhyChooseUsSection } from "@/components/sections/WhyChooseUsSection";
 import { ProvidersSection } from "@/components/sections/ProvidersSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { BlogPreviewSection } from "@/components/sections/BlogPreviewSection";
+import { QuizBandSection } from "@/components/sections/QuizBandSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { NewsletterSection } from "@/components/sections/NewsletterSection";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
@@ -97,50 +102,68 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      {/* 1. Hero */}
+      {/* 1. Editorial hero */}
       <HeroSection />
 
-      {/* 2. Quick Category Grid */}
+      {/* 2. Trust strip — immediately under hero, never buried */}
+      <div className="bg-ivory border-b border-line/60">
+        <Container className="py-6 md:py-8">
+          <TrustBadges />
+        </Container>
+      </div>
+
+      {/* 3. Shop by need (light cards + need chips) */}
       <ScrollReveal variant="up">
         <QuickCategoryGrid />
       </ScrollReveal>
 
-      {/* 3. Best Sellers */}
+      {/* 4. The Collection — bestsellers rail with intent tabs */}
       <ScrollReveal variant="up" delay={100}>
         <BestSellersSection />
       </ScrollReveal>
 
-      {/* 4. Services + How Booking Works + Trust Badges */}
+      {/* 5. Plant + Pot combos banner */}
+      <ScrollReveal variant="up">
+        <CombosBannerSection />
+      </ScrollReveal>
+
+      {/* 6. How your plant travels — de-risk transit anxiety */}
+      <TravelStorySection />
+
+      {/* 7. Services + How Booking Works */}
       <ScrollReveal variant="up">
         <ServicesSection />
       </ScrollReveal>
 
-      {/* 5. Why Choose Us */}
+      {/* 8. Why Choose Us */}
       <ScrollReveal variant="left">
         <WhyChooseUsSection />
       </ScrollReveal>
 
-      {/* 6. Providers */}
+      {/* 9. Providers (marketplace stays live; parked out of nav) */}
       <ScrollReveal variant="up">
         <ProvidersSection />
       </ScrollReveal>
 
-      {/* 7. Testimonials + Stats (dark green) */}
+      {/* 10. Testimonials + stats */}
       <ScrollReveal variant="scale">
         <TestimonialsSection />
       </ScrollReveal>
 
-      {/* 8. Blog Preview */}
+      {/* 11. Care Journal teaser */}
       <ScrollReveal variant="up">
         <BlogPreviewSection />
       </ScrollReveal>
 
-      {/* 9. FAQ */}
+      {/* 12. Quiz CTA band — "Confused hain kaunsa plant lein?" */}
+      <QuizBandSection />
+
+      {/* 13. FAQ */}
       <ScrollReveal variant="up">
         <FAQSection />
       </ScrollReveal>
 
-      {/* 10. Newsletter (dark green) */}
+      {/* 14. Newsletter */}
       <NewsletterSection />
 
       {/* Floating WhatsApp */}

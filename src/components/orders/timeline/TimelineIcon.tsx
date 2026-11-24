@@ -52,7 +52,7 @@ const SIZE_MAP = {
 
 export function TimelineIcon({
   name,
-  accentColor = "bg-[#1A6B3C] text-white",
+  accentColor = "bg-[#16382B] text-white",
   iconColor = "text-white",
   state,
   size = "md",
@@ -68,8 +68,8 @@ export function TimelineIcon({
         "relative rounded-full flex items-center justify-center shrink-0 transition-all duration-500",
         dims.circle,
         // State-based styling
-        state === "completed" && "bg-[#1A6B3C] text-white shadow-sm",
-        state === "current" && cn(accentColor, "shadow-md ring-4 ring-[#1A6B3C]/15 animate-pulse-soft"),
+        state === "completed" && "bg-[#16382B] text-white shadow-sm",
+        state === "current" && cn(accentColor, "shadow-md ring-4 ring-[#16382B]/15 animate-pulse-soft"),
         state === "upcoming" && "bg-slate-100 text-slate-400",
         state === "cancelled_step" && "bg-red-500 text-white shadow-sm",
         className,
@@ -81,7 +81,7 @@ export function TimelineIcon({
       {/* Checkmark overlay on completed steps (not for check-circle which already IS a checkmark) */}
       {state === "completed" && showCheckOnComplete && name !== "check-circle" && (
         <div className="absolute -bottom-0.5 -right-0.5 size-4 rounded-full bg-white flex items-center justify-center shadow-sm animate-checkmark-pop">
-          <CheckCircle2 className="size-4 text-[#1A6B3C]" strokeWidth={2.5} />
+          <CheckCircle2 className="size-4 text-[#16382B]" strokeWidth={2.5} />
         </div>
       )}
 

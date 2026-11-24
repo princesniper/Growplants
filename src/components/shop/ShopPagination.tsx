@@ -49,7 +49,7 @@ export function ShopPagination({ currentPage, totalPages, onPageChange, classNam
             className={cn(
               "size-9 rounded-md flex items-center justify-center text-sm font-medium transition-colors",
               p === currentPage
-                ? "bg-[#1A6B3C] text-white"
+                ? "bg-[#16382B] text-white"
                 : "border border-slate-200 text-slate-600 hover:bg-[#F3F8F1]"
             )}
             aria-label={`Page ${p}`}

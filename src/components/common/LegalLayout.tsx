@@ -5,6 +5,8 @@ import { TableOfContents, type TocItem } from "@/components/common/TableOfConten
 /**
  * LegalLayout — wrapper for legal/policy pages with sticky TOC sidebar
  * + main content area. Used on: Terms, Privacy Policy, Refund Policy.
+ * API preserved: title, lastUpdated, tocItems, children, className?.
+ * Typography/spacing only — policy wording is contractual and untouched.
  */
 export interface LegalLayoutProps {
   title: string;
@@ -22,7 +24,7 @@ export function LegalLayout({
   className,
 }: LegalLayoutProps) {
   return (
-    <Container className={cn("py-10 md:py-14", className)}>
+    <Container className={cn("py-12 md:py-16", className)}>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
         {/* TOC sidebar */}
         <aside className="lg:col-span-1">
@@ -31,13 +33,15 @@ export function LegalLayout({
 
         {/* Main content */}
         <div className="lg:col-span-3 max-w-3xl">
-          <div className="mb-8">
-            <h1 className="text-2xl md:text-4xl font-bold text-[#1A6B3C] mb-2">
+          <div className="mb-10 border-b border-line pb-6">
+            <h1 className="font-display text-h1 text-pine mb-3">
               {title}
             </h1>
-            <p className="text-sm text-slate-500">Last updated: {lastUpdated}</p>
+            <p className="text-body-sm text-ink-soft">
+              Last updated: <span className="font-medium text-ink">{lastUpdated}</span>
+            </p>
           </div>
-          <div className="prose prose-slate max-w-none space-y-8">
+          <div className="prose prose-slate max-w-none space-y-10 text-ink-soft [&_h2]:font-display [&_h2]:text-pine [&_a]:text-pine [&_strong]:text-ink">
             {children}
           </div>
         </div>

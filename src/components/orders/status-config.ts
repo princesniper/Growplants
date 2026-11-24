@@ -43,8 +43,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   placed: {
     label: "Order Placed",
     labelHi: "ऑर्डर दिया गया",
-    color: "bg-amber-100 text-amber-700 border-amber-200",
-    dotColor: "bg-amber-500",
+    color: "bg-gold-tint text-brass-deep border-brass/30",
+    dotColor: "bg-brass",
     isTimelineStep: true,
     stepIndex: 0,
     cancellable: true,
@@ -54,8 +54,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   pending: {
     label: "Order Placed",
     labelHi: "ऑर्डर दिया गया",
-    color: "bg-amber-100 text-amber-700 border-amber-200",
-    dotColor: "bg-amber-500",
+    color: "bg-gold-tint text-brass-deep border-brass/30",
+    dotColor: "bg-brass",
     isTimelineStep: true,
     stepIndex: 0,
     cancellable: true,
@@ -65,8 +65,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   payment_confirmed: {
     label: "Payment Confirmed",
     labelHi: "भुगतान की पुष्टि",
-    color: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    dotColor: "bg-emerald-500",
+    color: "bg-sage-wash text-moss border-moss/25",
+    dotColor: "bg-moss",
     isTimelineStep: true,
     stepIndex: 1,
     cancellable: true,
@@ -76,8 +76,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   confirmed: {
     label: "Order Confirmed",
     labelHi: "ऑर्डर की पुष्टि",
-    color: "bg-blue-100 text-blue-700 border-blue-200",
-    dotColor: "bg-blue-500",
+    color: "bg-pine/10 text-pine border-pine/20",
+    dotColor: "bg-pine",
     isTimelineStep: true,
     stepIndex: 2,
     cancellable: true,
@@ -87,8 +87,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   processing: {
     label: "Preparing Your Plants",
     labelHi: "पौधे तैयार किए जा रहे हैं",
-    color: "bg-indigo-100 text-indigo-700 border-indigo-200",
-    dotColor: "bg-indigo-500",
+    color: "bg-clay text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     isTimelineStep: true,
     stepIndex: 3,
     cancellable: false,
@@ -98,8 +98,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   quality_inspection: {
     label: "Quality Inspection",
     labelHi: "गुणवत्ता निरीक्षण",
-    color: "bg-teal-100 text-teal-700 border-teal-200",
-    dotColor: "bg-teal-500",
+    color: "bg-sage-wash text-pine border-pine/20",
+    dotColor: "bg-sage",
     isTimelineStep: true,
     stepIndex: 4,
     cancellable: false,
@@ -109,8 +109,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   packed: {
     label: "Packed",
     labelHi: "पैक किया गया",
-    color: "bg-cyan-100 text-cyan-700 border-cyan-200",
-    dotColor: "bg-cyan-500",
+    color: "bg-stone text-charcoal border-line",
+    dotColor: "bg-sage",
     isTimelineStep: true,
     stepIndex: 5,
     cancellable: false,
@@ -120,8 +120,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   shipped: {
     label: "Shipped",
     labelHi: "भेज दिया गया",
-    color: "bg-purple-100 text-purple-700 border-purple-200",
-    dotColor: "bg-purple-500",
+    color: "bg-gold-tint text-brass-deep border-brass/30",
+    dotColor: "bg-brass-deep",
     isTimelineStep: true,
     stepIndex: 6,
     cancellable: false,
@@ -131,8 +131,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   out_for_delivery: {
     label: "Out For Delivery",
     labelHi: "डिलीवरी के लिए रवाना",
-    color: "bg-orange-100 text-orange-700 border-orange-200",
-    dotColor: "bg-orange-500",
+    color: "bg-clay text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     isTimelineStep: true,
     stepIndex: 7,
     cancellable: false,
@@ -142,8 +142,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   delivered: {
     label: "Delivered",
     labelHi: "डिलीवर हो गया",
-    color: "bg-green-100 text-green-700 border-green-200",
-    dotColor: "bg-green-500",
+    color: "bg-sage-wash text-moss border-moss/25",
+    dotColor: "bg-moss",
     isTimelineStep: true,
     stepIndex: 8,
     cancellable: false,
@@ -153,8 +153,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   cancelled: {
     label: "Cancelled",
     labelHi: "रद्द किया गया",
-    color: "bg-red-100 text-red-700 border-red-200",
-    dotColor: "bg-red-500",
+    color: "bg-terracotta/10 text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: false,
@@ -165,8 +165,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   completed: {
     label: "Completed",
     labelHi: "पूर्ण",
-    color: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    dotColor: "bg-emerald-500",
+    color: "bg-sage-wash text-moss border-moss/25",
+    dotColor: "bg-moss",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: false,
@@ -176,8 +176,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   returned: {
     label: "Returned",
     labelHi: "वापस किया गया",
-    color: "bg-rose-100 text-rose-700 border-rose-200",
-    dotColor: "bg-rose-500",
+    color: "bg-clay text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: false,
@@ -187,8 +187,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   refunded: {
     label: "Refunded",
     labelHi: "धन वापसी",
-    color: "bg-teal-100 text-teal-700 border-teal-200",
-    dotColor: "bg-teal-500",
+    color: "bg-sage-wash text-pine border-pine/20",
+    dotColor: "bg-sage",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: false,
@@ -198,8 +198,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   failed: {
     label: "Failed",
     labelHi: "विफल",
-    color: "bg-red-100 text-red-700 border-red-200",
-    dotColor: "bg-red-500",
+    color: "bg-terracotta/10 text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: false,
@@ -209,8 +209,8 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   on_hold: {
     label: "On Hold",
     labelHi: "रुका हुआ",
-    color: "bg-slate-100 text-slate-700 border-slate-200",
-    dotColor: "bg-slate-500",
+    color: "bg-stone text-ink-soft border-line",
+    dotColor: "bg-sage",
     isTimelineStep: false,
     stepIndex: -1,
     cancellable: true,
@@ -235,36 +235,36 @@ export const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, PaymentStatusConfig> =
   pending: {
     label: "Pending",
     labelHi: "लंबित",
-    color: "bg-amber-100 text-amber-700 border-amber-200",
-    dotColor: "bg-amber-500",
+    color: "bg-gold-tint text-brass-deep border-brass/30",
+    dotColor: "bg-brass",
     description: "Payment awaiting processing",
   },
   paid: {
     label: "Paid",
     labelHi: "भुगतान हो गया",
-    color: "bg-green-100 text-green-700 border-green-200",
-    dotColor: "bg-green-500",
+    color: "bg-sage-wash text-moss border-moss/25",
+    dotColor: "bg-moss",
     description: "Payment successfully captured",
   },
   failed: {
     label: "Failed",
     labelHi: "विफल",
-    color: "bg-red-100 text-red-700 border-red-200",
-    dotColor: "bg-red-500",
+    color: "bg-terracotta/10 text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     description: "Payment failed",
   },
   refunded: {
     label: "Refunded",
     labelHi: "धन वापसी",
-    color: "bg-blue-100 text-blue-700 border-blue-200",
-    dotColor: "bg-blue-500",
+    color: "bg-pine/10 text-pine border-pine/20",
+    dotColor: "bg-pine",
     description: "Full refund processed",
   },
   partial_refund: {
     label: "Partial Refund",
     labelHi: "आंशिक धन वापसी",
-    color: "bg-orange-100 text-orange-700 border-orange-200",
-    dotColor: "bg-orange-500",
+    color: "bg-clay text-terracotta border-terracotta/30",
+    dotColor: "bg-terracotta",
     description: "Partial refund processed",
   },
 };
@@ -280,7 +280,7 @@ export function getStatusLabel(status: OrderStatus, lang: "en" | "hi" = "en"): s
 }
 
 export function getStatusColor(status: OrderStatus): string {
-  return ORDER_STATUS_CONFIG[status]?.color ?? "bg-slate-100 text-slate-700";
+  return ORDER_STATUS_CONFIG[status]?.color ?? "bg-stone text-ink-soft";
 }
 
 export function getPaymentStatusLabel(status: PaymentStatus, lang: "en" | "hi" = "en"): string {
@@ -290,7 +290,7 @@ export function getPaymentStatusLabel(status: PaymentStatus, lang: "en" | "hi" =
 }
 
 export function getPaymentStatusColor(status: PaymentStatus): string {
-  return PAYMENT_STATUS_CONFIG[status]?.color ?? "bg-slate-100 text-slate-700";
+  return PAYMENT_STATUS_CONFIG[status]?.color ?? "bg-stone text-ink-soft";
 }
 
 export function isCancellable(status: OrderStatus): boolean {

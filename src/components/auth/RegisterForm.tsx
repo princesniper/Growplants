@@ -89,7 +89,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             type="text"
             autoComplete="name"
             placeholder="Priya Sharma"
-            className="pl-9 h-12 rounded-md"
+            className="pl-9 h-12 rounded-xl"
             aria-invalid={!!errors.fullName}
             aria-describedby={errors.fullName ? "register-name-error" : undefined}
             {...register("fullName")}
@@ -118,7 +118,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               type="email"
               autoComplete="email"
               placeholder="you@email.com"
-              className="pl-9 h-12 rounded-md"
+              className="pl-9 h-12 rounded-xl"
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "register-email-error" : undefined}
               {...register("email")}
@@ -145,7 +145,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               type="tel"
               autoComplete="tel"
               placeholder="9876543210"
-              className="pl-9 h-12 rounded-md"
+              className="pl-9 h-12 rounded-xl"
               aria-invalid={!!errors.phone}
               aria-describedby={errors.phone ? "register-phone-error" : undefined}
               {...register("phone")}
@@ -174,7 +174,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
             placeholder="••••••••"
-            className="pl-9 pr-9 h-12 rounded-md"
+            className="pl-9 pr-9 h-12 rounded-xl"
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? "register-password-error" : undefined}
             {...register("password", {
@@ -217,7 +217,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             type={showConfirm ? "text" : "password"}
             autoComplete="new-password"
             placeholder="••••••••"
-            className="pl-9 pr-9 h-12 rounded-md"
+            className="pl-9 pr-9 h-12 rounded-xl"
             aria-invalid={!!errors.confirmPassword}
             aria-describedby={errors.confirmPassword ? "register-confirm-error" : undefined}
             {...register("confirmPassword")}
@@ -248,7 +248,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           <input
             type="checkbox"
             id="register-terms"
-            className="size-4 accent-[#1A6B3C] mt-0.5"
+            className="size-4 accent-pine mt-0.5"
             aria-invalid={!!errors.acceptTerms}
             aria-describedby={errors.acceptTerms ? "register-terms-error" : undefined}
             {...register("acceptTerms")}
@@ -275,7 +275,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-12 gap-2"
+        className="w-full h-12 gap-2 rounded-full"
         size="lg"
       >
         {isSubmitting ? (

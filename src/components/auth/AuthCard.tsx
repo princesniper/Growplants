@@ -90,9 +90,10 @@ export function AuthCard({ initialView = "login" }: { initialView?: View }) {
         {/* Middle: headline + trust points */}
         <div className="relative z-10 space-y-8">
           <div className="space-y-3">
-            <h2 className="text-h2 font-bold leading-tight">
+            <h2 className="font-display text-h2 font-bold leading-tight">
               {isHi ? "हरियाली का सफर शुरू करें" : "Start Your Green Journey"}
             </h2>
+            <span aria-hidden="true" className="block h-0.5 w-10 rounded-full bg-brass" />
             <p className="text-body text-primary-foreground/80 max-w-sm">
               {isHi
                 ? "सोनीपत का भरोसेमंद वनस्पति बाज़ार। पौधे, प्लांटर, और बागवानी सेवाएं — सब एक जगह।"
@@ -122,21 +123,21 @@ export function AuthCard({ initialView = "login" }: { initialView?: View }) {
         {/* Bottom: stats */}
         <div className="relative z-10 flex items-center gap-6 text-primary-foreground/90">
           <div>
-            <p className="text-h4 font-bold tabular-nums">1,200+</p>
+            <p className="font-display text-h4 font-bold tabular-nums">1,200+</p>
             <p className="text-caption text-primary-foreground/70">
               {isHi ? "ग्राहक" : "Customers"}
             </p>
           </div>
           <div className="h-8 w-px bg-primary-foreground/20" />
           <div>
-            <p className="text-h4 font-bold tabular-nums">4.8★</p>
+            <p className="font-display text-h4 font-bold tabular-nums">4.8★</p>
             <p className="text-caption text-primary-foreground/70">
               {isHi ? "रेटिंग" : "Rating"}
             </p>
           </div>
           <div className="h-8 w-px bg-primary-foreground/20" />
           <div>
-            <p className="text-h4 font-bold tabular-nums">500+</p>
+            <p className="font-display text-h4 font-bold tabular-nums">500+</p>
             <p className="text-caption text-primary-foreground/70">
               {isHi ? "उत्पाद" : "Products"}
             </p>
@@ -153,7 +154,7 @@ export function AuthCard({ initialView = "login" }: { initialView?: View }) {
 
         {/* Header */}
         <div className="mb-6 space-y-1">
-          <h1 className="text-h3 font-bold text-foreground">{titles[view].title}</h1>
+          <h1 className="font-display text-h3 font-bold text-foreground">{titles[view].title}</h1>
           <p className="text-body-sm text-muted-foreground">{titles[view].subtitle}</p>
         </div>
 

@@ -17,6 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { QuantitySelector } from "@/components/products/QuantitySelector";
 import { FreeShippingProgressBar } from "@/components/common/FreeShippingProgressBar";
 import { EmptyState } from "@/components/common/EmptyState";
+import { GuaranteeCallout } from "@/components/common/GuaranteeCallout";
 import { useCart } from "@/contexts/CartContext";
 import { useBilingual } from "@/store/useBilingual";
 import { formatINR } from "@/lib/utils";
@@ -196,6 +197,7 @@ export function CartDrawer() {
                 </span>
               </div>
               <Separator />
+              <GuaranteeCallout variant="compact" />
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" asChild>
                   <Link href="/cart" onClick={closeDrawer}>

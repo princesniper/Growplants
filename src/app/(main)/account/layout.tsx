@@ -43,9 +43,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const sidebar = (
     <div className="space-y-1">
       {/* User card */}
-      <div className="p-3 mb-3 rounded-lg bg-[#F3F8F1]">
+      <div className="p-3 mb-3 rounded-lg bg-sage-wash">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-full bg-[#1A6B3C] text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden border-2 border-white shadow-sm">
+          <div className="size-10 rounded-full bg-pine text-white flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden border-2 border-white shadow-sm">
             {user?.profileImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -59,8 +59,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-800 truncate">{user?.fullName ?? "Guest"}</p>
-            <p className="text-xs text-slate-500 truncate">{user?.email ?? "Not logged in"}</p>
+            <p className="text-sm font-semibold text-ink truncate">{user?.fullName ?? "Guest"}</p>
+            <p className="text-xs text-ink-soft truncate">{user?.email ?? "Not logged in"}</p>
           </div>
         </div>
       </div>
@@ -76,14 +76,14 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             className={cn(
               "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
               isActive(item.href)
-                ? "bg-[#1A6B3C] text-white"
-                : "text-slate-600 hover:bg-[#F3F8F1] hover:text-[#1A6B3C]"
+                ? "bg-pine text-white"
+                : "text-ink-soft hover:bg-sage-wash hover:text-pine"
             )}
           >
             <item.icon className="size-4 shrink-0" />
             <span className="flex-1">{item.label}</span>
             {showBadge > 0 && (
-              <span className={cn("text-xs font-bold px-1.5 py-0.5 rounded-full", isActive(item.href) ? "bg-white/20 text-white" : "bg-[#E8930A] text-white")}>
+              <span className={cn("text-xs font-bold px-1.5 py-0.5 rounded-full", isActive(item.href) ? "bg-paper/20 text-white" : "bg-brass text-white")}>
                 {showBadge}
               </span>
             )}
@@ -91,7 +91,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         );
       })}
 
-      <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+      <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-terracotta hover:bg-terracotta/10 transition-colors">
         <LogOut className="size-4 shrink-0" />
         Logout
       </button>
@@ -99,20 +99,20 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   );
 
   return (
-    <div className="min-h-screen bg-[#FAFAF6]">
+    <div className="min-h-screen bg-ivory">
       {/* Mobile header */}
-      <div className="lg:hidden sticky top-16 z-30 bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
-        <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+      <div className="lg:hidden sticky top-16 z-30 bg-paper border-b border-line px-4 py-2 flex items-center justify-between">
+        <button onClick={() => setSidebarOpen(true)} className="flex items-center gap-1.5 text-sm font-medium text-ink">
           <Menu className="size-5" /> Menu
         </button>
-        <span className="text-sm font-bold text-[#1A6B3C]">My Account</span>
+        <span className="text-sm font-bold text-pine">My Account</span>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Desktop sidebar */}
           <aside className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-24 bg-white border border-slate-200 rounded-xl p-3">
+            <div className="sticky top-24 bg-paper border border-line rounded-[18px] p-3">
               {sidebar}
             </div>
           </aside>
@@ -120,10 +120,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           {/* Mobile sidebar drawer */}
           {sidebarOpen && (
             <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setSidebarOpen(false)}>
-              <div className="absolute top-0 left-0 h-full w-72 max-w-[80vw] bg-white shadow-xl p-4 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="absolute top-0 left-0 h-full w-72 max-w-[80vw] bg-paper shadow-xl p-4 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold text-[#1A6B3C]">Account Menu</span>
-                  <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-100 rounded"><X className="size-5 text-slate-500" /></button>
+                  <span className="text-sm font-bold text-pine">Account Menu</span>
+                  <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-stone rounded"><X className="size-5 text-ink-soft" /></button>
                 </div>
                 {sidebar}
               </div>

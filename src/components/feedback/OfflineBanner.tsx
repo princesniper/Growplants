@@ -47,7 +47,7 @@ export function OfflineBanner({ className }: { className?: string }) {
     <div
       role="alert"
       className={cn(
-        "sticky top-0 z-50 w-full bg-warning text-warning-foreground",
+        "sticky top-0 z-50 w-full bg-warning text-warning-foreground border-b border-brass-deep/30",
         "px-4 py-2 text-body-sm font-medium text-center",
         "flex items-center justify-center gap-2",
         className

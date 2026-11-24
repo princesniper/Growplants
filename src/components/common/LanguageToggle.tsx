@@ -40,7 +40,7 @@ export function LanguageToggle({
         role="radiogroup"
         aria-label="Language"
         className={cn(
-          "inline-flex items-center rounded-lg border border-border bg-card p-0.5",
+          "inline-flex items-center rounded-full border border-border bg-card p-0.5",
           className
         )}
       >
@@ -51,7 +51,7 @@ export function LanguageToggle({
             aria-checked={language === lang}
             onClick={() => setLanguage(lang)}
             className={cn(
-              "px-3 py-1 text-body-sm font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "px-3 py-1 text-body-sm font-medium rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               language === lang
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -83,7 +83,7 @@ export function LanguageToggle({
       variant="ghost"
       size={size === "md" ? "default" : size}
       onClick={toggleLanguage}
-      className={cn("gap-2 font-medium", className)}
+      className={cn("gap-2 font-medium rounded-full", className)}
       aria-label={`Switch to ${OPPOSITE[language] === "en" ? "English" : "Hindi"}`}
     >
       <Languages className="size-4" aria-hidden="true" />

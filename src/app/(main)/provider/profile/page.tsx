@@ -59,34 +59,34 @@ export default function ProviderProfilePage() {
 
   return (
     <Container className="py-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1A6B3C] mb-6">Provider Profile</h1>
+      <h1 className="text-2xl font-bold text-pine mb-6">Provider Profile</h1>
 
       {/* Bio + Specializations */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 space-y-4">
-        <h2 className="text-base font-bold text-slate-800">About & Expertise</h2>
+      <div className="bg-paper border border-line rounded-[18px] p-5 mb-4 space-y-4">
+        <h2 className="text-base font-bold text-charcoal">About & Expertise</h2>
         <Separator />
         <div className="space-y-1.5"><Label className="text-sm">Bio</Label><Textarea rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} /></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5"><Label className="text-sm">Experience (years)</Label><Input type="number" value={form.experienceYears} onChange={(e) => setForm({ ...form, experienceYears: e.target.value })} className="h-11" /></div>
           <div className="space-y-1.5"><Label className="text-sm">Service Radius (km)</Label><Input type="number" value={form.serviceRadius} onChange={(e) => setForm({ ...form, serviceRadius: e.target.value })} className="h-11" /></div>
         </div>
-        <div className="space-y-2"><Label className="text-sm">Services Offered</Label><div className="grid grid-cols-2 gap-2">{SERVICE_OPTIONS.map((s) => <button key={s} onClick={() => toggleService(s)} className={`px-3 py-2 rounded-lg border-2 text-xs font-medium text-left transition-all ${form.specializations.includes(s) ? "border-[#1A6B3C] bg-[#F3F8F1] text-[#1A6B3C]" : "border-slate-200 text-slate-600"}`}>{s}</button>)}</div></div>
+        <div className="space-y-2"><Label className="text-sm">Services Offered</Label><div className="grid grid-cols-2 gap-2">{SERVICE_OPTIONS.map((s) => <button key={s} onClick={() => toggleService(s)} className={`px-3 py-2 rounded-lg border-2 text-xs font-medium text-left transition-all ${form.specializations.includes(s) ? "border-pine bg-sage-wash text-pine" : "border-line text-ink-soft"}`}>{s}</button>)}</div></div>
       </div>
 
       {/* Availability */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 space-y-3">
-        <h2 className="text-base font-bold text-slate-800">Weekly Availability</h2>
+      <div className="bg-paper border border-line rounded-[18px] p-5 mb-4 space-y-3">
+        <h2 className="text-base font-bold text-charcoal">Weekly Availability</h2>
         <Separator />
         {DAYS.map((day) => (
           <div key={day.label} className="flex items-center gap-3">
             <label className="flex items-center gap-2 w-28 cursor-pointer">
-              <input type="checkbox" checked={form[day.availKey] as boolean} onChange={(e) => setForm({ ...form, [day.availKey]: e.target.checked })} className="size-4 accent-[#1A6B3C]" />
-              <span className="text-sm text-slate-700">{day.label}</span>
+              <input type="checkbox" checked={form[day.availKey] as boolean} onChange={(e) => setForm({ ...form, [day.availKey]: e.target.checked })} className="size-4 accent-pine" />
+              <span className="text-sm text-ink">{day.label}</span>
             </label>
             {form[day.availKey] as boolean && (
               <div className="flex items-center gap-2">
                 <Input type="time" value={form[day.startKey] as string} onChange={(e) => setForm({ ...form, [day.startKey]: e.target.value })} className="h-9 w-28 text-sm" />
-                <span className="text-xs text-slate-400">to</span>
+                <span className="text-xs text-ink-soft/70">to</span>
                 <Input type="time" value={form[day.endKey] as string} onChange={(e) => setForm({ ...form, [day.endKey]: e.target.value })} className="h-9 w-28 text-sm" />
               </div>
             )}
@@ -95,8 +95,8 @@ export default function ProviderProfilePage() {
       </div>
 
       {/* Bank Details */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 space-y-3">
-        <h2 className="text-base font-bold text-slate-800">Bank & Payout Details</h2>
+      <div className="bg-paper border border-line rounded-[18px] p-5 mb-4 space-y-3">
+        <h2 className="text-base font-bold text-charcoal">Bank & Payout Details</h2>
         <Separator />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="space-y-1.5"><Label className="text-sm">Account Name</Label><Input value={form.bankAccountName} onChange={(e) => setForm({ ...form, bankAccountName: e.target.value })} className="h-11" /></div>
@@ -106,7 +106,7 @@ export default function ProviderProfilePage() {
         <div className="space-y-1.5"><Label className="text-sm">UPI ID</Label><Input value={form.upiId} onChange={(e) => setForm({ ...form, upiId: e.target.value })} className="h-11" /></div>
       </div>
 
-      <Button onClick={handleSave} disabled={isSaving} className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2">{isSaving ? <><Loader2 className="size-4 animate-spin" />Saving...</> : <><Check className="size-4" />Save Profile</>}</Button>
+      <Button onClick={handleSave} disabled={isSaving} className="bg-pine hover:bg-brass-deep gap-2">{isSaving ? <><Loader2 className="size-4 animate-spin" />Saving...</> : <><Check className="size-4" />Save Profile</>}</Button>
     </Container>
   );
 }

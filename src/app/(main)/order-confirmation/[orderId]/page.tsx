@@ -15,7 +15,7 @@
 import { use, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, Download, ArrowRight, MapPin, CreditCard, Loader2 } from "lucide-react";
+import { CheckCircle2, ArrowRight, MapPin, CreditCard, Loader2, Phone, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,8 @@ import { onUserOrderSnapshot } from "@/lib/firebase/firestore";
 import type { FirestoreOrder, FirestoreOrderAddressDetails } from "@/types/firebase";
 import { formatINR } from "@/lib/utils";
 import { OrderTimeline, TrackingSkeleton } from "@/components/orders/timeline";
+import { GuaranteeCallout } from "@/components/common/GuaranteeCallout";
+import { SOCIAL_LINKS } from "@/lib/constants";
 
 const FETCH_TIMEOUT_MS = 30_000;
 
@@ -137,7 +139,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
       <Container className="py-16 text-center space-y-4">
         <h1 className="text-xl font-bold text-gray-900">Order not found</h1>
         <p className="text-sm text-slate-500">This order may have been removed or is still syncing.</p>
-        <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A]"><Link href="/account/orders">View My Orders</Link></Button>
+        <Button asChild className="bg-pine hover:bg-brass-deep text-ivory rounded-full"><Link href="/account/orders">View My Orders</Link></Button>
       </Container>
     );
   }
@@ -153,14 +155,25 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
       <div className="max-w-3xl mx-auto space-y-6 animate-page-enter">
         {/* Success header */}
         <div className="text-center space-y-3">
-          <div className="size-16 rounded-full bg-green-100 flex items-center justify-center mx-auto animate-scale-in">
-            <CheckCircle2 className="size-8 text-green-600" aria-hidden="true" />
+          <div className="size-20 rounded-full bg-pine flex items-center justify-center mx-auto animate-scale-in shadow-[0_16px_40px_rgba(22,56,43,0.25)]">
+            <CheckCircle2 className="size-10 text-brass" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-[#1A6B3C]">Order Placed Successfully!</h1>
-          <p className="text-sm text-slate-500">Thank you for your order. We&apos;ll send updates via SMS and email.</p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F3F8F1] rounded-full">
-            <span className="text-sm text-slate-600">Order ID:</span>
-            <span className="text-sm font-bold text-[#1A6B3C]">#{order.orderNumber}</span>
+          <h1 className="font-display text-3xl md:text-5xl text-pine">Order placed! 🎉</h1>
+          <p className="text-ink-soft max-w-md mx-auto">Shukriya! Aapka order confirm ho gaya hai — nursery se fresh pick karke 1–2 din mein bhej denge.</p>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-paper border border-line rounded-full shadow-sm">
+            <span className="text-sm text-ink-soft">Order ID:</span>
+            <span className="text-sm font-bold text-pine tabular-nums">#{order.orderNumber}</span>
+          </div>
+          <div>
+            <a
+              href={`${SOCIAL_LINKS.whatsapp}?text=${encodeURIComponent(`Hi GrowPlants! Please send order updates for order #${order.orderNumber} on WhatsApp.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-pine/25 px-5 py-2.5 text-sm font-semibold text-pine transition-all hover:bg-pine hover:text-ivory min-h-[44px]"
+            >
+              <MessageCircle className="size-4" aria-hidden="true" />
+              Get order updates on WhatsApp
+            </a>
           </div>
         </div>
 
@@ -172,7 +185,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
         />
 
         {/* Items */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+        <div className="bg-paper border border-line rounded-[18px] p-5 space-y-3">
           <h2 className="text-sm font-bold text-slate-800">Items ({order.items.length})</h2>
           <Separator />
           {order.items.map((item, i) => (
@@ -181,28 +194,28 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                 {item.image && <Image src={item.image} alt={item.name} fill sizes="48px" className="object-cover" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 line-clamp-1">{item.name}</p>
-                <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatINR(item.price)}</p>
+                <p className="text-sm font-medium text-charcoal line-clamp-1">{item.name}</p>
+                <p className="text-xs text-ink-soft tabular-nums">Qty: {item.quantity} × {formatINR(item.price)}</p>
               </div>
-              <p className="text-sm font-bold text-[#1A6B3C] tabular-nums">{formatINR(item.price * item.quantity)}</p>
+              <p className="text-sm font-bold text-pine tabular-nums">{formatINR(item.price * item.quantity)}</p>
             </div>
           ))}
         </div>
 
         {/* Delivery + Payment */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase mb-2 flex items-center gap-1.5"><MapPin className="size-3.5" />Delivery Address</h3>
+          <div className="bg-paper border border-line rounded-[18px] p-4">
+            <h3 className="text-[11px] font-bold text-ink-soft uppercase tracking-[0.12em] mb-2 flex items-center gap-1.5"><MapPin className="size-3.5 text-brass-deep" />Delivery Address</h3>
             <p className="text-sm font-medium text-slate-800">{order.address.fullName}</p>
             <p className="text-xs text-slate-600">{order.address.addressLine1}</p>
             <p className="text-xs text-slate-600">{order.address.city}, {order.address.state} - {order.address.pincode}</p>
-            <p className="text-xs text-slate-600 mt-1">📞 {order.address.phone}</p>
+            <p className="text-xs text-ink-soft mt-1 flex items-center gap-1"><Phone className="size-3" aria-hidden="true" /> {order.address.phone}</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase mb-2 flex items-center gap-1.5"><CreditCard className="size-3.5" />Payment</h3>
+            <h3 className="text-[11px] font-bold text-ink-soft uppercase tracking-[0.12em] mb-2 flex items-center gap-1.5"><CreditCard className="size-3.5 text-brass-deep" />Payment</h3>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">Method</span>
-              <span className="text-sm font-medium text-slate-800">{order.paymentMethod === "cod" ? "COD" : "Online (Razorpay)"}</span>
+              <span className="text-sm font-medium text-slate-800">{order.paymentMethod === "cod" ? "Cash on Delivery" : "Online"}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">Status</span>
@@ -214,18 +227,20 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
         </div>
 
         {/* Price summary */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-2">
+        <div className="bg-paper border border-line rounded-[18px] p-5 space-y-2">
           <div className="flex justify-between text-sm"><span className="text-slate-600">Subtotal</span><span className="font-medium tabular-nums">{formatINR(order.subtotal)}</span></div>
           {order.discount > 0 && <div className="flex justify-between text-sm text-green-600"><span>Discount</span><span className="font-medium tabular-nums">-{formatINR(order.discount)}</span></div>}
           <div className="flex justify-between text-sm"><span className="text-slate-600">Delivery</span><span className="font-medium tabular-nums">{order.shipping === 0 ? "FREE" : formatINR(order.shipping)}</span></div>
           <Separator />
-          <div className="flex justify-between items-baseline"><span className="text-base font-bold text-slate-800">Total Amount</span><span className="text-xl font-bold text-[#1A6B3C] tabular-nums">{formatINR(order.total)}</span></div>
+          <div className="flex justify-between items-baseline"><span className="text-base font-bold text-charcoal">Total Amount</span><span className="font-display text-2xl text-pine tabular-nums">{formatINR(order.total)}</span></div>
         </div>
+
+        <GuaranteeCallout variant="inline" />
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button asChild className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"><Link href="/account/orders">View My Orders<ArrowRight className="size-4" /></Link></Button>
-          <Button asChild variant="outline" className="gap-2"><Link href="/shop">Continue Shopping</Link></Button>
+          <Button asChild className="bg-pine hover:bg-brass-deep text-ivory rounded-full gap-2"><Link href="/account/orders">View My Orders<ArrowRight className="size-4" /></Link></Button>
+          <Button asChild variant="outline" className="gap-2 rounded-full border-pine/30 text-pine hover:bg-pine hover:text-ivory"><Link href="/shop">Continue Shopping</Link></Button>
         </div>
       </div>
     </Container>

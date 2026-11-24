@@ -40,7 +40,7 @@ function getConfig(stock: number, threshold: number): VariantConfig {
     return {
       label: `Only ${stock} left`,
       icon: AlertCircle,
-      className: "text-warning",
+      className: "text-terracotta",
     };
   }
   return {
@@ -71,7 +71,7 @@ export function StockStatus({
         type="button"
         onClick={onNotify}
         className={cn(
-          "inline-flex items-center gap-1.5 font-medium text-primary hover:text-primary-hover",
+          "inline-flex items-center gap-1.5 font-medium text-primary hover:text-brass-deep",
           sizeClasses,
           "rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           className

@@ -53,7 +53,7 @@ export function QuantitySelector({
     return (
       <span
         className={cn(
-          "inline-flex items-center rounded-md border border-border bg-card px-3 py-1.5 font-medium tabular-nums",
+          "inline-flex items-center rounded-full border border-border bg-card px-3 py-1.5 font-medium tabular-nums",
           TEXT_SIZE[size],
           className
         )}
@@ -66,7 +66,7 @@ export function QuantitySelector({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-md border border-border bg-card",
+        "inline-flex items-center rounded-full border border-border bg-card",
         size === "sm" ? "p-0.5" : "p-1",
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 focus-within:ring-offset-background",
         disabled && "opacity-50 pointer-events-none",
@@ -81,7 +81,7 @@ export function QuantitySelector({
         size="icon"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={atMin || disabled}
-        className={cn(BTN_SIZE[size], "rounded-sm hover:bg-muted")}
+        className={cn(BTN_SIZE[size], "rounded-full hover:bg-sage-wash")}
         aria-label="Decrease quantity"
       >
         <Minus className="size-3.5" aria-hidden="true" />
@@ -102,7 +102,7 @@ export function QuantitySelector({
         size="icon"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={atMax || disabled}
-        className={cn(BTN_SIZE[size], "rounded-sm hover:bg-muted")}
+        className={cn(BTN_SIZE[size], "rounded-full hover:bg-sage-wash")}
         aria-label="Increase quantity"
       >
         <Plus className="size-3.5" aria-hidden="true" />

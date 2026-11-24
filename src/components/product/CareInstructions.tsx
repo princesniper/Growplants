@@ -18,8 +18,8 @@ export function CareInstructions({ instructions }: { instructions: CareType }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {items.map((item) => (
           <div key={item.label} className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-            <div className="size-10 rounded-lg flex items-center justify-center mb-3" style={{ background: "#E8930A15" }}>
-              <item.icon className="size-5" style={{ color: "#E8930A" }} aria-hidden="true" />
+            <div className="size-10 rounded-lg flex items-center justify-center mb-3" style={{ background: "#C6A15B15" }}>
+              <item.icon className="size-5" style={{ color: "#C6A15B" }} aria-hidden="true" />
             </div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
             <p className="text-sm text-gray-700 mt-1 leading-relaxed">{item.value}</p>

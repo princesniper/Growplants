@@ -35,7 +35,7 @@ export function FreeShippingProgressBar({
     return (
       <div
         className={cn(
-          "flex items-center gap-2 rounded-lg bg-success/10 text-success border border-success/30 px-3 py-2",
+          "flex items-center gap-2 rounded-[18px] bg-success/10 text-success border border-success/30 px-3 py-2",
           className
         )}
         role="status"
@@ -43,7 +43,7 @@ export function FreeShippingProgressBar({
         <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
         <p className="text-body-sm font-medium">
           {variant === "full"
-            ? "🎉 You've unlocked FREE shipping!"
+            ? "You've unlocked FREE shipping!"
             : "FREE shipping unlocked"}
         </p>
       </div>
@@ -68,7 +68,7 @@ export function FreeShippingProgressBar({
 
   return (
     <div
-      className={cn("flex items-center gap-3 px-3 py-2.5 rounded-lg bg-muted", className)}
+      className={cn("flex items-center gap-3 px-3 py-2.5 rounded-[18px] bg-sage-wash border border-line", className)}
       role="status"
       aria-live="polite"
     >

@@ -39,10 +39,10 @@ export function SectionSkeleton({
       {showHeader && (
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-6 w-48 bg-sand" />
+            <Skeleton className="h-3 w-32 bg-sand" />
           </div>
-          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-16 bg-sand" />
         </div>
       )}
 
@@ -65,12 +65,12 @@ export function SectionSkeleton({
       {variant === "list" && (
         <div className="space-y-3">
           {items.map((_, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 border border-border rounded-lg">
-              <Skeleton className="size-16 rounded-md shrink-0" />
+            <div key={i} className="flex items-center gap-3 p-3 border border-border rounded-[18px] bg-card">
+              <Skeleton className="size-16 rounded-lg bg-sand shrink-0" />
               <div className="flex-1 space-y-2">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-4 w-3/4 bg-sand" />
+                <Skeleton className="h-3 w-1/2 bg-sand" />
+                <Skeleton className="h-4 w-1/3 bg-sand" />
               </div>
             </div>
           ))}

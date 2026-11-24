@@ -406,11 +406,11 @@ export function UnifiedAddressForm({
             {gpsVerified ? (
               <ShieldCheck className="size-5 text-green-600 shrink-0" />
             ) : gpsState === "detecting" || gpsState === "fetching" ? (
-              <Loader2 className="size-5 text-[#1A6B3C] animate-spin shrink-0" />
+              <Loader2 className="size-5 text-[#16382B] animate-spin shrink-0" />
             ) : gpsState === "failed" ? (
               <AlertCircle className="size-5 text-red-500 shrink-0" />
             ) : (
-              <Navigation className="size-5 text-[#1A6B3C] shrink-0" />
+              <Navigation className="size-5 text-[#16382B] shrink-0" />
             )}
             <div className="min-w-0">
               <p className="text-sm font-semibold text-slate-800">
@@ -431,7 +431,7 @@ export function UnifiedAddressForm({
               type="button"
               size="sm"
               variant="outline"
-              className="border-[#1A6B3C] text-[#1A6B3C] gap-1.5 animate-pulse-ring shrink-0"
+              className="border-[#16382B] text-[#16382B] gap-1.5 animate-pulse-ring shrink-0"
               onClick={handleGPS}
             >
               {gpsButtonContent()}
@@ -458,7 +458,7 @@ export function UnifiedAddressForm({
           <button
             type="button"
             onClick={() => setMapPickerOpen(true)}
-            className="text-xs text-[#1A6B3C] hover:underline font-medium flex items-center gap-1"
+            className="text-xs text-[#16382B] hover:underline font-medium flex items-center gap-1"
           >
             <MapIcon className="size-3.5" />
             {gpsVerified ? "Adjust location on map" : "Set Location Manually on Map"}
@@ -503,7 +503,7 @@ export function UnifiedAddressForm({
       {/* Phone with +91 prefix */}
       <div className="space-y-1.5">
         <Label className="text-sm">Phone Number *</Label>
-        <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1A6B3C]/20 focus-within:border-[#1A6B3C]">
+        <div className="flex h-11 rounded-md border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#16382B]/20 focus-within:border-[#16382B]">
           <span className="flex items-center px-3 bg-slate-50 text-sm font-medium text-slate-600 border-r border-slate-200">+91</span>
           <input
             type="tel"
@@ -596,7 +596,7 @@ export function UnifiedAddressForm({
       </div>
 
       <div className="flex items-center gap-2 pt-2">
-        <input type="checkbox" id="isDefault" checked={form.isDefault} onChange={(e) => setForm({ ...form, isDefault: e.target.checked })} className="size-4 accent-[#1A6B3C]" />
+        <input type="checkbox" id="isDefault" checked={form.isDefault} onChange={(e) => setForm({ ...form, isDefault: e.target.checked })} className="size-4 accent-[#16382B]" />
         <Label htmlFor="isDefault" className="text-sm cursor-pointer">Set as default address</Label>
       </div>
 
@@ -607,7 +607,7 @@ export function UnifiedAddressForm({
         <Button
           onClick={handleSave}
           disabled={!gpsVerified || isSaving}
-          className={cn("gap-2 flex-1", gpsVerified ? "bg-[#1A6B3C] hover:bg-[#16A34A]" : "bg-slate-300 cursor-not-allowed")}
+          className={cn("gap-2 flex-1", gpsVerified ? "bg-[#16382B] hover:bg-[#A8843F]" : "bg-slate-300 cursor-not-allowed")}
         >
           {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
           {initial?.id ? "Update" : "Save"} Address

@@ -30,20 +30,20 @@ export function TrackingErrorState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center py-12 px-6 rounded-2xl border border-red-200 bg-red-50/50",
+        "flex flex-col items-center justify-center text-center py-12 px-6 rounded-2xl border border-terracotta/30 bg-terracotta/5",
         className,
       )}
       role="alert"
     >
       {/* Icon */}
-      <div className="size-16 rounded-full bg-red-100 flex items-center justify-center mb-4 shadow-sm">
-        <AlertTriangle className="size-8 text-red-500" strokeWidth={2} />
+      <div className="size-16 rounded-full bg-clay flex items-center justify-center mb-4 shadow-sm">
+        <AlertTriangle className="size-8 text-terracotta" strokeWidth={2} />
       </div>
 
-      <h3 className="text-base font-bold text-red-800 mb-1.5">
+      <h3 className="text-base font-bold text-terracotta mb-1.5">
         Tracking Unavailable
       </h3>
-      <p className="text-sm text-red-600 max-w-sm leading-relaxed mb-5">
+      <p className="text-sm text-terracotta max-w-sm leading-relaxed mb-5">
         {message}
       </p>
 
@@ -51,7 +51,7 @@ export function TrackingErrorState({
         {onRetry && (
           <Button
             onClick={onRetry}
-            className="bg-[#1A6B3C] hover:bg-[#16A34A] gap-2"
+            className="bg-pine hover:bg-brass-deep gap-2"
             size="sm"
           >
             <RefreshCw className="size-4" />
@@ -62,7 +62,7 @@ export function TrackingErrorState({
           <Button
             onClick={onContactSupport}
             variant="outline"
-            className="border-red-300 text-red-600 hover:bg-red-50 gap-2"
+            className="border-terracotta/40 text-terracotta hover:bg-terracotta/10 gap-2"
             size="sm"
           >
             <Headphones className="size-4" />

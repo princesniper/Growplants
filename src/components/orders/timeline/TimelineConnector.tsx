@@ -46,8 +46,8 @@ export function TimelineConnector({
         <div
           className={cn(
             "absolute inset-0 rounded-full transition-all duration-700 ease-out",
-            state === "completed" && "bg-[#1A6B3C] w-full",
-            state === "current" && "bg-[#1A6B3C] w-1/2",
+            state === "completed" && "bg-[#16382B] w-full",
+            state === "current" && "bg-[#16382B] w-1/2",
             state === "upcoming" && "w-0",
             state === "cancelled_step" && "bg-red-400 w-full opacity-50",
           )}
@@ -70,8 +70,8 @@ export function TimelineConnector({
       <div
         className={cn(
           "absolute inset-0 rounded-full transition-all duration-700 ease-out",
-          state === "completed" && "bg-[#1A6B3C] h-full",
-          state === "current" && "bg-[#1A6B3C] h-1/2",
+          state === "completed" && "bg-[#16382B] h-full",
+          state === "current" && "bg-[#16382B] h-1/2",
           state === "upcoming" && "h-0",
           state === "cancelled_step" && "bg-red-400 h-full opacity-50",
         )}

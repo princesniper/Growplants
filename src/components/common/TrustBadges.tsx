@@ -1,13 +1,11 @@
-import { Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
+import { ShieldCheck, PackageCheck, Truck, MessageCircleHeart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
 /**
- * TrustBadges — persistent trust bar (4 badges).
- * Source: HOMEPAGE_AUDIT_REPORT.md §9.1.5 ("No persistent trust badge visible
- * without scrolling" — fix: add visible trust badges).
- *
- * Used below the hero section to reinforce trust above the fold.
+ * TrustBadges — trust strip directly under the hero (blueprint D1.4).
+ * Research rhythm: guarantee + packaging story + delivery promise + human
+ * support, never buried in the footer.
  */
 interface TrustBadge {
   icon: LucideIcon;
@@ -16,10 +14,10 @@ interface TrustBadge {
 }
 
 const BADGES: TrustBadge[] = [
-  { icon: Truck, title: "Free Delivery", subtitle: "Above ₹499 in Sonipat" },
-  { icon: ShieldCheck, title: "24h Damage Guarantee", subtitle: "Free replacement" },
-  { icon: RefreshCw, title: "7-Day Returns", subtitle: "On planters & accessories" },
-  { icon: Headphones, title: "Expert Support", subtitle: "Mon–Sun, 9AM–7PM" },
+  { icon: ShieldCheck, title: "30-Day Replacement Promise", subtitle: "Photo within 48h → free replacement" },
+  { icon: PackageCheck, title: "Nursery-Fresh, Packed for Transit", subtitle: "Moisture-locked breathable wrap" },
+  { icon: Truck, title: "Free Delivery over ₹499", subtitle: "1–2 business days in Sonipat" },
+  { icon: MessageCircleHeart, title: "Plant Doctor on WhatsApp", subtitle: "Free advice, photo bhejo" },
 ];
 
 export interface TrustBadgesProps {
@@ -30,25 +28,26 @@ export function TrustBadges({ className }: TrustBadgesProps) {
   return (
     <div
       className={cn(
-        "grid grid-cols-2 md:grid-cols-4 gap-4",
+        "grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4",
         className
       )}
       role="list"
+      aria-label="Why shop with GrowPlants"
     >
       {BADGES.map((badge) => (
         <div
           key={badge.title}
-          className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border"
+          className="flex items-center gap-3 p-3.5 md:p-4 rounded-2xl bg-paper border border-line shadow-[0_8px_24px_rgba(22,56,43,0.06)]"
           role="listitem"
         >
-          <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <div className="size-11 rounded-full bg-pine text-brass flex items-center justify-center shrink-0">
             <badge.icon className="size-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="text-body-sm font-semibold text-foreground truncate">
+            <p className="text-body-sm font-semibold text-pine leading-tight">
               {badge.title}
             </p>
-            <p className="text-caption text-muted-foreground truncate">
+            <p className="text-caption text-ink-soft leading-tight mt-0.5">
               {badge.subtitle}
             </p>
           </div>
